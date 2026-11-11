@@ -47,11 +47,11 @@ jobs:
         run: composer audit --no-interaction --format=plain
 
       - name: Node install (websocket app)
-        working-directory: app
+        working-directory: services/realtime
         run: npm ci
 
       - name: Node audit (high+)
-        working-directory: app
+        working-directory: services/realtime
         run: npm audit --audit-level=high
 
       - name: Secret scan (gitleaks)
@@ -74,4 +74,3 @@ jobs:
           name: security-monthly-readiness
           path: docs/security/SECURITY_MONTHLY_READINESS.md
           if-no-files-found: error
-
