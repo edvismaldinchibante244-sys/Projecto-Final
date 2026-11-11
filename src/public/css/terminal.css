@@ -1,0 +1,28 @@
+/* Ecra de bloqueio do terminal (terminal.php) */
+*{box-sizing:border-box}
+body.term{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#14110f;color:#f5efe6;display:flex;align-items:center;justify-content:center}
+.term__caixa{width:min(920px,100%);padding:32px 20px;text-align:center}
+.term__topo h1{margin:0;font-size:1.9rem;letter-spacing:.02em}
+.term__topo p{margin:.35rem 0 0;color:#b9ad9c}
+.term h2{font-size:1.15rem;font-weight:600;margin:2rem 0 1rem;color:#e8dccb}
+.term__vazio{max-width:520px;margin:0 auto;color:#cfc3b2;line-height:1.5}
+.term__grelha{display:flex;flex-wrap:wrap;justify-content:center;gap:14px}
+.term__pessoa{width:160px}
+.term__pessoa{background:#221d19;border:1px solid #3a322b;border-radius:16px;padding:18px 10px;color:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font:inherit;transition:border-color .15s,transform .15s}
+.term__pessoa:hover,.term__pessoa:focus-visible{border-color:#c9a36a;transform:translateY(-2px);outline:none}
+.term__inicial{width:56px;height:56px;border-radius:50%;background:#c9a36a;color:#14110f;font-weight:700;font-size:1.4rem;display:flex;align-items:center;justify-content:center}
+.term__nome{font-weight:600}
+.term__perfil{font-size:.82rem;color:#b9ad9c}
+.term__pin{max-width:320px;margin:0 auto}
+.term__pontos{display:flex;justify-content:center;gap:12px;height:22px;margin:8px 0}
+.term__pontos span{width:16px;height:16px;border-radius:50%;border:2px solid #c9a36a}
+.term__pontos span.cheio{background:#c9a36a}
+.term__erro{min-height:1.4em;color:#ff9b8a;margin:.4rem 0 .8rem}
+.term__teclado{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.term__teclado button{height:64px;border-radius:14px;border:1px solid #3a322b;background:#221d19;color:inherit;font-size:1.5rem;cursor:pointer}
+.term__teclado button:active{background:#2e2721}
+.term__teclado .term__ok{font-size:1rem;font-weight:700;background:#c9a36a;color:#14110f;border-color:#c9a36a}
+.term__teclado button:disabled{opacity:.5;cursor:wait}
+.term__voltar{margin-top:18px;background:none;border:0;color:#cfc3b2;font:inherit;cursor:pointer;text-decoration:underline}
+.term__rodape{margin-top:2.5rem}
+.term__rodape a{color:#9f9383;font-size:.9rem}

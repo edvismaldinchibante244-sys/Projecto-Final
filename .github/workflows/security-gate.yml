@@ -1,0 +1,77 @@
+name: Security Gate
+
+on:
+  pull_request:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  security-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: PHP lint (public + app)
+        shell: bash
+        run: |
+          set -euo pipefail
+          find src/public app/src tools -type f -name "*.php" -print0 | xargs -0 -n1 php -l
+
+      - name: Composer install
+        working-directory: app
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Composer audit
+        working-directory: app
+        run: composer audit --no-interaction --format=plain
+
+      - name: Node install (websocket app)
+        working-directory: app
+        run: npm ci
+
+      - name: Node audit (high+)
+        working-directory: app
+        run: npm audit --audit-level=high
+
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Security preflight
+        run: php tools/security_preflight.php --json
+
+      - name: Security ops preflight
+        run: php tools/security_ops_preflight.php --json
+
+      - name: Monthly readiness report
+        run: php tools/security_readiness_report.php --json
+
+      - name: Upload readiness artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-monthly-readiness
+          path: docs/security/SECURITY_MONTHLY_READINESS.md
+          if-no-files-found: error
+

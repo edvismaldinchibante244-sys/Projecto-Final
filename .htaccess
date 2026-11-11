@@ -1,0 +1,46 @@
+# Redirecionar todas as requisições para src/public/
+# RECOMENDADO: no servidor, o DocumentRoot deve ser V00/src/public (não esta pasta).
+RewriteEngine On
+RewriteBase /
+
+# URL canónica de páginas: remove /src/public e a extensão .php.
+# Aplica apenas a GET/HEAD para não redirecionar POSTs de formulários ou APIs.
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$ [NC]
+RewriteCond %{THE_REQUEST} \s/+src/public/index\.php(?:[\s?]) [NC]
+RewriteRule ^src/public/index\.php$ / [R=301,L,NE]
+
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$ [NC]
+RewriteCond %{THE_REQUEST} \s/+src/public/(?!api/)([^?\s]+?)\.php(?:[\s?]) [NC]
+RewriteRule ^src/public/(?!api/)(.+)\.php$ /$1 [R=301,L,NE]
+
+# Bloqueia acesso direto a diretórios/ficheiros sensíveis se o vhost apontar para a raiz do projeto
+RewriteRule ^(config|app|storage|vendor|tools|docs|tests|services|scripts|db|apps|node_modules|public_legacy_backup)(/|$) - [F,L]
+RewriteRule ^websocket-server\.js$ - [F,L]
+RewriteRule ^_to_delete(/|$) - [F,L]
+RewriteRule ^\.git(/|$) - [F,L]
+RewriteRule ^backup_.* - [F,L]
+RewriteRule ^dump_.* - [F,L]
+RewriteRule ^\.env - [F,L]
+RewriteRule ^(SECURITY_|CYBERSECURITY_|PENTEST_|DISASTER_|INCIDENT_).* - [F,L]
+RewriteRule ^.*\.(md|sql|yml|yaml|json|lock)$ - [F,L]
+# Ferramentas e ficheiros de trabalho que nunca devem ser servidos (se o vhost apontar para a raiz).
+RewriteRule ^.*\.(phar|bat|cmd|ps1|sh|log|bak)$ - [F,L]
+RewriteRule ^[^/]+\.(zip|gz|7z|rar|env|ini|dist|toml|xml)$ - [F,L]
+RewriteRule ^(dist|_to_delete|backup_antes_.*)(/|$) - [F,L]
+RewriteRule ^(design-qa|phpunit)[^/]*$ - [F,L]
+RewriteRule ^\.(php-cs-fixer|gitleaks|gitignore|user\.ini)[^/]*$ - [F,L]
+
+# Se a requisição não for para um arquivo ou diretório existente
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# IMPORTANTE:
+# Permite acesso direto a /src/public/... (por ex. /src/public/api/operacoes_empresariais.php)
+# sem redirecionar para src/public/src/public/...
+RewriteCond %{REQUEST_URI} !^/src/public/ [NC]
+
+# Redirecionar para src/public/
+RewriteRule ^(.*)$ src/public/$1 [L,QSA]
+
+# Se for acesso à raiz
+RewriteRule ^$ src/public/ [L]

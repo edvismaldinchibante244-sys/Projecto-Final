@@ -1,0 +1,1511 @@
+{
+    "info": {
+        "_postman_id": "c0a1e7e1-0007-4000-8000-customerapi0001",
+        "name": "RestauranteSaaS — Customer API v1",
+        "description": "API REST do app cliente (JWT).\nBase: {{base_url}}\n\nFluxo: Health → Auth → Catalogo → Carrinho → Enderecos → Pedidos.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:3000/V00/src/public/api/v1"
+        },
+        {
+            "key": "token",
+            "value": ""
+        }
+    ],
+    "item": [
+        {
+            "name": "0. Health",
+            "description": "Sem JWT",
+            "item": [
+                {
+                    "name": "Root",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": []
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Health",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/health",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "health"
+                            ]
+                        },
+                        "description": "Verifica API + MySQL"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "1. Auth",
+            "description": "",
+            "item": [
+                {
+                    "name": "Register",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "description": "Cria conta em clientes + JWT",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"restaurante_id\": \"{{restaurante_id}}\",\n    \"nome\": \"Cliente Postman\",\n    \"email\": \"{{email}}\",\n    \"telefone\": \"{{telefone}}\",\n    \"senha\": \"{{senha}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "if (j && j.token) { pm.environment.set(\"token\", j.token); }",
+                                    "if (j && j.cliente && j.cliente.id) { pm.environment.set(\"cliente_id\", String(j.cliente.id)); }",
+                                    "if (j && j.cliente && j.cliente.restaurante_id) { pm.environment.set(\"restaurante_id\", String(j.cliente.restaurante_id)); }",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"restaurante_id\": \"{{restaurante_id}}\",\n    \"email\": \"{{email}}\",\n    \"senha\": \"{{senha}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "if (j && j.token) { pm.environment.set(\"token\", j.token); }",
+                                    "if (j && j.cliente && j.cliente.id) { pm.environment.set(\"cliente_id\", String(j.cliente.id)); }",
+                                    "if (j && j.cliente && j.cliente.restaurante_id) { pm.environment.set(\"restaurante_id\", String(j.cliente.restaurante_id)); }",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Me",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "me"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Update Me",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "me"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nome\": \"Cliente Postman Actualizado\",\n    \"telefone\": \"{{telefone}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Change Password",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/password",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "password"
+                            ]
+                        },
+                        "description": "Mantém a mesma senha no environment de teste",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"senha_actual\": \"{{senha}}\",\n    \"senha_nova\": \"{{senha}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Forgot Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/forgot-password",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "forgot-password"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"restaurante_id\": \"{{restaurante_id}}\",\n    \"email\": \"{{email}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Reset Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/reset-password",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "reset-password"
+                            ]
+                        },
+                        "description": "Usar token do forgot (dev) ou email",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"token\": \"{{reset_token}}\",\n    \"senha\": \"{{senha}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/auth/logout",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "logout"
+                            ]
+                        },
+                        "description": "Stateless — apagar token no app"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "2. Catalogo (publico)",
+            "description": "Sem JWT",
+            "item": [
+                {
+                    "name": "Restaurante",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurantes/{{restaurante_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurantes",
+                                "{{restaurante_id}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Categorias",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurantes/{{restaurante_id}}/categorias",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurantes",
+                                "{{restaurante_id}}",
+                                "categorias"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });",
+                                    "if (j.produtos && j.produtos.length) { pm.environment.set(\"produto_id\", String(j.produtos[0].id)); }",
+                                    "if (j.categorias && j.categorias.length) { pm.environment.set(\"categoria_id\", String(j.categorias[0].id)); }"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Listar produtos",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurantes/{{restaurante_id}}/produtos?limite=50",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurantes",
+                                "{{restaurante_id}}",
+                                "produtos"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limite",
+                                    "value": "50"
+                                }
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });",
+                                    "if (j.produtos && j.produtos.length) { pm.environment.set(\"produto_id\", String(j.produtos[0].id)); }",
+                                    "if (j.categorias && j.categorias.length) { pm.environment.set(\"categoria_id\", String(j.categorias[0].id)); }"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Buscar produtos",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurantes/{{restaurante_id}}/produtos?q=a&limite=20",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurantes",
+                                "{{restaurante_id}}",
+                                "produtos"
+                            ],
+                            "query": [
+                                {
+                                    "key": "q",
+                                    "value": "a"
+                                },
+                                {
+                                    "key": "limite",
+                                    "value": "20"
+                                }
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Produto detalhe",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurantes/{{restaurante_id}}/produtos/{{produto_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurantes",
+                                "{{restaurante_id}}",
+                                "produtos",
+                                "{{produto_id}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Promocoes / destaques",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/restaurantes/{{restaurante_id}}/promocoes",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "restaurantes",
+                                "{{restaurante_id}}",
+                                "promocoes"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "3. Carrinho (JWT)",
+            "description": "",
+            "item": [
+                {
+                    "name": "Ver carrinho",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/carrinho",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "carrinho"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Adicionar item",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/carrinho/itens",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "carrinho",
+                                "itens"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"produto_id\": \"{{produto_id}}\",\n    \"quantidade\": 2\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Actualizar quantidade",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/carrinho/itens/{{produto_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "carrinho",
+                                "itens",
+                                "{{produto_id}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"quantidade\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Remover item",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/carrinho/itens/{{produto_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "carrinho",
+                                "itens",
+                                "{{produto_id}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Limpar carrinho",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/carrinho",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "carrinho"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "4. Enderecos (JWT)",
+            "description": "",
+            "item": [
+                {
+                    "name": "Listar",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/enderecos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "enderecos"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Criar",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/enderecos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "enderecos"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"rotulo\": \"Casa\",\n    \"endereco\": \"Av. Julius Nyerere 100\",\n    \"referencia\": \"Perto do mercado\",\n    \"cidade\": \"Maputo\",\n    \"provincia\": \"Maputo\",\n    \"telefone_contacto\": \"{{telefone}}\",\n    \"is_padrao\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });",
+                                    "if (j.endereco && j.endereco.id) { pm.environment.set(\"endereco_id\", String(j.endereco.id)); }"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Obter",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/enderecos/{{endereco_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "enderecos",
+                                "{{endereco_id}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Actualizar",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/enderecos/{{endereco_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "enderecos",
+                                "{{endereco_id}}"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"rotulo\": \"Casa\",\n    \"endereco\": \"Av. Julius Nyerere 200\",\n    \"cidade\": \"Maputo\",\n    \"is_padrao\": true\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });",
+                                    "if (j.endereco && j.endereco.id) { pm.environment.set(\"endereco_id\", String(j.endereco.id)); }"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Definir padrao",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/enderecos/{{endereco_id}}/padrao",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "enderecos",
+                                "{{endereco_id}}",
+                                "padrao"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });",
+                                    "if (j.endereco && j.endereco.id) { pm.environment.set(\"endereco_id\", String(j.endereco.id)); }"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Remover",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/enderecos/{{endereco_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "enderecos",
+                                "{{endereco_id}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "5. Pedidos (JWT)",
+            "description": "",
+            "item": [
+                {
+                    "name": "Preparar carrinho (1 item)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/carrinho/itens",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "carrinho",
+                                "itens"
+                            ]
+                        },
+                        "description": "Corre antes de criar pedido",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"produto_id\": \"{{produto_id}}\",\n    \"quantidade\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Criar TAKEAWAY",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/pedidos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pedidos"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"tipo_pedido\": \"TAKEAWAY\",\n    \"observacao\": \"Postman takeaway\",\n    \"idem_key\": \"pm-takeaway-{{$timestamp}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });",
+                                    "if (j.pedido && j.pedido.id) { pm.environment.set(\"pedido_id\", String(j.pedido.id)); }"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Preparar carrinho (delivery)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/carrinho/itens",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "carrinho",
+                                "itens"
+                            ]
+                        },
+                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"produto_id\": \"{{produto_id}}\",\n    \"quantidade\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Criar DELIVERY (endereco_id)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/pedidos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pedidos"
+                            ]
+                        },
+                        "description": "Requer endereco criado antes",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"tipo_pedido\": \"DELIVERY\",\n    \"endereco_id\": \"{{endereco_id}}\",\n    \"observacao\": \"Postman delivery\",\n    \"idem_key\": \"pm-delivery-{{$timestamp}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });",
+                                    "if (j.pedido && j.pedido.id) { pm.environment.set(\"pedido_id\", String(j.pedido.id)); }"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Criar DELIVERY (texto livre)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/pedidos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pedidos"
+                            ]
+                        },
+                        "description": "Adiciona item ao carrinho antes",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"tipo_pedido\": \"DELIVERY\",\n    \"endereco_entrega\": \"Rua Teste 1, Maputo\",\n    \"observacao\": \"Sem endereco_id\",\n    \"idem_key\": \"pm-delivery-txt-{{$timestamp}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });",
+                                    "if (j.pedido && j.pedido.id) { pm.environment.set(\"pedido_id\", String(j.pedido.id)); }"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Listar",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/pedidos",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pedidos"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Detalhe",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/pedidos/{{pedido_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pedidos",
+                                "{{pedido_id}}"
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Cancelar",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/pedidos/{{pedido_id}}/cancelar",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "pedidos",
+                                "{{pedido_id}}",
+                                "cancelar"
+                            ]
+                        },
+                        "description": "So se status ainda permitir"
+                    },
+                    "response": [],
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "const j = pm.response.json();",
+                                    "pm.test(\"success\", function () { pm.expect(j.success).to.eql(true); });"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Pré-visualização KDS Empresarial</title>
+    <link rel="stylesheet" href="../src/public/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../src/public/css/kds-plan.css">
+    <link rel="stylesheet" href="../src/public/css/kds-command.css">
+</head>
+<body class="kds-command-v2 plan-theme-empresarial">
+    <header class="kds-topbar">
+        <div class="kds-title">Comando da Cozinha <span class="kds-plan-badge">Empresarial</span></div>
+        <div class="kds-actions">
+            <span class="kds-online"><i class="fas fa-circle"></i>Sistema online</span>
+            <button class="kds-sound-toggle" type="button" data-kds-sound-toggle hidden aria-label="Controlar alertas sonoros"></button>
+            <span class="kds-action-separator"></span>
+            <span>10:48:31</span>
+            <a class="btn-primary" href="#"><i class="fas fa-plus"></i>Novo pedido</a>
+            <a href="#"><i class="fas fa-arrow-left"></i>Voltar</a>
+        </div>
+    </header>
+
+    <section class="kds-emp-intel" data-kds-intel data-kds-risk="18">
+        <div class="kds-emp-intel-main tom-ok">
+            <div class="kds-intel-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="kds-intel-copy">
+                <div class="kds-emp-intel-kicker">Nivora Intelligence · Cozinha · risco 18%</div>
+                <div class="kds-emp-intel-title">Operação estável</div>
+                <div class="kds-emp-intel-txt">1 em preparo · média 0 min · SLA 8/15 min.</div>
+                <div class="kds-ai-advice"><i class="fas fa-wand-magic-sparkles"></i><span>Manter a sequência atual; não há risco relevante de quebra de SLA.</span></div>
+            </div>
+        </div>
+        <div class="kds-emp-intel-metrics">
+            <div class="kds-emp-metric tone-prep"><span class="kds-metric-icon"><i class="fas fa-kitchen-set"></i></span><span class="kds-metric-copy"><span class="lbl">Em preparo</span><span class="val">1</span></span><span class="kds-metric-line"></span></div>
+            <div class="kds-emp-metric tone-ready"><span class="kds-metric-icon"><i class="fas fa-check"></i></span><span class="kds-metric-copy"><span class="lbl">Prontos</span><span class="val">0</span></span><span class="kds-metric-line"></span></div>
+            <div class="kds-emp-metric tone-critical"><span class="kds-metric-icon"><i class="fas fa-triangle-exclamation"></i></span><span class="kds-metric-copy"><span class="lbl">Críticos</span><span class="val">0</span></span><span class="kds-metric-line"></span></div>
+            <div class="kds-emp-metric tone-oldest"><span class="kds-metric-icon"><i class="fas fa-clock"></i></span><span class="kds-metric-copy"><span class="lbl">Mais antigo</span><span class="val">0 min</span></span><span class="kds-metric-line"></span></div>
+            <div class="kds-emp-metric tone-average"><span class="kds-metric-icon"><i class="fas fa-stopwatch"></i></span><span class="kds-metric-copy"><span class="lbl">Média espera</span><span class="val">0 min</span></span><span class="kds-metric-line"></span></div>
+        </div>
+    </section>
+
+    <main class="board kds-refresh-root">
+        <section class="column column-preparo">
+            <div class="column-header"><span><i class="fas fa-kitchen-set"></i>EM PREPARO</span><span class="count">1</span></div>
+            <div class="column-body">
+                <article class="card-item" data-status="em_preparo">
+                    <div class="card-top"><span>Mesa 1</span></div>
+                    <div class="card-sub">Pedido #310 · Item #355</div>
+                    <div class="kds-product-row">
+                        <img class="kds-product-image" src="../src/public/images/p_6a12f117b82be9.10181636.png" alt="Produto do pedido">
+                        <div class="kds-product-info"><span class="badge-qtd">1x</span><strong>Produto completo</strong></div>
+                    </div>
+                    <div class="tempo">agora</div>
+                    <button class="btn-status btn-ready"><i class="fas fa-check"></i>Marcar pronto</button>
+                </article>
+            </div>
+        </section>
+        <section class="column column-pronto">
+            <div class="column-header"><span><i class="fas fa-circle-check"></i>PRONTO</span><span class="count">0</span></div>
+            <div class="column-body"><div class="empty-state"><span class="empty-state-icon"><i class="fas fa-bell-concierge"></i></span><strong>Fila limpa —</strong><span>à espera do próximo pedido</span></div></div>
+        </section>
+        <section class="column column-critico">
+            <div class="column-header"><span><i class="fas fa-triangle-exclamation"></i>CRÍTICO</span><span class="count">0</span></div>
+            <div class="column-body"><div class="empty-state"><span class="empty-state-icon"><i class="fas fa-triangle-exclamation"></i></span><strong>Fila limpa —</strong><span>à espera do próximo pedido</span></div></div>
+        </section>
+    </main>
+    <script src="../src/public/js/kds_sound_alerts.js"></script>
+    <script>
+        window.previewSoundController = window.KdsSoundAlerts.create({ enabled: true, area: 'cozinha' });
+        const soundTestBoard = document.querySelector('.kds-refresh-root').cloneNode(true);
+        const soundTestCard = document.createElement('article');
+        soundTestCard.className = 'card-item';
+        soundTestCard.dataset.id = 'sound-test-item';
+        soundTestCard.dataset.status = 'em_preparo';
+        soundTestBoard.appendChild(soundTestCard);
+        const soundTestResults = [window.previewSoundController.compareAndNotify(soundTestBoard)];
+        soundTestCard.dataset.status = 'pronto';
+        soundTestResults.push(window.previewSoundController.compareAndNotify(soundTestBoard));
+        soundTestCard.remove();
+        soundTestResults.push(window.previewSoundController.compareAndNotify(soundTestBoard));
+        document.body.dataset.soundTest = JSON.stringify(soundTestResults);
+    </script>
+</body>
+</html>

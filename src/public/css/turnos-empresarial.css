@@ -1,0 +1,562 @@
+/* Gestão de Turnos — layout Empresarial
+   Só aplica com body.turnos-emp-shell */
+
+body.turnos-emp-shell .main-content {
+  background:
+    radial-gradient(900px 320px at 12% -8%, rgba(234, 88, 12, 0.10), transparent 55%),
+    radial-gradient(700px 280px at 92% 0%, rgba(249, 115, 22, 0.06), transparent 50%),
+    #f8fafc;
+}
+
+body.turnos-emp-shell .te-hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 55%, #9a3412 100%);
+  color: #fff;
+  box-shadow: 0 14px 32px rgba(194, 65, 12, 0.28);
+}
+
+body.turnos-emp-shell .te-hero h1 {
+  margin: 0 0 4px;
+  font-family: 'Space Grotesk', 'Outfit', 'Segoe UI', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  color: #fff;
+}
+
+body.turnos-emp-shell .te-hero h1 .plan-page-badge,
+body.turnos-emp-shell .te-hero h1 .badge {
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+body.turnos-emp-shell .te-hero p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 42rem;
+}
+
+body.turnos-emp-shell .te-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+body.turnos-emp-shell .te-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 11px;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+body.turnos-emp-shell .te-btn-light {
+  background: #fff;
+  color: #c2410c;
+  border-color: #fff;
+}
+
+body.turnos-emp-shell .te-btn-light:hover {
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+body.turnos-emp-shell .te-btn-ghost {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+body.turnos-emp-shell .te-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+body.turnos-emp-shell .te-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+body.turnos-emp-shell .te-kpi {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+  border-top: 3px solid #ea580c;
+}
+
+body.turnos-emp-shell .te-kpi.is-warn {
+  border-top-color: #dc2626;
+}
+
+body.turnos-emp-shell .te-kpi-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+body.turnos-emp-shell .te-kpi-value {
+  display: block;
+  font-family: 'Space Grotesk', 'Outfit', 'Segoe UI', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.15;
+}
+
+body.turnos-emp-shell .te-kpi.is-warn .te-kpi-value {
+  color: #b91c1c;
+}
+
+body.turnos-emp-shell .te-intel {
+  margin-bottom: 16px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid #ffedd5;
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(234, 88, 12, 0.08);
+}
+
+body.turnos-emp-shell .te-intel-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+body.turnos-emp-shell .te-intel-head strong {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+body.turnos-emp-shell .te-intel-head strong i {
+  color: #ea580c;
+}
+
+body.turnos-emp-shell .te-intel-head span {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+body.turnos-emp-shell .te-intel-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+body.turnos-emp-shell .te-intel-kpis > div {
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+
+body.turnos-emp-shell .te-intel-kpis span {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #9a3412;
+  margin-bottom: 4px;
+}
+
+body.turnos-emp-shell .te-intel-kpis strong {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+body.turnos-emp-shell .te-intel-notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+body.turnos-emp-shell .te-intel-notes li {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: grid;
+  gap: 3px;
+}
+
+body.turnos-emp-shell .te-intel-notes li strong {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+body.turnos-emp-shell .te-intel-notes li span {
+  font-size: 0.8rem;
+  color: #475569;
+  line-height: 1.4;
+}
+
+body.turnos-emp-shell .te-intel-notes li.tom-warn {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+body.turnos-emp-shell .te-intel-notes li.tom-ok {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+body.turnos-emp-shell .te-intel-notes li.tom-info {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+body.turnos-emp-shell .main-content > .row .card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+  background: #fff;
+}
+
+body.turnos-emp-shell .te-panel-head {
+  background: linear-gradient(180deg, #fff7ed 0%, #fff 100%) !important;
+  border-bottom: 1px solid #ffedd5 !important;
+  padding: 14px 16px !important;
+}
+
+body.turnos-emp-shell .te-panel-head h6 {
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 0.98rem;
+  margin: 0;
+}
+
+body.turnos-emp-shell .te-panel-head h6 i {
+  color: #ea580c;
+}
+
+body.turnos-emp-shell .te-panel-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+body.turnos-emp-shell .te-count-badge {
+  min-width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ea580c;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.9rem;
+  border: none;
+}
+
+body.turnos-emp-shell .te-ativos-list {
+  max-height: 340px;
+  overflow: auto;
+}
+
+body.turnos-emp-shell .te-active-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s ease;
+}
+
+body.turnos-emp-shell .te-active-row:hover {
+  background: #fff7ed;
+}
+
+body.turnos-emp-shell .te-active-row:last-child {
+  border-bottom: 0;
+}
+
+body.turnos-emp-shell .te-active-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+body.turnos-emp-shell .te-active-meta strong {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+body.turnos-emp-shell .te-active-meta span {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+body.turnos-emp-shell .te-pill {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+body.turnos-emp-shell .te-pill.is-on {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+body.turnos-emp-shell .te-pill.is-off {
+  background: #f8fafc;
+  color: #64748b;
+  border-color: #e2e8f0;
+}
+
+body.turnos-emp-shell .te-empty {
+  padding: 2rem 1rem !important;
+}
+
+body.turnos-emp-shell .te-form-body {
+  padding: 18px 16px !important;
+}
+
+body.turnos-emp-shell .te-form-body .form-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+body.turnos-emp-shell .te-form-body .form-control,
+body.turnos-emp-shell .te-form-body .form-select {
+  border-radius: 11px;
+  border-color: #e2e8f0;
+  min-height: 44px;
+  font-size: 0.92rem;
+}
+
+body.turnos-emp-shell .te-form-body .form-control:focus,
+body.turnos-emp-shell .te-form-body .form-select:focus {
+  border-color: #fb923c;
+  box-shadow: 0 0 0 0.2rem rgba(234, 88, 12, 0.15);
+}
+
+body.turnos-emp-shell .te-btn-add {
+  min-height: 44px;
+  border-radius: 11px;
+  font-weight: 800;
+}
+
+body.turnos-emp-shell .te-panel-form .btn-outline-danger {
+  min-height: 44px;
+  border-radius: 11px;
+  font-weight: 700;
+}
+
+body.turnos-emp-shell .te-table-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+body.turnos-emp-shell .te-table-tools .form-select {
+  border-radius: 10px;
+  border-color: #fed7aa;
+  background: #fff;
+  font-weight: 600;
+  color: #9a3412;
+}
+
+body.turnos-emp-shell .te-btn-export {
+  border-radius: 10px;
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+  color: #c2410c;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+body.turnos-emp-shell .te-btn-export:hover {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+body.turnos-emp-shell .te-table {
+  margin: 0;
+}
+
+body.turnos-emp-shell .te-thead th {
+  background: #fff7ed !important;
+  color: #9a3412;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid #ffedd5 !important;
+  padding: 12px 14px;
+  white-space: nowrap;
+}
+
+body.turnos-emp-shell .te-table tbody td {
+  padding: 12px 14px;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  color: #0f172a;
+  border-color: #f1f5f9;
+}
+
+body.turnos-emp-shell .te-table tbody tr:hover {
+  background: #fffbeb;
+}
+
+body.turnos-emp-shell .te-table .badge {
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+}
+
+body.turnos-emp-shell .te-table .badge.bg-success {
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  border: 1px solid #a7f3d0;
+}
+
+body.turnos-emp-shell .te-table .badge.bg-dark {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1;
+}
+
+body.turnos-emp-shell .te-table .badge.bg-danger {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #fecaca;
+}
+
+body.turnos-emp-shell .te-table .badge.bg-secondary {
+  background: #fff7ed !important;
+  color: #c2410c !important;
+  border: 1px solid #fed7aa;
+}
+
+body.turnos-emp-shell .te-table .te-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+body.turnos-emp-shell .te-table .btn-info {
+  background: #ea580c;
+  border-color: #ea580c;
+  color: #fff;
+  border-radius: 9px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 6px 10px;
+}
+
+body.turnos-emp-shell .te-table .btn-info:hover {
+  background: #c2410c;
+  border-color: #c2410c;
+  color: #fff;
+}
+
+body.turnos-emp-shell .te-table .btn-outline-danger {
+  border-radius: 9px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 6px 10px;
+}
+
+body.turnos-emp-shell .main-content .btn-primary {
+  background: #ea580c;
+  border-color: #ea580c;
+}
+
+body.turnos-emp-shell .main-content .btn-primary:hover {
+  background: #c2410c;
+  border-color: #c2410c;
+}
+
+body.turnos-emp-shell .avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ea580c, #f97316);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  box-shadow: 0 6px 14px rgba(234, 88, 12, 0.28);
+}
+
+body.turnos-emp-shell .top-bar {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  body.turnos-emp-shell .te-kpis,
+  body.turnos-emp-shell .te-intel-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  body.turnos-emp-shell .te-kpis,
+  body.turnos-emp-shell .te-intel-kpis {
+    grid-template-columns: 1fr;
+  }
+}

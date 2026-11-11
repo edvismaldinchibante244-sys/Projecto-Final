@@ -1,0 +1,914 @@
+/* Layout Novo Pedido — apenas plano Empresarial (referência visual do mockup) */
+
+body.pedido-emp-shell {
+  background: #f4f6f8 !important;
+  color: #1e293b;
+}
+
+body.pedido-emp-shell .np-topbar {
+  background: #fff;
+  border-bottom: 1px solid #e8edf2;
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+body.pedido-emp-shell .np-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+body.pedido-emp-shell .np-brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+  color: #fff;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+body.pedido-emp-shell .np-brand h1 {
+  margin: 0;
+  font-family: 'Space Grotesk', 'Segoe UI Semibold', 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+body.pedido-emp-shell .np-brand .np-tagline {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+body.pedido-emp-shell .np-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+body.pedido-emp-shell .np-nav .btn {
+  min-height: 38px;
+  border-radius: 999px !important;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+body.pedido-emp-shell .np-nav .btn-cozinha {
+  background: #ea580c;
+  border-color: #ea580c;
+  color: #fff;
+}
+
+body.pedido-emp-shell .np-toolbar {
+  max-width: 1440px;
+  margin: 14px auto 0;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+body.pedido-emp-shell .np-search {
+  flex: 1 1 280px;
+  position: relative;
+}
+
+body.pedido-emp-shell .np-search i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+body.pedido-emp-shell .np-search input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 14px 10px 40px;
+  background: #fff;
+  font-size: 14px;
+}
+
+body.pedido-emp-shell .np-toolbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+body.pedido-emp-shell .np-count {
+  font-size: 13px;
+  color: #64748b;
+}
+
+body.pedido-emp-shell .np-count::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+body.pedido-emp-shell .np-link-fila {
+  font-size: 13px;
+  font-weight: 700;
+  color: #c2410c;
+  text-decoration: none;
+}
+
+body.pedido-emp-shell .np-link-fila:hover {
+  text-decoration: underline;
+}
+
+body.pedido-emp-shell .np-shell {
+  max-width: 1440px;
+  margin: 14px auto 28px;
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 340px;
+  gap: 16px;
+  align-items: start;
+}
+
+body.pedido-emp-shell .np-cats {
+  background: #fff;
+  border: 1px solid #e8edf2;
+  border-radius: 18px;
+  padding: 14px;
+  position: sticky;
+  top: 78px;
+}
+
+body.pedido-emp-shell .np-cats-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+body.pedido-emp-shell .np-cats-risk-total {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+body.pedido-emp-shell .np-cat-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  text-align: left;
+}
+
+body.pedido-emp-shell .np-cat-btn.has-risk {
+  border-color: #fecaca;
+  background: #fff5f5;
+}
+
+body.pedido-emp-shell .np-cat-btn.has-low {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+body.pedido-emp-shell .np-cat-btn .left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+body.pedido-emp-shell .np-cat-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+body.pedido-emp-shell .np-cat-btn .count {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  background: #f1f5f9;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+body.pedido-emp-shell .np-cat-risk {
+  min-width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+  color: #fff;
+  background: #dc2626;
+  border-radius: 999px;
+  padding: 0 5px;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+}
+
+body.pedido-emp-shell .np-cat-low {
+  min-width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #92400e;
+  background: #fde68a;
+  border-radius: 999px;
+  padding: 0 5px;
+}
+
+body.pedido-emp-shell .np-cat-btn.is-active {
+  background: #ea580c;
+  color: #fff;
+  border-color: #ea580c;
+}
+
+body.pedido-emp-shell .np-cat-btn.is-active.has-risk {
+  background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+  border-color: #b91c1c;
+}
+
+body.pedido-emp-shell .np-cat-btn.is-active .count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+body.pedido-emp-shell .np-cat-btn.is-active .np-cat-risk {
+  background: #fff;
+  color: #dc2626;
+}
+
+body.pedido-emp-shell .np-cat-btn.is-active .np-cat-low {
+  background: rgba(255, 255, 255, 0.9);
+  color: #b45309;
+}
+
+body.pedido-emp-shell .np-cat-promo {
+  margin-top: 14px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(160deg, #ecfdf5, #d1fae5);
+  border: 1px solid #a7f3d0;
+  padding: 12px;
+}
+
+body.pedido-emp-shell .np-cat-promo.is-risk {
+  background: linear-gradient(160deg, #fef2f2, #fee2e2);
+  border-color: #fecaca;
+}
+
+body.pedido-emp-shell .np-cat-promo strong {
+  display: block;
+  font-size: 12px;
+  color: #065f46;
+  margin-bottom: 4px;
+}
+
+body.pedido-emp-shell .np-cat-promo.is-risk strong {
+  color: #991b1b;
+}
+
+body.pedido-emp-shell .np-cat-promo span {
+  font-size: 11px;
+  color: #047857;
+  line-height: 1.35;
+}
+
+body.pedido-emp-shell .np-cat-promo.is-risk span {
+  color: #b91c1c;
+}
+
+body.pedido-emp-shell .np-main {
+  min-width: 0;
+}
+
+body.pedido-emp-shell .np-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+body.pedido-emp-shell .np-section-head h2 {
+  margin: 0;
+  font-family: 'Space Grotesk', 'Segoe UI Semibold', 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+body.pedido-emp-shell .np-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+body.pedido-emp-shell .np-card {
+  background: #fff;
+  border: 1px solid #e8edf2;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+body.pedido-emp-shell .np-card.is-hidden {
+  display: none !important;
+}
+
+body.pedido-emp-shell .np-card-img {
+  aspect-ratio: 1 / 1;
+  background: #f1f5f9;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+
+body.pedido-emp-shell .np-card-img::after {
+  content: '+';
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(234, 88, 12, 0.92);
+  color: #fff;
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 28px;
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+}
+
+body.pedido-emp-shell .np-card:hover .np-card-img::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+body.pedido-emp-shell .np-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+body.pedido-emp-shell .np-card-body {
+  padding: 12px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+body.pedido-emp-shell .np-card-name {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.25;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+body.pedido-emp-shell .np-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+body.pedido-emp-shell .np-card-price {
+  font-weight: 800;
+  color: #ea580c;
+  font-size: 14px;
+}
+
+body.pedido-emp-shell .np-badge-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #15803d;
+  background: #dcfce7;
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+body.pedido-emp-shell .np-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  align-self: flex-start;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 999px;
+  padding: 4px;
+}
+
+body.pedido-emp-shell .np-qty button {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: #ea580c;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+}
+
+body.pedido-emp-shell .np-qty button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+body.pedido-emp-shell .np-qty span {
+  min-width: 18px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+body.pedido-emp-shell .np-cart {
+  background: #fff;
+  border: 1px solid #e8edf2;
+  border-radius: 20px;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.06);
+  position: sticky;
+  top: 78px;
+  max-height: calc(100vh - 96px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body.pedido-emp-shell .np-cart-head {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  font-family: 'Space Grotesk', 'Segoe UI Semibold', 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+body.pedido-emp-shell .np-cart-note {
+  margin: 12px 14px 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff7ed;
+  border: 1px solid #ffedd5;
+  color: #9a3412;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+body.pedido-emp-shell .np-cart-body {
+  padding: 12px 14px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+body.pedido-emp-shell .np-cart-empty {
+  text-align: center;
+  color: #94a3b8;
+  padding: 28px 8px;
+  font-size: 13px;
+}
+
+body.pedido-emp-shell .np-cart-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+body.pedido-emp-shell .np-cart-item:last-child {
+  border-bottom: none;
+}
+
+body.pedido-emp-shell .np-cart-item .ci-info {
+  flex: 1;
+  min-width: 0;
+}
+
+body.pedido-emp-shell .np-cart-item .ci-name {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+body.pedido-emp-shell .np-cart-item .ci-sub {
+  font-size: 12px;
+  color: #64748b;
+}
+
+body.pedido-emp-shell .np-cart-item .ci-price {
+  font-weight: 700;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+body.pedido-emp-shell .np-cart-item .ci-del {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 2px;
+}
+
+body.pedido-emp-shell .np-cart-item .ci-del:hover {
+  color: #dc2626;
+}
+
+body.pedido-emp-shell .np-cart-foot {
+  padding: 12px 14px 16px;
+  border-top: 1px solid #f1f5f9;
+  background: #fff;
+}
+
+body.pedido-emp-shell .np-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+body.pedido-emp-shell .np-total-row span:last-child {
+  color: #ea580c;
+}
+
+body.pedido-emp-shell .np-takeaway {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1.5px solid #bbf7d0;
+  background: #f0fdf4;
+  margin-bottom: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+body.pedido-emp-shell .np-takeaway.is-on {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.12);
+}
+
+body.pedido-emp-shell .np-takeaway input {
+  margin-top: 3px;
+}
+
+body.pedido-emp-shell .np-takeaway strong {
+  display: block;
+  font-size: 13px;
+  color: #166534;
+}
+
+body.pedido-emp-shell .np-takeaway small {
+  color: #15803d;
+  font-size: 11px;
+}
+
+body.pedido-emp-shell .np-btn-send {
+  width: 100%;
+  min-height: 48px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ea580c, #c2410c);
+  color: #fff;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+body.pedido-emp-shell .np-btn-send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+body.pedido-emp-shell .np-mesa-wrap.is-hidden {
+  display: none !important;
+}
+
+/* —— Inteligência EMP —— */
+body.pedido-emp-shell .np-intel {
+  max-width: 1440px;
+  margin: 12px auto 0;
+  padding: 0 18px;
+}
+
+body.pedido-emp-shell .np-intel-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+body.pedido-emp-shell .np-intel-kpis > div {
+  background: #fff;
+  border: 1px solid #ffedd5;
+  border-radius: 12px;
+  padding: 10px 12px;
+  border-top: 3px solid #ea580c;
+}
+
+body.pedido-emp-shell .np-intel-kpis span {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #9a3412;
+  margin-bottom: 2px;
+}
+
+body.pedido-emp-shell .np-intel-kpis strong {
+  font-family: 'Space Grotesk', 'Outfit', 'Segoe UI', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+body.pedido-emp-shell .np-intel-tops {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+body.pedido-emp-shell .np-intel-tops-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+body.pedido-emp-shell .np-top-chip {
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+  color: #9a3412;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+body.pedido-emp-shell .np-top-chip em {
+  font-style: normal;
+  margin-left: 6px;
+  color: #ea580c;
+  font-weight: 800;
+}
+
+body.pedido-emp-shell .np-top-chip:hover {
+  background: #ffedd5;
+}
+
+body.pedido-emp-shell .np-intel-notes {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.pedido-emp-shell .np-intel-notes li {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 2px;
+}
+
+body.pedido-emp-shell .np-intel-notes li strong {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+body.pedido-emp-shell .np-intel-notes li span {
+  font-size: 0.74rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+body.pedido-emp-shell .np-intel-notes li.tom-warn {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+body.pedido-emp-shell .np-intel-notes li.tom-ok {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+body.pedido-emp-shell .np-intel-notes li.tom-info {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+body.pedido-emp-shell .np-badge-low {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #b45309;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+body.pedido-emp-shell .np-badge-out {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+body.pedido-emp-shell .np-card.is-low {
+  border-color: #fde68a;
+}
+
+body.pedido-emp-shell .np-card.is-out {
+  opacity: 0.55;
+  filter: grayscale(0.35);
+}
+
+body.pedido-emp-shell .np-card.is-out .np-qty button {
+  cursor: not-allowed;
+}
+
+body.pedido-emp-shell .np-cart-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+body.pedido-emp-shell .np-cart-mesa-hint {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ea580c;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+@media (max-width: 1100px) {
+  body.pedido-emp-shell .np-shell {
+    grid-template-columns: 180px minmax(0, 1fr);
+  }
+  body.pedido-emp-shell .np-cart {
+    grid-column: 1 / -1;
+    position: static;
+    max-height: none;
+  }
+  body.pedido-emp-shell .np-intel-notes {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  body.pedido-emp-shell .np-intel-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  body.pedido-emp-shell .np-shell {
+    grid-template-columns: 1fr;
+  }
+  body.pedido-emp-shell .np-cats {
+    position: static;
+  }
+}
+
+/* —— Melhorias Empresarial (nov 2026) —— */
+body.pedido-emp-shell .np-grid { grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 12px; }
+body.pedido-emp-shell .np-card { border-radius: 14px; }
+body.pedido-emp-shell .np-card-img { aspect-ratio: 16 / 10; }
+body.pedido-emp-shell .np-card-body { padding: 10px 10px 12px; gap: 6px; }
+body.pedido-emp-shell .np-mesa-select-oculto {
+  position: absolute !important; width: 1px !important; height: 1px !important;
+  opacity: 0 !important; pointer-events: none !important; overflow: hidden;
+}
+body.pedido-emp-shell .np-mesa-wrap { position: relative; }
+body.pedido-emp-shell .np-mesa-btns { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 6px; }
+body.pedido-emp-shell .np-mesa-btn {
+  min-height: 42px; border-radius: 10px; border: 1.5px solid #86efac; background: #f0fdf4;
+  color: #166534; font-weight: 700; font-size: 14px; cursor: pointer; transition: all .12s ease;
+}
+body.pedido-emp-shell .np-mesa-btn:hover { border-color: #16a34a; }
+body.pedido-emp-shell .np-mesa-btn.is-ocupada { border-color: #e2e8f0; background: #f1f5f9; color: #64748b; }
+body.pedido-emp-shell .np-mesa-btn.is-active { background: #ea580c; border-color: #ea580c; color: #fff; box-shadow: 0 6px 14px rgba(234,88,12,.28); }
+body.pedido-emp-shell .np-mesa-legenda { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 11.5px; color: #64748b; }
+body.pedido-emp-shell .np-mesa-legenda span { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+body.pedido-emp-shell .np-mesa-legenda span + span, body.pedido-emp-shell .np-mesa-legenda span.is-ocupada { margin-left: 8px; }
+body.pedido-emp-shell .np-mesa-legenda .is-livre { background: #bbf7d0; border: 1px solid #86efac; margin-left: 0; }
+body.pedido-emp-shell .np-mesa-legenda .is-ocupada { background: #e2e8f0; border: 1px solid #cbd5e1; }
+body.pedido-emp-shell .np-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+body.pedido-emp-shell .np-card-meta { flex-wrap: wrap; gap: 4px 6px; }
+body.pedido-emp-shell .np-card-price { white-space: nowrap; }
+body.pedido-emp-shell .np-cart-head { justify-content: flex-start; gap: 8px; }
+
+/* Segundo canal de balcão: escolha do destino do take-away */
+.np-balcao-canais {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 8px 0 4px;
+}
+.np-balcao-canais label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 13px;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+}
+.np-balcao-canais label:has(input:checked) {
+    border-color: #16a34a;
+    background: rgba(22, 163, 74, 0.08);
+    color: #166534;
+}
+.np-balcao-canais.d-none { display: none; }

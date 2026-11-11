@@ -1,0 +1,79 @@
+:root {
+    --primary: #FF6B35;
+    --secondary: #F7931E;
+    --dark: #0f172a;
+    --surface: #ffffff;
+    --bg: #f7f9fc;
+    --text: #0f172a;
+    --muted: #64748b;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+
+    --shadow-sm: 0 10px 24px rgba(15, 23, 42, 0.07);
+    --shadow-md: 0 18px 42px rgba(15, 23, 42, 0.09);
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+.sidebar {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+}
+
+.sidebar .brand {
+    padding: var(--space-5);
+}
+
+.main-content {
+    padding: var(--space-6);
+}
+
+.stat-card,
+.table-card,
+.chart-card {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #e2e8f0;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.stat-icon {
+    border-radius: var(--radius-sm);
+}
+
+.kpi-trend {
+    margin-top: var(--space-2);
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.kpi-trend.positive {
+    color: #0f9d58;
+}
+
+.kpi-trend.negative {
+    color: #d93025;
+}
+
+.kpi-trend.neutral {
+    color: var(--muted);
+}
+
+.kpi-trend small {
+    font-weight: 500;
+    color: var(--muted);
+}

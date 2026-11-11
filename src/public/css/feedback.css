@@ -1,0 +1,123 @@
+.nivora-feedback-region {
+    position: fixed;
+    z-index: 1200;
+    inset-block-start: 16px;
+    inset-inline-end: 16px;
+    display: grid;
+    gap: 10px;
+    width: min(400px, calc(100% - 32px));
+    pointer-events: none;
+}
+
+.nivora-feedback {
+    --feedback-accent: #1d4ed8;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: #fff;
+    color: #172033;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+    pointer-events: auto;
+    animation: nivora-feedback-enter 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.nivora-feedback--success { --feedback-accent: #087352; }
+.nivora-feedback--error { --feedback-accent: #a61b1b; }
+.nivora-feedback--warning { --feedback-accent: #8a4b00; }
+
+.nivora-feedback__content {
+    min-width: 0;
+}
+
+.nivora-feedback__title {
+    margin: 0 0 3px;
+    color: var(--feedback-accent);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.nivora-feedback__message {
+    margin: 0;
+    color: #3f4b5e;
+    font-size: 1rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+.nivora-feedback__close {
+    min-height: 40px;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #475569;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.nivora-feedback__close:hover {
+    background: #f1f5f9;
+    color: #172033;
+}
+
+.nivora-feedback__close:focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.nivora-feedback.is-leaving {
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+@keyframes nivora-feedback-enter {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 520px) {
+    .nivora-feedback-region {
+        inset-block-start: 10px;
+        inset-inline-end: 10px;
+        width: calc(100% - 20px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nivora-feedback,
+    .nivora-feedback.is-leaving {
+        animation: none;
+        transition: none;
+    }
+}
+
+.nivora-feedback__action {
+    margin-top: 8px;
+    min-height: 36px;
+    padding: 6px 14px;
+    border: 1px solid var(--feedback-accent);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--feedback-accent);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.nivora-feedback__action:hover {
+    background: color-mix(in srgb, var(--feedback-accent) 10%, transparent);
+}
+
+.nivora-feedback__action:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--feedback-accent) 40%, transparent);
+    outline-offset: 2px;
+}

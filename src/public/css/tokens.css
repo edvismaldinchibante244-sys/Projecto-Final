@@ -1,0 +1,71 @@
+/*
+ * Nivora — tokens de design (fonte única de cores, tipografia, espaço, raio e sombra).
+ *
+ * Regras:
+ *  - Páginas e componentes novos usam SÓ estes tokens (var(--nv-…)), nunca hexadecimais soltos.
+ *  - Os pares texto/fundo marcados "AA" foram medidos (WCAG 2.1, ≥ 4,5:1 texto normal) e estão
+ *    verificados em tests/Unit/TokensDesignTest.php: se mudar uma cor, o teste avisa.
+ *  - A cor do plano chega por --nv-plano (Básico, Profissional, Empresarial) — ver o fim do ficheiro.
+ *  - Guia completo: docs/design-system.md
+ */
+:root {
+    /* ---- Marca ---- */
+    --nv-laranja: #f97316;            /* decorativo: ícones grandes, gradientes, ilustração */
+    --nv-laranja-texto: #c2410c;      /* AA: texto/links laranja sobre branco (5,2:1) e branco sobre ele */
+    --nv-laranja-forte: #a8380a;      /* hover/pressionado */
+    --nv-laranja-suave: #fff7ed;      /* fundos de destaque */
+
+    /* ---- Tinta (texto) e neutros ---- */
+    --nv-tinta: #172033;              /* AA: texto principal (16:1) */
+    --nv-tinta-2: #374151;            /* AA: texto secundário forte (10:1) */
+    --nv-tinta-suave: #5b6577;        /* AA: texto de apoio / legendas (5,9:1 em branco, 5,6:1 em --nv-fundo) */
+    --nv-placeholder: #6b7385;        /* AA: placeholder (4,8:1) */
+    --nv-borda: #e5e7eb;
+    --nv-borda-forte: #cbd5e1;
+    --nv-fundo: #f8fafc;              /* fundo de página */
+    --nv-superficie: #ffffff;         /* cartões, janelas */
+    --nv-superficie-2: #f1f5f9;       /* campos desativados, chips */
+
+    /* ---- Estado (texto AA sobre o respectivo fundo suave) ---- */
+    --nv-sucesso: #11704c;   --nv-sucesso-suave: #dcfce7;   /* 5,9:1 · 5,3:1 */
+    --nv-aviso: #92400e;     --nv-aviso-suave: #fef3c7;     /* 7,1:1 · 6,4:1 */
+    --nv-perigo: #b91c1c;    --nv-perigo-suave: #fee2e2;    /* 6,5:1 · 5,4:1 */
+    --nv-info: #1d4ed8;      --nv-info-suave: #dbeafe;      /* 6,7:1 · 5,5:1 */
+
+    /* ---- Tipografia ---- */
+    --nv-fonte-titulo: "Cormorant Garamond", Georgia, serif;   /* títulos de marca (login, emails) */
+    --nv-fonte-texto: "Manrope", "Poppins", system-ui, sans-serif;
+    --nv-texto-xs: .75rem;   /* 12px — mínimo para texto informativo */
+    --nv-texto-sm: .875rem;  /* 14px */
+    --nv-texto-md: 1rem;     /* 16px */
+    --nv-texto-lg: 1.25rem;
+    --nv-texto-xl: 1.6rem;
+
+    /* ---- Espaço (escala de 4px) ---- */
+    --nv-esp-1: 4px;  --nv-esp-2: 8px;  --nv-esp-3: 12px; --nv-esp-4: 16px;
+    --nv-esp-5: 20px; --nv-esp-6: 24px; --nv-esp-8: 32px; --nv-esp-10: 40px;
+
+    /* ---- Raio ---- */
+    --nv-raio-sm: 8px;
+    --nv-raio-md: 12px;   /* campos, botões, cartões pequenos */
+    --nv-raio-lg: 16px;   /* janelas, cartões grandes */
+    --nv-raio-pill: 999px;
+
+    /* ---- Sombra ---- */
+    --nv-sombra-1: 0 1px 2px rgba(15, 23, 42, .06);
+    --nv-sombra-2: 0 6px 18px rgba(15, 23, 42, .08);
+    --nv-sombra-3: 0 24px 64px rgba(15, 23, 42, .28);
+
+    /* ---- Foco (sempre visível no teclado) ---- */
+    --nv-foco: 0 0 0 3px color-mix(in srgb, var(--nv-plano, var(--nv-laranja-texto)) 35%, transparent);
+
+    /* ---- Cor do plano (padrão = Nivora) ---- */
+    --nv-plano: var(--nv-laranja-texto);
+    --nv-plano-suave: var(--nv-laranja-suave);
+}
+
+/* Cor de cada plano. O menu lateral põe a classe plan-theme-<plano> no <body>.
+   Os três passam AA com texto branco por cima (botões). */
+body.plan-theme-basico       { --nv-plano: #475569; --nv-plano-suave: #f1f5f9; }   /* 7,6:1 */
+body.plan-theme-profissional { --nv-plano: #0e7490; --nv-plano-suave: #ecfeff; }   /* 5,4:1 */
+body.plan-theme-empresarial  { --nv-plano: #c2410c; --nv-plano-suave: #fff7ed; }   /* 5,2:1 */

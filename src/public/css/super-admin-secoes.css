@@ -1,0 +1,73 @@
+/* Padrao unico das seccoes do painel Super Admin (Suporte, Seguranca, Privacidade...).
+   Um so tamanho de titulo, de cartao de numeros e de botoes em todas as paginas. */
+.super-admin-ui .sa-sec-header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:0 0 18px}
+.super-admin-ui .sa-sec-title{font-size:1.45rem;font-weight:700;margin:0;color:#0f172a;display:flex;align-items:center;gap:10px}
+.super-admin-ui .sa-sec-title i{font-size:1.15rem;color:#2563eb}
+.super-admin-ui .sa-sec-sub{margin:4px 0 0;color:#475569;font-size:.9rem}
+.super-admin-ui .sa-sec-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.super-admin-ui .sa-sec-tools .form-control{width:260px}
+.super-admin-ui .sa-sec-tools .form-select{width:190px}
+.super-admin-ui .sa-sec-tools .form-control,.super-admin-ui .sa-sec-tools .form-select,.super-admin-ui .sa-sec-tools .btn{height:40px;font-size:.88rem}
+
+.super-admin-ui .sa-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0 0 18px}
+.super-admin-ui .sa-kpis--4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.super-admin-ui .sa-kpi{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;box-shadow:0 4px 14px rgba(15,23,42,.04)}
+.super-admin-ui .sa-kpi__rotulo{font-size:.78rem;font-weight:600;color:#475569}
+.super-admin-ui .sa-kpi__valor{font-size:1.6rem;font-weight:700;line-height:1.2;color:#0f172a}
+.super-admin-ui .sa-kpi__nota{font-size:.78rem;color:#475569}
+.super-admin-ui .sa-kpi--alerta .sa-kpi__valor{color:#b91c1c}
+.super-admin-ui .sa-kpi--ok{border-color:#86efac;background:#f0fdf4}.super-admin-ui .sa-kpi--ok .sa-kpi__valor{color:#15803d}
+.super-admin-ui .sa-kpi--atencao{border-color:#fcd34d;background:#fffbeb}.super-admin-ui .sa-kpi--atencao .sa-kpi__valor{color:#b45309}
+.super-admin-ui .sa-kpi--risco{border-color:#fca5a5;background:#fef2f2}.super-admin-ui .sa-kpi--risco .sa-kpi__valor{color:#b91c1c}
+
+.super-admin-ui .sa-card-titulo{font-size:1rem;font-weight:700;margin:0 0 10px;color:#0f172a}
+.super-admin-ui .sa-tabela{font-size:.86rem}
+.super-admin-ui .sa-tabela th{font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;color:#475569;font-weight:700}
+.super-admin-ui .sa-tabela td{vertical-align:middle;padding-top:10px;padding-bottom:10px}
+.super-admin-ui .sa-linha-clicavel{cursor:pointer}
+.super-admin-ui .sa-linha-clicavel:focus-visible{outline:3px solid #93c5fd;outline-offset:-3px}
+.super-admin-ui .sa-1linha{max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.super-admin-ui .sa-plano{display:inline-block;margin-top:3px;padding:1px 8px;border-radius:999px;font-size:.7rem;font-weight:700;color:#fff;background:#475569}
+.super-admin-ui .sa-plano--basico{background:#475569}.super-admin-ui .sa-plano--profissional{background:#0e7490}.super-admin-ui .sa-plano--empresarial{background:#c2410c}
+
+.super-admin-ui .sa-ticket-painel{width:min(520px,100vw)!important}
+.super-admin-ui .sa-ticket-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+.super-admin-ui .sa-ticket-assunto{font-size:1.05rem;font-weight:700;margin:0 0 6px}
+.super-admin-ui .sa-ticket-descricao{white-space:pre-wrap;overflow-wrap:anywhere;color:#334155;font-size:.9rem;background:#f8fafc;border-radius:10px;padding:10px 12px}
+.super-admin-ui .sa-ticket-chat{border:1px solid #e2e8f0;border-radius:10px;background:#fafbff;min-height:180px;max-height:42vh;overflow:auto;padding:8px;margin-bottom:10px}
+.super-admin-ui .sa-msg{border-radius:10px;padding:8px 10px;margin-bottom:8px;font-size:.88rem;overflow-wrap:anywhere}
+.super-admin-ui .sa-msg--cliente{background:#fff;border:1px solid #e2e8f0;margin-right:24px}
+.super-admin-ui .sa-msg--suporte{background:#eff6ff;border:1px solid #bfdbfe;margin-left:24px}
+.super-admin-ui .sa-msg--sistema{background:#f1f5f9;border:1px dashed #cbd5e1}
+
+.super-admin-ui .sa-atalho{display:flex;align-items:center;gap:14px;padding:14px 18px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;color:#0f172a;text-decoration:none}
+.super-admin-ui .sa-atalho:hover{border-color:#93c5fd;background:#f8fbff}
+.super-admin-ui .sa-atalho>i:first-child{font-size:1.3rem;color:#2563eb}
+.super-admin-ui .sa-detalhes summary{cursor:pointer;list-style:none}
+.super-admin-ui .sa-detalhes summary::-webkit-details-marker{display:none}
+.super-admin-ui .sa-detalhes summary::after{content:"\25BE";margin-left:8px;color:#64748b}
+
+/* A seccao Seguranca usava letra maior que as outras: alinhar ao padrao. */
+.super-admin-ui #secao-seguranca .security-mini-item{font-size:.86rem}
+.super-admin-ui #secao-seguranca .card-header{padding-top:12px!important;padding-bottom:12px!important}
+
+@media (max-width:991px){
+  .super-admin-ui .sa-kpis,.super-admin-ui .sa-kpis--4{grid-template-columns:1fr 1fr}
+  .super-admin-ui .sa-sec-tools .form-control,.super-admin-ui .sa-sec-tools .form-select{width:100%}
+  .super-admin-ui .sa-sec-tools{width:100%}
+}
+@media (max-width:560px){.super-admin-ui .sa-kpis,.super-admin-ui .sa-kpis--4{grid-template-columns:1fr}}
+
+/* Blocos e cartoes clicaveis do painel executivo */
+.super-admin-ui .sa-bloco-titulo{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#475569;margin:6px 0 8px}
+.super-admin-ui a.sa-kpi--link{text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s}
+.super-admin-ui a.sa-kpi--link:hover{border-color:#93c5fd;box-shadow:0 6px 18px rgba(37,99,235,.12)}
+.super-admin-ui a.sa-kpi--link:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+.super-admin-ui .sa-kpi .kpi-trend{font-size:.76rem;margin-top:2px}
+.super-admin-ui .sa-kpi .kpi-health-label{align-self:flex-start;margin-top:4px}
+.super-admin-ui .sa-tabela .sa-acoes{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.super-admin-ui .sa-tabela .sa-acoes .btn{white-space:nowrap}
+.super-admin-ui .sa-acoes{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap}
+.super-admin-ui .sa-acoes .btn{white-space:nowrap;border-radius:8px;width:auto;height:auto;padding:4px 10px}
+.nv-atualizar-falhou{border-color:#dc2626!important;color:#b91c1c!important}

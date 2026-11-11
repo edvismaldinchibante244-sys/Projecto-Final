@@ -1,0 +1,474 @@
+/* Identidade publica Nivora Restaurant para redefinicao de senha. */
+.nivora-reset-page {
+    /* Mapeado para os tokens centrais (css/tokens.css); o hexadecimal e reserva. */
+    --nivora-ink: var(--nv-tinta, #172033);
+    --nivora-muted: var(--nv-tinta-suave, #5b6577); /* 5.9:1 sobre branco (AA) */
+    --nivora-line: #d9e0e8;
+    --nivora-orange: var(--nv-laranja, #f97316);
+    --nivora-orange-dark: var(--nv-laranja-texto, #c2410c); /* texto/links laranja: 5.2:1 (antes 4.0:1, falhava AA) */
+    --nivora-green: var(--nv-sucesso, #11704c); /* 5.9:1 (antes 4.5:1 no fundo cinza) */
+    --nivora-danger: #c43f4d;
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px clamp(22px, 5vw, 88px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+    color: var(--nivora-ink);
+    background:
+        linear-gradient(90deg, rgba(4, 5, 5, .88) 0%, rgba(4, 5, 5, .68) 48%, rgba(4, 5, 5, .76) 100%),
+        linear-gradient(180deg, rgba(4, 5, 5, .12), rgba(4, 5, 5, .62)),
+        url("../images/hero-restaurante-atendimento.jpg") center / cover fixed no-repeat;
+    /* Imagem local (antes vinha do Unsplash, ~2200 px): AVIF/WebP com JPG de reserva. */
+    background-image:
+        linear-gradient(90deg, rgba(4, 5, 5, .88) 0%, rgba(4, 5, 5, .68) 48%, rgba(4, 5, 5, .76) 100%),
+        linear-gradient(180deg, rgba(4, 5, 5, .12), rgba(4, 5, 5, .62)),
+        image-set(url("../images/hero-restaurante-atendimento.avif") type("image/avif"), url("../images/hero-restaurante-atendimento.webp") type("image/webp"), url("../images/hero-restaurante-atendimento.jpg") type("image/jpeg"));
+    font-family: "Manrope", "Poppins", sans-serif;
+}
+
+.nivora-reset-page::before {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 15% 20%, rgba(224, 126, 43, .18), transparent 32rem);
+    content: "";
+    pointer-events: none;
+}
+
+.nivora-reset-page .login-container {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 1080px);
+    max-width: none;
+    display: grid;
+    grid-template-columns: minmax(300px, 1fr) minmax(460px, 520px);
+    gap: clamp(44px, 7vw, 112px);
+    align-items: center;
+}
+
+.nivora-reset-page .reset-brand-story {
+    max-width: 510px;
+    color: #fffaf3;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, .34);
+}
+
+.nivora-reset-page .reset-story-kicker {
+    margin: 0 0 16px;
+    color: #ffb56f;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .17em;
+    text-transform: uppercase;
+}
+
+.nivora-reset-page .reset-brand-story h2 {
+    margin: 0;
+    color: #fffaf3;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(48px, 5vw, 72px);
+    font-weight: 600;
+    line-height: .98;
+    letter-spacing: -.035em;
+}
+
+.nivora-reset-page .reset-story-copy {
+    max-width: 460px;
+    margin: 24px 0 0;
+    color: rgba(255, 250, 243, .82);
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.nivora-reset-page .reset-trust-list {
+    display: grid;
+    gap: 14px;
+    margin: 28px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nivora-reset-page .reset-trust-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255, 250, 243, .9);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.nivora-reset-page .reset-trust-list i {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    flex: 0 0 34px;
+    align-items: center;
+    justify-content: center;
+    color: #ffad60;
+    background: rgba(249, 115, 22, .14);
+    border: 1px solid rgba(255, 181, 111, .3);
+    border-radius: 10px;
+    text-shadow: none;
+}
+
+.nivora-reset-page .login-box {
+    width: 100%;
+    padding: 38px 42px 32px;
+    background: #ffffff;
+    border: 1px solid rgba(255, 255, 255, .78);
+    border-radius: 22px;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, .42), 0 1px 0 rgba(255, 255, 255, .8) inset;
+}
+
+.nivora-reset-page .login-header {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.nivora-reset-page .login-header .logo-icon {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 17px;
+    color: #fff;
+    background: linear-gradient(135deg, #e2580c, #ea580c); /* icone: 3,6:1 (AA graficos) */
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(249, 115, 22, .25);
+    font-size: 19px;
+}
+
+.nivora-reset-page .login-header .brand-kicker {
+    margin: 0 0 7px;
+    color: var(--nivora-orange-dark);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+.nivora-reset-page .login-header h1 {
+    margin: 0 0 6px;
+    color: var(--nivora-ink);
+    background: none;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -.035em;
+    -webkit-text-fill-color: initial;
+}
+
+.nivora-reset-page .login-header p:not(.brand-kicker) {
+    margin: 0;
+    color: var(--nivora-muted);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.nivora-reset-page .form-group {
+    margin-bottom: 19px;
+}
+
+.nivora-reset-page .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #283346;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.nivora-reset-page .password-field {
+    position: relative;
+}
+
+.nivora-reset-page .password-field .form-control,
+.nivora-reset-page .form-group input[type="password"],
+.nivora-reset-page .form-group input[type="text"] {
+    width: 100%;
+    min-height: 52px;
+    padding: 13px 49px 13px 15px !important;
+    color: #172033 !important;
+    caret-color: var(--nivora-orange-dark);
+    background: #f8fafc !important;
+    border: 1px solid #cdd6e1 !important;
+    border-radius: 11px !important;
+    box-shadow: none !important;
+    font-family: "Manrope", sans-serif;
+    font-size: 14px !important;
+    line-height: 1.4;
+}
+
+.nivora-reset-page .password-field .form-control::placeholder {
+    color: #6b7385; /* placeholder 4.8:1 (antes 3.1:1) */
+    opacity: 1;
+}
+
+.nivora-reset-page .password-field .form-control:focus {
+    background: #fff !important;
+    border-color: var(--nivora-orange) !important;
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, .13) !important;
+    outline: none;
+}
+
+.nivora-reset-page .password-field .form-control:-webkit-autofill,
+.nivora-reset-page .password-field .form-control:-webkit-autofill:hover,
+.nivora-reset-page .password-field .form-control:-webkit-autofill:focus {
+    -webkit-text-fill-color: #172033;
+    box-shadow: 0 0 0 1000px #f8fafc inset !important;
+    transition: background-color 9999s ease-out 0s;
+}
+
+.nivora-reset-page .password-toggle {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    right: 8px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    color: #748094;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nivora-reset-page .password-toggle:hover,
+.nivora-reset-page .password-toggle:focus-visible {
+    color: var(--nivora-orange-dark);
+    background: #fff1e7;
+    outline: none;
+}
+
+.nivora-reset-page .password-strength {
+    height: 6px;
+    margin-top: 11px;
+    overflow: hidden;
+    background: #e5e9ef;
+    border-radius: 999px;
+}
+
+.nivora-reset-page .password-strength span {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: #e34c5c;
+    border-radius: inherit;
+    transition: width .2s ease, background .2s ease;
+}
+
+.nivora-reset-page .password-strength span[data-level="medium"] { background: #d89016; }
+.nivora-reset-page .password-strength span[data-level="strong"] { background: var(--nivora-green); }
+
+.nivora-reset-page .password-strength-label,
+.nivora-reset-page .password-match-state {
+    margin: 8px 0 0;
+    color: #5b6577;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.45;
+}
+
+.nivora-reset-page .password-requirements {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 16px;
+    margin: 14px 0 0;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e7ed;
+    border-radius: 11px;
+    list-style: none;
+}
+
+.nivora-reset-page .password-requirements li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: #4b5567; /* 7.2:1 */
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    transition: color .18s ease;
+}
+
+.nivora-reset-page .password-requirements li i {
+    flex: 0 0 12px;
+    margin-top: 2px;
+    color: #8a93a3; /* marcador por cumprir mais visivel */
+    font-size: 10px;
+}
+
+.nivora-reset-page .password-requirements li.is-valid,
+.nivora-reset-page .password-requirements li.is-valid i,
+.nivora-reset-page .password-match-state.is-valid {
+    color: var(--nivora-green);
+}
+
+.nivora-reset-page .password-match-state.is-invalid {
+    color: var(--nivora-danger);
+}
+
+.nivora-reset-page .btn-primary {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 3px;
+    padding: 13px 18px;
+    color: #fff;
+    /* Branco sobre laranja claro dava 2,8:1. Laranja Nivora mais fundo: 5,2:1 (AA). */
+    background: linear-gradient(135deg, #c2410c, #d4510b);
+    border: 0;
+    border-radius: 11px;
+    box-shadow: 0 11px 24px rgba(249, 115, 22, .22);
+    font-family: "Manrope", sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.nivora-reset-page .btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #a8380a, #c2410c);
+    box-shadow: 0 14px 28px rgba(249, 115, 22, .28);
+}
+
+.nivora-reset-page .btn-primary:focus-visible {
+    outline: 3px solid rgba(249, 115, 22, .28);
+    outline-offset: 3px;
+}
+
+.nivora-reset-page .btn-primary:disabled {
+    /* Desativado: continua claramente "inativo", mas legivel (5,2:1) e com contorno. */
+    color: #5b6576;
+    background: #eef1f5;
+    border: 1px dashed #c3cad4;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.nivora-reset-page .alert {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border: 1px solid;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.55;
+}
+
+.nivora-reset-page .me-2 { margin-right: 8px; }
+.nivora-reset-page .me-1 { margin-right: 4px; }
+
+.nivora-reset-page .alert-info {
+    color: #19546a;
+    background: #edf9fc;
+    border-color: #bfe7ef;
+    border-left: 4px solid #27a9bd;
+}
+
+.nivora-reset-page .alert-success {
+    color: #126342;
+    background: #edf9f3;
+    border-color: #b9e6d0;
+}
+
+.nivora-reset-page .alert-error {
+    color: #9b2f3d;
+    background: #fff2f3;
+    border-color: #f0c4ca;
+}
+
+.nivora-reset-page .login-footer {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e7ed;
+    text-align: center;
+}
+
+.nivora-reset-page .login-footer a {
+    color: #b84d0b;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.nivora-reset-page .token-invalido h4 { color: var(--nivora-ink); }
+.nivora-reset-page .token-invalido p { color: var(--nivora-muted); }
+.nivora-reset-page .token-invalido .fa-times-circle { color: var(--nivora-orange) !important; }
+
+@media (max-width: 900px) {
+    .nivora-reset-page {
+        align-items: flex-start;
+        padding: 28px 20px;
+        background-attachment: scroll;
+    }
+
+    .nivora-reset-page .login-container {
+        width: min(100%, 560px);
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .nivora-reset-page .reset-brand-story {
+        max-width: none;
+        text-align: center;
+    }
+
+    .nivora-reset-page .reset-brand-story h2 {
+        font-size: 46px;
+    }
+
+    .nivora-reset-page .reset-story-copy {
+        margin: 16px auto 0;
+    }
+
+    .nivora-reset-page .reset-trust-list {
+        display: none;
+    }
+}
+
+@media (max-width: 560px) {
+    .nivora-reset-page {
+        padding: 20px 12px;
+    }
+
+    .nivora-reset-page .reset-story-kicker {
+        margin-bottom: 9px;
+        font-size: 10px;
+    }
+
+    .nivora-reset-page .reset-brand-story h2 {
+        font-size: 36px;
+        line-height: 1.02;
+    }
+
+    .nivora-reset-page .reset-story-copy {
+        display: none;
+    }
+
+    .nivora-reset-page .login-box {
+        padding: 28px 22px 24px;
+        border-radius: 17px;
+    }
+
+    .nivora-reset-page .login-header h1 {
+        font-size: 35px;
+    }
+
+    .nivora-reset-page .password-requirements {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nivora-reset-page *,
+    .nivora-reset-page *::before,
+    .nivora-reset-page *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+    }
+}

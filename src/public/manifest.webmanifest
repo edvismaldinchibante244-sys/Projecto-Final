@@ -1,0 +1,10 @@
+{
+  "name": "Nivora Restaurant - Gestao de Restaurantes",
+  "short_name": "Nivora Restaurant",
+  "start_url": "./index.php",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#d97706",
+  "description": "Operacao de restaurante com suporte a continuidade offline."
+}

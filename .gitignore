@@ -1,0 +1,75 @@
+.env
+.env.local
+src/.env
+src/.env.local
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+
+debug_email.log
+debug_produto_api.log
+debug_produto_listar.log
+*.log
+debug_*.log
+*.gz
+storage/backups/
+backup_*/
+dump_*.json
+*.sql
+!app/src/config/schema_security_audit.sql
+*.sql.gz
+
+vendor/
+node_modules/
+*.zip
+uploads/
+public/uploads/
+src/public/uploads/
+storage/
+!app/storage/
+app/storage/*
+!app/storage/sessions/
+app/storage/sessions/*
+!app/storage/sessions/.htaccess
+!app/storage/sessions/.gitignore
+db/*.sql
+src/config/database_local.php
+src/config/email.php
+config/email.php
+
+# Arquivos temporários, cache e backups
+*.cache
+*.tmp
+*~
+*.bak
+tmp/
+tmp_*
+**/tmp_*
+public_legacy_backup/
+app/config_legacy_backup/
+session/
+uploads/tmp/
+
+# Diretórios de build/compilação
+dist/
+build/
+tests/output/
+coverage/
+dist/
+
+# Configurações de IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.iml
+composer.lock
+
+# Estrutura base da BD (sem dados) - necessaria para o CI e recuperacao
+!db/schema_base.sql
+# PHPUnit local
+phpunit.phar
+.phpunit.result.cache
+# Ficheiros movidos pela limpeza (apagar depois de verificar)
+_to_delete/

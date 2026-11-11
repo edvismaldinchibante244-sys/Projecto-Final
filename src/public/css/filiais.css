@@ -1,0 +1,789 @@
+:root {
+    --filiais-primary: #ff6b35;
+    --filiais-secondary: #f7931e;
+    --filiais-text: #1e293b;
+    --filiais-muted: #64748b;
+    --filiais-border: #e2e8f0;
+    --filiais-surface: #ffffff;
+    --filiais-surface-alt: #fff4ec;
+    --filiais-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+    --filiais-success-soft: rgba(16, 185, 129, 0.12);
+    --filiais-warning-soft: rgba(245, 158, 11, 0.14);
+    --filiais-danger-soft: rgba(239, 68, 68, 0.12);
+}
+
+html,
+body {
+    width: 100%;
+    overflow-x: hidden;
+    background: linear-gradient(180deg, #f8fafc 0%, #fffaf5 100%);
+}
+
+.filiais-page {
+    margin-left: 280px;
+    width: calc(100% - 280px);
+    max-width: calc(100% - 280px);
+    padding: 24px;
+    color: var(--filiais-text);
+    font-family: 'Outfit', 'Segoe UI', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.filiais-page .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    border: 1px solid var(--filiais-border);
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--filiais-text);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.filiais-page .back-btn:hover {
+    color: var(--filiais-primary);
+    border-color: rgba(255, 107, 53, 0.35);
+    transform: translateX(-3px);
+}
+
+.hero-card,
+.content-card,
+.stats-card,
+.context-banner {
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: var(--filiais-shadow);
+}
+
+.hero-card {
+    background: radial-gradient(circle at top left, rgba(255, 107, 53, 0.18), transparent 35%), #ffffff;
+    border-radius: 28px;
+    padding: 28px;
+    margin-bottom: 22px;
+}
+
+.hero-main,
+.content-head,
+.context-banner,
+.branch-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.hero-card h1 {
+    margin: 0;
+    font-family: 'Space Grotesk', 'Segoe UI Semibold', 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.hero-card p,
+.content-subtitle,
+.stats-card p,
+.context-banner p {
+    color: var(--filiais-muted);
+}
+
+.hero-card p {
+    margin: 10px 0 0;
+    font-size: 1rem;
+}
+
+.hero-meta,
+.hero-actions,
+.branch-meta,
+.action-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.hero-meta {
+    margin-top: 18px;
+}
+
+.hero-chip,
+.pill,
+.status-chip,
+.branch-meta span {
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(255, 107, 53, 0.12);
+    font-size: 0.92rem;
+}
+
+.btn-brand,
+.btn-ghost,
+.btn-table {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-brand {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--filiais-primary), var(--filiais-secondary));
+    color: #fff;
+    box-shadow: 0 16px 28px rgba(255, 107, 53, 0.24);
+}
+
+.btn-brand:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 20px 35px rgba(255, 107, 53, 0.3);
+}
+
+.btn-brand[disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.btn-ghost {
+    padding: 12px 18px;
+    border: 1px solid var(--filiais-border);
+    border-radius: 14px;
+    background: #fff;
+    color: var(--filiais-text);
+}
+
+.btn-ghost:hover {
+    color: var(--filiais-primary);
+    border-color: rgba(255, 107, 53, 0.35);
+}
+
+.context-banner {
+    padding: 20px 22px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(14, 165, 233, 0.08));
+    margin-bottom: 20px;
+}
+
+.context-banner h2,
+.content-title {
+    margin: 0;
+    font-weight: 700;
+}
+
+.context-banner h2 {
+    font-size: 1.12rem;
+}
+
+.context-banner p {
+    margin: 6px 0 0;
+}
+
+.stat-grid,
+.nav-grid,
+.overview-grid,
+.metric-list {
+    display: grid;
+    gap: 16px;
+}
+
+.stat-grid,
+.nav-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-bottom: 24px;
+}
+
+.overview-grid,
+.metric-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stats-card,
+.content-card,
+.overview-box,
+.branch-block,
+.metric-item {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.stats-card,
+.overview-box,
+.branch-block,
+.metric-item,
+.content-card {
+    border-radius: 22px;
+}
+
+.stats-card {
+    padding: 18px;
+}
+
+.stats-card .stats-label {
+    color: var(--filiais-muted);
+    font-size: 0.84rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+}
+
+.stats-card strong {
+    display: block;
+    margin: 14px 0 6px;
+    font-size: clamp(1.6rem, 3vw, 2.3rem);
+    line-height: 1;
+    font-family: 'Space Grotesk', 'Segoe UI Semibold', 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+}
+
+.stats-card p {
+    margin: 0;
+}
+
+.nav-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px;
+    border-radius: 22px;
+    background: var(--filiais-surface);
+    border: 1px solid var(--filiais-border);
+    box-shadow: var(--filiais-shadow);
+    color: var(--filiais-text);
+    text-decoration: none;
+}
+
+.nav-card.active {
+    background: linear-gradient(135deg, var(--filiais-primary), var(--filiais-secondary));
+    color: #fff;
+    border-color: transparent;
+}
+
+.nav-card span {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.nav-card small {
+    color: inherit;
+    opacity: 0.8;
+}
+
+.content-card {
+    padding: 22px;
+    margin-bottom: 24px;
+}
+
+.content-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.2rem;
+}
+
+.content-subtitle {
+    margin: 6px 0 0;
+}
+
+.pill,
+.status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 0.84rem;
+}
+
+.pill-success,
+.status-chip.active {
+    background: var(--filiais-success-soft);
+    color: #047857;
+}
+
+.pill-warning,
+.status-chip.inactive {
+    background: var(--filiais-warning-soft);
+    color: #b45309;
+}
+
+.pill-danger {
+    background: var(--filiais-danger-soft);
+    color: #b91c1c;
+}
+
+.overview-box {
+    border: 1px solid rgba(255, 107, 53, 0.12);
+    padding: 18px;
+}
+
+.overview-box span,
+.metric-item span {
+    display: block;
+    color: var(--filiais-muted);
+    font-size: 0.88rem;
+}
+
+.overview-box strong,
+.metric-item strong {
+    display: block;
+    margin-top: 8px;
+    font-size: 1.08rem;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+.table-filiais {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-filiais th,
+.table-filiais td {
+    padding: 15px 12px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    vertical-align: top;
+}
+
+.table-filiais th {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--filiais-muted);
+    font-weight: 700;
+}
+
+.branch-name {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.branch-meta span {
+    padding: 6px 10px;
+    font-size: 0.82rem;
+    color: var(--filiais-muted);
+    background: #f8fafc;
+}
+
+.btn-table {
+    padding: 9px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--filiais-border);
+    background: #fff;
+    color: var(--filiais-text);
+    font-size: 0.9rem;
+}
+
+.btn-table:hover {
+    color: var(--filiais-primary);
+    border-color: rgba(255, 107, 53, 0.28);
+}
+
+.btn-table-primary {
+    border: none;
+    background: linear-gradient(135deg, var(--filiais-primary), var(--filiais-secondary));
+    color: #fff;
+}
+
+.btn-table-primary:hover {
+    color: #fff;
+}
+
+.btn-table[disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.empty-state {
+    padding: 42px 20px;
+    text-align: center;
+    color: var(--filiais-muted);
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 14px;
+}
+
+.branch-block {
+    border: 1px solid rgba(226, 232, 240, 0.85);
+    padding: 18px;
+    margin-bottom: 16px;
+}
+
+.branch-block:last-child {
+    margin-bottom: 0;
+}
+
+.metric-item {
+    padding: 14px;
+}
+
+.filiais-page .modal-content {
+    border: none;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.2);
+}
+
+.filiais-page .modal-header {
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.filiais-page .modal-title,
+.filiais-page .form-label {
+    font-weight: 700;
+}
+
+.filiais-page .form-control,
+.filiais-page .form-select {
+    border-radius: 14px;
+    padding: 12px 14px;
+    border-color: rgba(203, 213, 225, 0.95);
+}
+
+.filiais-page .form-control:focus,
+.filiais-page .form-select:focus {
+    border-color: rgba(255, 107, 53, 0.45);
+    box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.12);
+}
+
+@media (max-width: 1200px) {
+    .stat-grid,
+    .nav-grid,
+    .overview-grid,
+    .metric-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 991px) {
+    .filiais-page {
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .filiais-page {
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 18px;
+    }
+
+    .hero-main,
+    .content-head,
+    .context-banner,
+    .branch-block-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero-actions,
+    .hero-actions > *,
+    .action-stack,
+    .action-stack > * {
+        width: 100%;
+    }
+
+    .hero-card,
+    .content-card {
+        padding: 18px;
+    }
+
+    .stat-grid,
+    .nav-grid,
+    .overview-grid,
+    .metric-list {
+        grid-template-columns: 1fr;
+    }
+
+    .table-filiais th:nth-child(3),
+    .table-filiais td:nth-child(3) {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .filiais-page {
+        padding: 14px;
+    }
+
+    .hero-card,
+    .content-card,
+    .context-banner,
+    .branch-block {
+        border-radius: 18px;
+        padding: 16px;
+    }
+
+    .hero-card h1 {
+        font-size: 1.6rem;
+    }
+
+    .hero-card p {
+        font-size: 0.92rem;
+    }
+
+    .filiais-page .back-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-brand,
+    .btn-ghost,
+    .btn-table {
+        width: 100%;
+    }
+
+    .hero-actions,
+    .action-stack {
+        width: 100%;
+    }
+
+    .hero-actions > *,
+    .action-stack > * {
+        width: 100%;
+    }
+
+    .stat-grid,
+    .nav-grid,
+    .overview-grid,
+    .metric-list {
+        grid-template-columns: 1fr;
+    }
+
+    .table-filiais th,
+    .table-filiais td {
+        padding: 12px 10px;
+        font-size: 12px;
+    }
+
+    .table-filiais th:nth-child(4),
+    .table-filiais td:nth-child(4) {
+        display: none;
+    }
+
+    .filiais-page .modal-dialog {
+        margin: 10px;
+    }
+
+    .filiais-page .modal-content {
+        border-radius: 18px;
+    }
+}
+
+/* Identidade Empresarial na página de filiais */
+.filiais-hero-emp {
+    background:
+        radial-gradient(circle at top right, rgba(234, 88, 12, 0.18), transparent 42%),
+        linear-gradient(135deg, #0f172a 0%, #431407 55%, #7c2d12 100%) !important;
+    border: 1px solid rgba(251, 146, 60, 0.35) !important;
+    color: #fff !important;
+}
+
+.filiais-hero-emp h1,
+.filiais-hero-emp p {
+    color: #fff !important;
+}
+
+.filiais-hero-emp p {
+    color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.filiais-exclusive-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #ea580c, #f59e0b);
+    color: #fff;
+}
+
+.filiais-hero-emp .hero-chip {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
+    color: #fff !important;
+}
+
+.filiais-modules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filiais-module {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.filiais-module.on i {
+    color: #86efac;
+}
+
+body.plan-theme-empresarial .filiais-page .nav-card.active,
+body.plano-empresarial .filiais-page .nav-card.active {
+    border-color: rgba(234, 88, 12, 0.45);
+    box-shadow: 0 12px 28px rgba(194, 65, 12, 0.18);
+}
+
+body.plan-theme-empresarial .filiais-page .stats-card,
+body.plano-empresarial .filiais-page .stats-card {
+    border-color: rgba(194, 65, 12, 0.16);
+}
+
+.filiais-hero-emp .hero-chip-warn {
+    background: rgba(251, 191, 36, 0.22) !important;
+    border-color: rgba(251, 191, 36, 0.45) !important;
+    color: #fef3c7 !important;
+}
+
+.stats-card.is-ok {
+    border-color: rgba(16, 185, 129, 0.28);
+    background: linear-gradient(180deg, #ffffff 0%, #f0fdf4 100%);
+}
+
+.stats-card.is-warn {
+    border-color: rgba(245, 158, 11, 0.35);
+    background: linear-gradient(180deg, #ffffff 0%, #fffbeb 100%);
+}
+
+.filiais-intel-notes {
+    display: grid;
+    gap: 10px;
+    margin: 0 0 22px;
+}
+
+.filiais-intel-note {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--filiais-border);
+    background: #fff;
+}
+
+.filiais-intel-note strong {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--filiais-text);
+    margin-bottom: 2px;
+}
+
+.filiais-intel-note span {
+    display: block;
+    font-size: 0.86rem;
+    color: var(--filiais-muted);
+}
+
+.filiais-intel-note a {
+    flex-shrink: 0;
+    font-weight: 700;
+    font-size: 0.84rem;
+    color: var(--filiais-primary);
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 107, 53, 0.28);
+    background: rgba(255, 107, 53, 0.08);
+}
+
+.filiais-intel-note a:hover {
+    background: rgba(255, 107, 53, 0.16);
+}
+
+.filiais-intel-note.tom-ok {
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+}
+
+.filiais-intel-note.tom-warn {
+    border-color: #fde68a;
+    background: #fffbeb;
+}
+
+.filiais-intel-note.tom-info {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+}
+
+.filiais-rank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.1rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.filiais-rank.is-top {
+    background: linear-gradient(135deg, #ea580c, #f59e0b);
+    color: #fff;
+}
+
+.table-filiais tr.row-attention {
+    background: rgba(255, 251, 235, 0.65);
+}
+
+.branch-meta .meta-warn,
+.meta-warn-inline {
+    color: #b45309 !important;
+    font-weight: 700;
+}
+
+@media (max-width: 720px) {
+    .filiais-intel-note {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Comparativo da rede (Empresarial) */
+.filiais-periodo { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.filiais-comparativo td, .filiais-comparativo th { vertical-align: middle; }
+.filiais-comparativo tfoot th { border-top: 2px solid #e2e8f0; padding-top: 10px; }
+.filiais-var { font-weight: 700; white-space: nowrap; }
+.filiais-var.is-up { color: #15803d; }
+.filiais-var.is-down { color: #b91c1c; }
+.filiais-parte { width: 120px; height: 8px; background: #f1f5f9; border-radius: 999px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 6px; }
+.filiais-parte span { display: block; height: 100%; background: linear-gradient(90deg, #f97316, #ea580c); border-radius: 999px; }
+.text-end { text-align: right; }
+.filiais-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; border: 1px solid #e2e8f0; background: #fff; color: #334155; font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.filiais-chip:hover { border-color: #f97316; color: #c2410c; }
+.filiais-chip.is-ativo { background: #ea580c; border-color: #ea580c; color: #fff; }
+.filiais-chip-export { color: #15803d; border-color: #bbf7d0; background: #f0fdf4; }

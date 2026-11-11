@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Testes automaticos do Nivora Restaurant.
+  Correr (na pasta V00):   php phpunit.phar
+  So os rapidos (sem BD):  php phpunit.phar (opcao testsuite unit)
+
+  Os testes de integracao usam uma base de dados DESCARTAVEL. Por seguranca,
+  o nome da base TEM de conter test/testing/sandbox/staging; caso contrario
+  esses testes sao ignorados (nunca tocam na base real).
+  Variaveis de ambiente reais tem prioridade sobre os valores abaixo.
+-->
+<phpunit bootstrap="tests/bootstrap.php" colors="true" cacheResult="false">
+    <testsuites>
+        <testsuite name="unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+        <testsuite name="legacy">
+            <directory>tests/Legacy</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <env name="APP_ENV" value="local"/>
+        <env name="DB_HOST" value="127.0.0.1"/>
+        <env name="DB_PORT" value="3306"/>
+        <env name="DB_NAME" value="nivora_test"/>
+        <env name="DB_USER" value="root"/>
+        <env name="DB_PASS" value=""/>
+        <env name="APP_KEY" value="test_key_only_for_automated_tests_32+"/>
+    </php>
+</phpunit>

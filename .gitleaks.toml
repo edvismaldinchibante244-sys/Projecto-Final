@@ -1,0 +1,17 @@
+title = "REZVA Security Gate"
+
+[extend]
+useDefault = true
+
+[[allowlist.paths]]
+description = "Docs with placeholders"
+path = '''docs/security/.*\.md'''
+
+[[allowlist.regexes]]
+description = "Placeholder SIEM endpoint"
+regex = '''siem\.seudominio\.com'''
+
+[[allowlist.regexes]]
+description = "Placeholder security email"
+regex = '''security@seudominio\.com'''
+

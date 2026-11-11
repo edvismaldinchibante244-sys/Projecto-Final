@@ -1,0 +1,550 @@
+/* Shared premium layer for the most visible SaaS screens.
+   It sits on top of each page's local CSS to standardize shell,
+   cards, forms, tables and modal presentation. */
+
+:root {
+    --brand-primary: #FF6B35;
+    --brand-primary-strong: #e55a2b;
+    --brand-secondary: #F7931E;
+    --brand-ink: #0f172a;
+    --brand-ink-soft: #334155;
+    --brand-muted: #64748b;
+    --brand-surface: #ffffff;
+    --brand-surface-soft: #f8fafc;
+    --brand-border: #e2e8f0;
+    --brand-border-strong: #d7e0eb;
+    --brand-shadow-sm: 0 10px 26px rgba(15, 23, 42, 0.06);
+    --brand-shadow-md: 0 20px 48px rgba(15, 23, 42, 0.08);
+    --brand-shadow-lg: 0 28px 80px rgba(15, 23, 42, 0.12);
+    --brand-radius-sm: 14px;
+    --brand-radius-md: 20px;
+    --brand-radius-lg: 28px;
+}
+
+body.premium-ui,
+body.landing-premium,
+body.super-admin-ui {
+    background:
+        radial-gradient(circle at top right, rgba(255, 107, 53, 0.08), transparent 26%),
+        linear-gradient(180deg, #f8fafc 0%, #f4f7fb 100%);
+    color: var(--brand-ink);
+}
+
+.premium-ui .main-content,
+.super-admin-ui .main-content {
+    padding-top: 24px !important;
+    padding-bottom: 28px !important;
+}
+
+.premium-ui .main-content > .row,
+.super-admin-ui .main-content > .row {
+    --bs-gutter-x: 1.2rem;
+    --bs-gutter-y: 1.2rem;
+}
+
+.premium-ui .stat-card,
+.premium-ui .chart-card,
+.premium-ui .content-card,
+.premium-ui .cart-panel,
+.premium-ui .top-bar,
+.premium-ui .topbar,
+.premium-ui .table-responsive,
+.premium-ui .reserva-card,
+.premium-ui .mesa-card,
+.premium-ui .pedido-card,
+.premium-ui .pedido-item,
+.premium-ui .status-card,
+.super-admin-ui .stat-card,
+.super-admin-ui .chart-card {
+    background: rgba(255, 255, 255, 0.92) !important;
+    border: 1px solid var(--brand-border-strong) !important;
+    box-shadow: var(--brand-shadow-sm) !important;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.premium-ui .stat-card,
+.premium-ui .chart-card,
+.premium-ui .content-card,
+.premium-ui .cart-panel,
+.premium-ui .pedido-card,
+.premium-ui .mesa-card,
+.premium-ui .status-card,
+.super-admin-ui .stat-card,
+.super-admin-ui .chart-card {
+    border-radius: var(--brand-radius-md) !important;
+}
+
+.premium-ui .top-bar,
+.premium-ui .topbar,
+.super-admin-ui .top-bar {
+    border-radius: 22px !important;
+    padding: 18px 22px !important;
+    margin-bottom: 18px !important;
+}
+
+.premium-ui .topbar h1,
+.premium-ui .top-bar h1,
+.premium-ui .page-title,
+.super-admin-ui .page-title,
+.super-admin-ui h1,
+.super-admin-ui h2,
+.super-admin-ui h3 {
+    letter-spacing: 0;
+    color: var(--brand-ink);
+}
+
+.premium-ui .section-title,
+.premium-ui .menu-title,
+.premium-ui .text-muted,
+.super-admin-ui .text-muted {
+    color: var(--brand-muted) !important;
+}
+
+.premium-ui .produto-btn,
+.premium-ui .mesa-card,
+.premium-ui .pedido-card,
+.premium-ui .action-card {
+    border-radius: 18px !important;
+    border: 1px solid var(--brand-border) !important;
+    box-shadow: var(--brand-shadow-sm);
+}
+
+.premium-ui .produto-btn:hover,
+.premium-ui .mesa-card:hover,
+.premium-ui .pedido-card:hover,
+.premium-ui .action-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--brand-shadow-md);
+}
+
+.premium-ui .form-control,
+.premium-ui .form-select,
+.premium-ui textarea,
+.super-admin-ui .form-control,
+.super-admin-ui .form-select {
+    min-height: 48px;
+    border-radius: 14px !important;
+    border: 1px solid var(--brand-border-strong) !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    color: var(--brand-ink) !important;
+    box-shadow: none !important;
+}
+
+.premium-ui textarea,
+.super-admin-ui textarea {
+    min-height: 108px;
+    resize: vertical;
+}
+
+.premium-ui .form-control:focus,
+.premium-ui .form-select:focus,
+.premium-ui textarea:focus,
+.super-admin-ui .form-control:focus,
+.super-admin-ui .form-select:focus,
+.super-admin-ui textarea:focus {
+    border-color: rgba(255, 107, 53, 0.45) !important;
+    box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.12) !important;
+}
+
+.premium-ui .btn,
+.super-admin-ui .btn {
+    border-radius: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0;
+    min-height: 46px;
+    padding: 10px 18px !important;
+    box-shadow: none;
+}
+
+.premium-ui .btn-primary,
+.premium-ui .btn-success,
+.premium-ui .btn-warning,
+.premium-ui .btn-premium,
+.super-admin-ui .btn-primary {
+    border: none !important;
+    box-shadow: 0 14px 28px rgba(255, 107, 53, 0.18);
+}
+
+.premium-ui .table,
+.super-admin-ui .table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--brand-ink);
+}
+
+.premium-ui .table thead th,
+.super-admin-ui .table thead th {
+    color: var(--brand-muted) !important;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom-color: var(--brand-border) !important;
+}
+
+.premium-ui .table tbody td,
+.super-admin-ui .table tbody td {
+    vertical-align: middle;
+    border-bottom-color: #edf2f7 !important;
+}
+
+.premium-ui .badge,
+.premium-ui .status-badge,
+.super-admin-ui .badge {
+    border-radius: 999px !important;
+    font-weight: 700;
+    padding: 8px 12px !important;
+}
+
+.premium-ui .modal-content,
+.super-admin-ui .modal-content,
+.landing-premium .modal-content {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 26px !important;
+    box-shadow: var(--brand-shadow-lg) !important;
+    overflow: hidden;
+}
+
+.premium-ui .modal-header,
+.super-admin-ui .modal-header,
+.landing-premium .modal-header {
+    padding: 20px 22px !important;
+    border-bottom: 1px solid var(--brand-border) !important;
+}
+
+.premium-ui .modal-body,
+.super-admin-ui .modal-body,
+.landing-premium .modal-body {
+    padding: 22px !important;
+}
+
+.premium-ui .modal-footer,
+.super-admin-ui .modal-footer,
+.landing-premium .modal-footer {
+    padding: 18px 22px 22px !important;
+    border-top: 1px solid var(--brand-border) !important;
+}
+
+.landing-premium .hero-shell {
+    max-width: 1220px;
+    border-radius: 40px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 36px 90px rgba(0, 0, 0, 0.3) !important;
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04)),
+        rgba(6, 10, 20, 0.48) !important;
+}
+
+.landing-premium .main-title {
+    font-size: clamp(2.7rem, 5vw, 4.3rem);
+    line-height: 1.02;
+    letter-spacing: 0;
+}
+
+.landing-premium .subtitle {
+    font-size: 1.04rem;
+    max-width: 760px;
+}
+
+.landing-premium .action-card {
+    min-height: 280px;
+    border-radius: 30px !important;
+}
+
+.landing-premium .login-modal .modal-content {
+    background:
+        linear-gradient(180deg, rgba(28, 32, 52, 0.98), rgba(18, 23, 39, 0.98)) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.landing-premium .login-modal .form-control {
+    min-height: 56px;
+    border-radius: 18px !important;
+}
+
+.landing-premium .login-modal .btn {
+    min-height: 58px;
+    border-radius: 18px !important;
+}
+
+.premium-ui .cart-panel {
+    overflow: hidden;
+}
+
+.premium-ui .cart-panel .cart-header {
+    padding: 18px 20px 16px !important;
+    background: linear-gradient(180deg, rgba(255, 107, 53, 0.04), transparent);
+}
+
+.premium-ui .cart-body {
+    padding: 16px !important;
+}
+
+.premium-ui .cart-item {
+    padding: 12px 0 !important;
+}
+
+.premium-ui .produtos-grid {
+    gap: 14px !important;
+}
+
+.premium-ui .filters-bar,
+.premium-ui .section-filters,
+.premium-ui .filter-row {
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid var(--brand-border);
+    border-radius: 18px;
+    padding: 12px;
+    box-shadow: var(--brand-shadow-sm);
+}
+
+.super-admin-ui .sidebar .nav-item a:hover,
+.super-admin-ui .sidebar .nav-item a.active {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.92), rgba(247, 147, 30, 0.88)) !important;
+}
+
+.super-admin-ui .stat-icon {
+    border-radius: 16px !important;
+}
+
+@media (max-width: 991px) {
+    .premium-ui .main-content,
+    .super-admin-ui .main-content {
+        padding-top: 94px !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+    .premium-ui .topbar,
+    .premium-ui .top-bar {
+        border-radius: 18px !important;
+        padding: 16px !important;
+    }
+
+    .landing-premium .hero-shell {
+        padding: 24px !important;
+        border-radius: 28px !important;
+    }
+}
+
+/* =========================================================
+   Identidade visual por plano (global — sidebar + páginas)
+   ========================================================= */
+
+body.plan-theme-basico {
+    --plan-accent: #475569;
+    --plan-accent-2: #64748b;
+    --plan-accent-soft: rgba(71, 85, 105, 0.12);
+}
+
+body.plan-theme-profissional {
+    --plan-accent: #0e7490;
+    --plan-accent-2: #0891b2;
+    --plan-accent-soft: rgba(14, 116, 144, 0.12);
+}
+
+body.plan-theme-empresarial {
+    --plan-accent: #c2410c;
+    --plan-accent-2: #ea580c;
+    --plan-accent-soft: rgba(194, 65, 12, 0.12);
+}
+
+body.plan-theme-profissional.premium-ui {
+    background:
+        radial-gradient(circle at top right, rgba(14, 116, 144, 0.10), transparent 28%),
+        linear-gradient(180deg, #f8fafc 0%, #f0fdfa 100%) !important;
+}
+
+body.plan-theme-empresarial.premium-ui {
+    background:
+        radial-gradient(circle at top left, rgba(194, 65, 12, 0.10), transparent 30%),
+        linear-gradient(180deg, #fffaf5 0%, #f8fafc 100%) !important;
+}
+
+body.plan-theme-basico.premium-ui {
+    background:
+        radial-gradient(circle at top right, rgba(100, 116, 139, 0.08), transparent 28%),
+        linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
+}
+
+body.plan-theme-profissional .top-bar,
+body.plan-theme-profissional .topbar {
+    border-color: rgba(14, 116, 144, 0.16) !important;
+    box-shadow: 0 12px 28px rgba(14, 116, 144, 0.08) !important;
+}
+
+body.plan-theme-empresarial .top-bar,
+body.plan-theme-empresarial .topbar {
+    border-color: rgba(194, 65, 12, 0.16) !important;
+    box-shadow: 0 12px 28px rgba(194, 65, 12, 0.08) !important;
+}
+
+body.plan-theme-profissional .page-title,
+body.plan-theme-profissional .topbar h1 {
+    color: #0f172a;
+}
+
+body.plan-theme-profissional .btn-primary {
+    background: linear-gradient(135deg, #0e7490, #0891b2) !important;
+    box-shadow: 0 14px 28px rgba(14, 116, 144, 0.22) !important;
+}
+
+body.plan-theme-empresarial .btn-primary {
+    background: linear-gradient(135deg, #ea580c, #c2410c) !important;
+    box-shadow: 0 14px 28px rgba(194, 65, 12, 0.22) !important;
+}
+
+body.plan-theme-profissional .form-control:focus,
+body.plan-theme-profissional .form-select:focus,
+body.plan-theme-profissional textarea:focus {
+    border-color: rgba(14, 116, 144, 0.45) !important;
+    box-shadow: 0 0 0 4px rgba(14, 116, 144, 0.12) !important;
+}
+
+body.plan-theme-empresarial .form-control:focus,
+body.plan-theme-empresarial .form-select:focus,
+body.plan-theme-empresarial textarea:focus {
+    border-color: rgba(194, 65, 12, 0.45) !important;
+    box-shadow: 0 0 0 4px rgba(194, 65, 12, 0.12) !important;
+}
+
+body.plan-theme-profissional .panel,
+body.plan-theme-profissional .content-card,
+body.plan-theme-profissional .mesa-card,
+body.plan-theme-profissional .pedido-card {
+    border-color: rgba(14, 116, 144, 0.14) !important;
+}
+
+body.plan-theme-empresarial .panel,
+body.plan-theme-empresarial .content-card,
+body.plan-theme-empresarial .mesa-card,
+body.plan-theme-empresarial .pedido-card {
+    border-color: rgba(194, 65, 12, 0.14) !important;
+}
+
+.plan-page-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 10px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+body.plan-theme-basico .plan-page-badge {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+body.plan-theme-profissional .plan-page-badge {
+    background: linear-gradient(135deg, #0e7490, #0891b2);
+    color: #fff;
+}
+
+body.plan-theme-empresarial .plan-page-badge {
+    background: linear-gradient(135deg, #ea580c, #c2410c);
+    color: #fff;
+}
+
+/* Contraste estrutural PRO vs EMP vs Básico (páginas operacionais) */
+body.plan-theme-profissional .top-bar,
+body.plan-theme-profissional .topbar,
+body.plan-theme-profissional .pedidos-header {
+    border-top: 3px solid #0e7490 !important;
+}
+
+body.plan-theme-empresarial .top-bar,
+body.plan-theme-empresarial .topbar,
+body.plan-theme-empresarial .pedidos-header {
+    border-top: 3px solid #ea580c !important;
+}
+
+body.plan-theme-basico .top-bar,
+body.plan-theme-basico .topbar,
+body.plan-theme-basico .pedidos-header {
+    border-top: 3px solid #94a3b8 !important;
+    box-shadow: none !important;
+}
+
+body.plan-theme-profissional .card > .card-header,
+body.plan-theme-profissional .panel-head {
+    border-left: 4px solid #0e7490;
+}
+
+body.plan-theme-empresarial .card > .card-header,
+body.plan-theme-empresarial .panel-head {
+    border-left: 4px solid #ea580c;
+    background: linear-gradient(90deg, rgba(234, 88, 12, 0.06), transparent) !important;
+}
+
+body.plan-theme-basico .card > .card-header,
+body.plan-theme-basico .panel-head {
+    border-left: 3px solid #94a3b8;
+}
+
+body.plan-theme-profissional .hero-panel,
+body.plan-theme-profissional .executive-hero {
+    border: 1px solid rgba(14, 116, 144, 0.18);
+    background: linear-gradient(135deg, #f0fdfa, #ffffff);
+}
+
+body.plan-theme-empresarial .hero-panel,
+body.plan-theme-empresarial .executive-hero {
+    border: 1px solid rgba(194, 65, 12, 0.22);
+    background: linear-gradient(135deg, #fff7ed, #ffffff);
+}
+
+body.plan-theme-basico .hero-panel {
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    box-shadow: none;
+}
+
+body.plan-theme-basico .stat-card,
+body.plan-theme-basico .card,
+body.plan-theme-basico .panel {
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.plan-theme-profissional .stat-card {
+    border-color: rgba(14, 116, 144, 0.12) !important;
+}
+
+body.plan-theme-empresarial .stat-card {
+    border-color: rgba(194, 65, 12, 0.14) !important;
+}
+
+body.plan-theme-basico .btn-primary {
+    background: #475569 !important;
+    box-shadow: none !important;
+}
+
+body.plan-theme-basico .quick-action {
+    box-shadow: none !important;
+    filter: saturate(0.85);
+}
+
+body.plan-theme-profissional .quick-action {
+    box-shadow: 0 12px 24px rgba(14, 116, 144, 0.18) !important;
+}
+
+body.plan-theme-empresarial .quick-action {
+    box-shadow: 0 14px 28px rgba(194, 65, 12, 0.2) !important;
+}
+
+body.plan-theme-basico .dashboard-plan-chip.is-locked {
+    opacity: 0.72;
+}
+
+body.plan-theme-profissional .pedidos-qr-card {
+    border-color: rgba(14, 116, 144, 0.2) !important;
+}
+
+body.plan-theme-empresarial .pedidos-qr-card {
+    border-color: rgba(194, 65, 12, 0.22) !important;
+    background: linear-gradient(135deg, rgba(255, 247, 237, 0.9), #fff);
+}

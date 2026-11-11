@@ -1,0 +1,84 @@
+# Segurança básica para produção (InfinityFree/Apache)
+
+Options -Indexes -MultiViews
+ServerSignature Off
+
+# Força HTTPS (compatível com Cloudflare - verifica cabeçalho X-Forwarded-Proto)
+RewriteEngine On
+
+# URLs limpas para todas as páginas PHP públicas.
+# /src/public/pedidos.php e /pedidos.php passam a /pedidos.
+# APIs são excluídas para preservar os contratos existentes.
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$ [NC]
+RewriteCond %{THE_REQUEST} \s/+(.*/)?index\.php(?:[\s?]) [NC]
+RewriteRule ^(?:.*/)?index\.php$ / [R=301,L,NE]
+
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$ [NC]
+RewriteCond %{THE_REQUEST} \s/+(.*/)?(?!api/)([^/?\s]+)\.php(?:[\s?]) [NC]
+RewriteRule ^(?!api/)(?:.*/)?([^/]+)\.php$ /$1 [R=301,L,NE]
+
+# Resolve internamente /pedidos para pedidos.php sem expor a extensão.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^([^/.]+)/?$ $1.php [END,QSA]
+
+# Em desenvolvimento local, evita HTTPS com certificado local invalido
+RewriteCond %{HTTP_HOST} ^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+RewriteCond %{HTTPS} =on
+RewriteRule ^ http://%{HTTP_HOST}%{REQUEST_URI} [L,R=302]
+
+RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+RewriteCond %{HTTPS} !=on [OR]
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Bloqueia acesso a arquivos sensíveis
+<FilesMatch "\.(env|sql|zip|gz|pem|key|p12|pfx|log)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Bloqueia diretórios internos
+RedirectMatch 404 ^/(vendor|storage|config|tests|backup_.*|dump_.*|\.git)/?
+
+# Impede leitura de .git, composer, package configs
+<FilesMatch "^(composer\.(json|lock)|package-lock\.json|package\.json|\.gitignore|\.gitconfig)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# PHP: desativar exibição de erros em produção e registrar em log
+php_flag display_errors Off
+php_flag display_startup_errors Off
+php_flag log_errors On
+php_value error_reporting 22519
+
+# Uploads de imagens de produtos (fotos de telemóvel)
+php_value upload_max_filesize 16M
+php_value post_max_size 24M
+php_value max_file_uploads 20
+php_value max_input_time 120
+php_value max_execution_time 120
+
+# Sessões mais seguras (requer HTTPS para secure flag funcionar)
+php_value session.use_strict_mode 1
+php_value session.cookie_httponly 1
+php_value session.cookie_secure 1
+php_value session.cookie_samesite Strict
+php_flag expose_php Off
+
+# Cabeçalhos de segurança
+<IfModule mod_headers.c>
+  SetEnvIfNoCase Host "^(localhost|127\.0\.0\.1)(:\d+)?$" LOCAL_DEV=1
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=!LOCAL_DEV
+  Header always set X-Frame-Options "DENY"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+  # CSP alinhada com security.php (inline ainda necessário até migrar scripts para ficheiros)
+  Header set Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; connect-src 'self' https: wss:; upgrade-insecure-requests" env=!LOCAL_DEV
+</IfModule>
+
+# Garante que uploads não executem PHP (há regra própria em /uploads/.htaccess)

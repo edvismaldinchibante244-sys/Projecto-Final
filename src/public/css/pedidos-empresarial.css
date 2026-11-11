@@ -1,0 +1,915 @@
+/* Pedidos — layout Empresarial (match mockup).
+   Só aplica com body.pedidos-emp-shell (plano EMPRESARIAL). */
+
+body.pedidos-emp-shell .main-content {
+  background: #f3f5f8;
+  padding-top: 12px !important;
+}
+
+/* —— Top utility bar —— */
+body.pedidos-emp-shell .pe-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0 0 10px;
+  min-height: 36px;
+}
+
+body.pedidos-emp-shell .pe-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body.pedidos-emp-shell .pe-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid #e5eaf0;
+  background: #fff;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+body.pedidos-emp-shell .pe-icon-btn:hover {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+body.pedidos-emp-shell .pe-notif-dot {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: 2px solid #fff;
+}
+
+body.pedidos-emp-shell .pe-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 6px;
+  border-left: 1px solid #e5eaf0;
+  margin-left: 2px;
+}
+
+body.pedidos-emp-shell .pe-user img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+body.pedidos-emp-shell .pe-user strong {
+  display: block;
+  font-size: 13px;
+  color: #0f172a;
+  line-height: 1.2;
+  text-align: right;
+}
+
+body.pedidos-emp-shell .pe-user small {
+  display: block;
+  color: #94a3b8;
+  font-size: 11px;
+  text-align: right;
+}
+
+/* —— Page header —— */
+body.pedidos-emp-shell .pe-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+body.pedidos-emp-shell .pe-header h1 {
+  margin: 0;
+  font-family: 'Space Grotesk', 'Outfit', 'Segoe UI', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: #0f172a;
+}
+
+body.pedidos-emp-shell .pe-title-icon {
+  color: #ea580c;
+  font-size: 1.35rem;
+}
+
+body.pedidos-emp-shell .pe-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #ea580c;
+  border-radius: 999px;
+  padding: 5px 11px;
+}
+
+body.pedidos-emp-shell .pe-live::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.28);
+  animation: pe-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pe-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+body.pedidos-emp-shell .pe-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+body.pedidos-emp-shell .pe-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  line-height: 1;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+body.pedidos-emp-shell .pe-btn:hover {
+  transform: translateY(-1px);
+}
+
+body.pedidos-emp-shell .pe-btn-ghost {
+  background: #fff;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+body.pedidos-emp-shell .pe-btn-ghost:hover {
+  border-color: #fdba74;
+  color: #c2410c;
+  background: #fff7ed;
+}
+
+body.pedidos-emp-shell .pe-btn-primary {
+  background: #16a34a;
+  color: #fff !important;
+  box-shadow: 0 8px 16px rgba(22, 163, 74, 0.22);
+}
+
+body.pedidos-emp-shell .pe-btn-primary:hover {
+  background: #15803d;
+  color: #fff !important;
+}
+
+/* —— KPI cards —— */
+body.pedidos-emp-shell .pe-kpis {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+body.pedidos-emp-shell .pe-intel-note {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+body.pedidos-emp-shell .pe-intel-note.is-warn {
+  border-color: #fde68a;
+  background: #fffbeb;
+  color: #92400e;
+}
+body.pedidos-emp-shell .pe-intel-note.is-info {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #9a3412;
+}
+body.pedidos-emp-shell .pe-intel-note strong {
+  font-weight: 800;
+}
+body.pedidos-emp-shell .pe-cozinha-card {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #fed7aa;
+  background: linear-gradient(180deg, #fffaf5 0%, #fff 70%);
+}
+body.pedidos-emp-shell .pe-cozinha-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+body.pedidos-emp-shell .pe-cozinha-head strong {
+  color: #0f172a;
+  font-size: 14px;
+}
+body.pedidos-emp-shell .pe-cozinha-head span {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+body.pedidos-emp-shell .pe-cozinha-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+body.pedidos-emp-shell .pe-cozinha-kpis > div {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  min-width: 0;
+}
+body.pedidos-emp-shell .pe-cozinha-kpis span {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 2px;
+}
+body.pedidos-emp-shell .pe-cozinha-kpis strong {
+  display: block;
+  font-family: 'Space Grotesk', 'Segoe UI Semibold', 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+body.pedidos-emp-shell .pe-cozinha-notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+body.pedidos-emp-shell .pe-cozinha-notes li {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  display: grid;
+  gap: 3px;
+}
+body.pedidos-emp-shell .pe-cozinha-notes li strong {
+  font-size: 12.5px;
+  color: #0f172a;
+}
+body.pedidos-emp-shell .pe-cozinha-notes li span {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.4;
+}
+body.pedidos-emp-shell .pe-cozinha-notes li.tom-ok { background: #ecfdf5; border-color: #a7f3d0; }
+body.pedidos-emp-shell .pe-cozinha-notes li.tom-warn { background: #fffbeb; border-color: #fde68a; }
+body.pedidos-emp-shell .pe-cozinha-notes li.tom-info { background: #fff7ed; border-color: #fed7aa; }
+@media (max-width: 700px) {
+  body.pedidos-emp-shell .pe-cozinha-kpis { grid-template-columns: 1fr; }
+}
+
+body.pedidos-emp-shell .pe-kpi {
+  background: #fff;
+  border: 1px solid #e8edf2;
+  border-radius: 14px;
+  padding: 14px 14px 12px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+  min-width: 0;
+}
+
+body.pedidos-emp-shell .pe-kpi-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+body.pedidos-emp-shell .pe-kpi .label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+body.pedidos-emp-shell .pe-kpi .value {
+  font-family: 'Space Grotesk', 'Outfit', 'Segoe UI', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #0f172a;
+}
+
+body.pedidos-emp-shell .pe-kpi .hint {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+body.pedidos-emp-shell .pe-kpi-ico {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+body.pedidos-emp-shell .pe-kpi.is-hoje {
+  background: linear-gradient(135deg, #ff7a18 0%, #ea580c 100%);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(234, 88, 12, 0.28);
+}
+
+body.pedidos-emp-shell .pe-kpi.is-hoje .label,
+body.pedidos-emp-shell .pe-kpi.is-hoje .value {
+  color: #fff;
+}
+
+body.pedidos-emp-shell .pe-kpi-main {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+body.pedidos-emp-shell .pe-delta {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  border-radius: 999px;
+  padding: 4px 8px;
+  margin-bottom: 2px;
+}
+
+body.pedidos-emp-shell .pe-kpi-lock {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+}
+
+body.pedidos-emp-shell .pe-kpi.is-novo .pe-kpi-ico {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+body.pedidos-emp-shell .pe-kpi.is-prep .pe-kpi-ico {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+body.pedidos-emp-shell .pe-kpi.is-pronto .pe-kpi-ico {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+body.pedidos-emp-shell .pe-kpi.is-atrasado .pe-kpi-ico {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+body.pedidos-emp-shell .pe-kpi.is-atrasado .value {
+  color: #dc2626;
+}
+
+/* —— Workspace —— */
+body.pedidos-emp-shell .pe-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 14px;
+  align-items: start;
+}
+
+body.pedidos-emp-shell .pe-board {
+  background: #fff;
+  border: 1px solid #e8edf2;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+}
+
+body.pedidos-emp-shell .pe-board-head {
+  padding: 16px 18px 4px;
+}
+
+body.pedidos-emp-shell .pe-board-head h2 {
+  margin: 0;
+  font-family: 'Space Grotesk', 'Outfit', 'Segoe UI', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+body.pedidos-emp-shell .pe-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 8px 14px 0;
+  border-bottom: 1px solid #eef2f6;
+  overflow-x: auto;
+}
+
+body.pedidos-emp-shell .pe-tab {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  padding: 10px 12px 12px;
+  border-radius: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+}
+
+body.pedidos-emp-shell .pe-tab-count {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+body.pedidos-emp-shell .pe-tab-count::before {
+  content: '(';
+}
+
+body.pedidos-emp-shell .pe-tab-count::after {
+  content: ')';
+}
+
+body.pedidos-emp-shell .pe-tab.is-active {
+  color: #ea580c;
+}
+
+body.pedidos-emp-shell .pe-tab.is-active .pe-tab-count {
+  color: #ea580c;
+}
+
+body.pedidos-emp-shell .pe-tab.is-active::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 2px;
+  background: #ea580c;
+  border-radius: 2px 2px 0 0;
+}
+
+body.pedidos-emp-shell .pe-table-wrap {
+  overflow-x: auto;
+  min-height: 220px;
+}
+
+body.pedidos-emp-shell .pe-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+body.pedidos-emp-shell .pe-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+  font-weight: 700;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafbfc;
+  text-align: left;
+}
+
+body.pedidos-emp-shell .pe-table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid #f5f7fa;
+  font-size: 13px;
+  vertical-align: middle;
+  color: #0f172a;
+}
+
+body.pedidos-emp-shell .pe-table tbody tr {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+body.pedidos-emp-shell .pe-table tbody tr:hover {
+  background: #fffaf5;
+}
+
+body.pedidos-emp-shell .pe-table tbody tr.is-selected {
+  background: #fff7ed;
+}
+
+body.pedidos-emp-shell .pe-id {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+body.pedidos-emp-shell .pe-sub {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+body.pedidos-emp-shell .pe-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+body.pedidos-emp-shell .pe-status.novo { background: #dbeafe; color: #1d4ed8; }
+body.pedidos-emp-shell .pe-status.preparando { background: #ffedd5; color: #c2410c; }
+body.pedidos-emp-shell .pe-status.pronto { background: #dcfce7; color: #15803d; }
+body.pedidos-emp-shell .pe-status.entregue { background: #e0e7ff; color: #4338ca; }
+body.pedidos-emp-shell .pe-status.conta { background: #e0f2fe; color: #0369a1; }
+body.pedidos-emp-shell .pe-status.pago { background: #f1f5f9; color: #475569; }
+body.pedidos-emp-shell .pe-status.atrasado { background: #fee2e2; color: #b91c1c; }
+
+body.pedidos-emp-shell .pe-tempo {
+  font-weight: 700;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+body.pedidos-emp-shell .pe-tempo.is-late {
+  color: #dc2626;
+}
+
+body.pedidos-emp-shell .pe-empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: #94a3b8;
+}
+
+body.pedidos-emp-shell .pe-board-foot {
+  padding: 12px 16px 14px;
+  border-top: 1px solid #f1f5f9;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+body.pedidos-emp-shell .pe-board.pe-flash {
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.35);
+  transition: box-shadow 0.3s ease;
+}
+
+body.pedidos-emp-shell .pe-link-btn {
+  border: none;
+  background: transparent;
+  color: #ea580c;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+body.pedidos-emp-shell .pe-link-btn:hover {
+  text-decoration: none;
+  background: #fff7ed;
+}
+
+/* —— Detail panel (Último Pedido) —— */
+body.pedidos-emp-shell .pe-detail {
+  background: #fff;
+  border: 1px solid #e8edf2;
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+
+body.pedidos-emp-shell .pe-detail-kicker {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+body.pedidos-emp-shell .pe-detail-head {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+body.pedidos-emp-shell .pe-detail-head h3 {
+  margin: 0;
+  font-family: 'Space Grotesk', 'Outfit', 'Segoe UI', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+body.pedidos-emp-shell .pe-detail-head .meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+body.pedidos-emp-shell .pe-detail-head .meta .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #cbd5e1;
+}
+
+body.pedidos-emp-shell .pe-detail-body {
+  padding: 14px 16px 16px;
+}
+
+body.pedidos-emp-shell .pe-section-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+body.pedidos-emp-shell .pe-item-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 13px;
+}
+
+body.pedidos-emp-shell .pe-item-row:last-child {
+  border-bottom: none;
+}
+
+body.pedidos-emp-shell .pe-item-row span:first-child {
+  color: #334155;
+}
+
+body.pedidos-emp-shell .pe-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed #e2e8f0;
+  font-weight: 800;
+}
+
+body.pedidos-emp-shell .pe-total span:last-child {
+  color: #ea580c;
+  font-size: 1.05rem;
+}
+
+body.pedidos-emp-shell .pe-timeline {
+  margin: 18px 0 14px;
+  padding-left: 2px;
+}
+
+body.pedidos-emp-shell .pe-step {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 0;
+  position: relative;
+  padding-bottom: 14px;
+}
+
+body.pedidos-emp-shell .pe-step:last-child {
+  padding-bottom: 0;
+}
+
+body.pedidos-emp-shell .pe-step::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 16px;
+  bottom: 0;
+  width: 2px;
+  background: #e2e8f0;
+}
+
+body.pedidos-emp-shell .pe-step:last-child::after {
+  display: none;
+}
+
+body.pedidos-emp-shell .pe-step::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #e2e8f0;
+  margin-top: 1px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+body.pedidos-emp-shell .pe-step.is-done::before {
+  background: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+body.pedidos-emp-shell .pe-step.is-current::before {
+  background: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.2);
+}
+
+body.pedidos-emp-shell .pe-step.is-done::after {
+  background: #93c5fd;
+}
+
+body.pedidos-emp-shell .pe-step span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  padding-top: 1px;
+}
+
+body.pedidos-emp-shell .pe-step.is-done span,
+body.pedidos-emp-shell .pe-step.is-current span {
+  color: #0f172a;
+}
+
+body.pedidos-emp-shell .pe-detail-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+body.pedidos-emp-shell .pe-detail-actions .btn,
+body.pedidos-emp-shell .pe-detail-actions .pe-btn {
+  border-radius: 10px !important;
+  font-weight: 700;
+  width: 100%;
+  justify-content: center;
+}
+
+body.pedidos-emp-shell .pe-btn-xs {
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+  white-space: nowrap;
+  width: auto !important;
+}
+
+body.pedidos-emp-shell .pe-detail-empty {
+  padding: 48px 16px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* —— Bottom banner —— */
+body.pedidos-emp-shell .pe-banner {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  background: #fff7ed;
+  border: 1px solid #ffedd5;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: #9a3412;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+body.pedidos-emp-shell .pe-banner i {
+  color: #ea580c;
+}
+
+body.pedidos-emp-shell .pe-banner a {
+  margin-left: auto;
+  color: #ea580c;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+body.pedidos-emp-shell .pe-banner a:hover {
+  text-decoration: underline;
+}
+
+/* Esconde KPI strip / kanban antigo no shell emp */
+body.pedidos-emp-shell .pedidos-kpi-strip,
+body.pedidos-emp-shell .pedidos-header {
+  display: none !important;
+}
+
+@media (max-width: 1100px) {
+  body.pedidos-emp-shell .pe-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  body.pedidos-emp-shell .pe-kpi.is-hoje {
+    grid-column: 1 / -1;
+  }
+  body.pedidos-emp-shell .pe-workspace {
+    grid-template-columns: 1fr;
+  }
+  body.pedidos-emp-shell .pe-detail {
+    position: static;
+    max-height: none;
+  }
+}
+
+@media (max-width: 576px) {
+  body.pedidos-emp-shell .pe-kpis {
+    grid-template-columns: 1fr;
+  }
+  body.pedidos-emp-shell .pe-topbar-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* —— Melhorias Empresarial (nov 2026) —— */
+body.pedidos-emp-shell .pe-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #ea580c; color: #fff; font-weight: 700; font-size: 14px; letter-spacing: .02em;
+}
+body.pedidos-emp-shell .pe-empty.pe-empty-compacta {
+  display: flex; align-items: center; gap: 14px; text-align: left;
+  padding: 18px 20px; margin: 16px; border: 1px dashed #e2e8f0; border-radius: 12px; background: #f8fafc;
+}
+body.pedidos-emp-shell .pe-empty-compacta > i { font-size: 1.4rem; color: #94a3b8; margin: 0; }
+body.pedidos-emp-shell .pe-empty-compacta > div { flex: 1; min-width: 0; }
+body.pedidos-emp-shell .pe-empty-compacta strong { display: block; color: #334155; font-size: 14px; }
+body.pedidos-emp-shell .pe-empty-compacta span { display: block; color: #94a3b8; font-size: 12.5px; margin-top: 2px; }
+body.pedidos-emp-shell .pe-empty-compacta .pe-btn { white-space: nowrap; text-decoration: none; }
+body.pedidos-emp-shell .pe-resumo { padding: 18px; }
+body.pedidos-emp-shell .pe-resumo-head strong { display: block; color: #0f172a; font-size: 15px; }
+body.pedidos-emp-shell .pe-resumo-head span { display: block; color: #94a3b8; font-size: 12px; margin-top: 2px; }
+body.pedidos-emp-shell .pe-resumo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+body.pedidos-emp-shell .pe-resumo-grid > div { border: 1px solid #eef2f7; border-radius: 10px; padding: 10px 12px; background: #fbfcfe; min-width: 0; }
+body.pedidos-emp-shell .pe-resumo-grid span { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: #64748b; font-weight: 600; }
+body.pedidos-emp-shell .pe-resumo-grid strong { display: block; font-size: 15px; color: #0f172a; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.pedidos-emp-shell .pe-resumo-aviso { margin-top: 10px; font-size: 12.5px; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 7px 10px; }
+body.pedidos-emp-shell .pe-resumo-sub { margin-top: 16px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #64748b; font-weight: 700; }
+body.pedidos-emp-shell .pe-resumo-lista { list-style: none; padding: 0; margin: 8px 0 0; }
+body.pedidos-emp-shell .pe-resumo-lista li { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #475569; }
+body.pedidos-emp-shell .pe-resumo-lista li:last-child { border-bottom: 0; }
+body.pedidos-emp-shell .pe-resumo-lista strong { color: #0f172a; }
+body.pedidos-emp-shell .pe-resumo-vazio { margin-top: 8px; font-size: 13px; color: #94a3b8; }
+/* Aviso de som discreto no canto */
+body.pedidos-emp-shell .sound-banner {
+  left: auto; right: 20px; bottom: 20px; transform: none;
+  padding: 8px 10px 8px 14px; border-radius: 12px; font-size: 13px; gap: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.18);
+}
+body.pedidos-emp-shell .sound-banner button { padding: 6px 10px; font-size: 12.5px; }
+body.pedidos-emp-shell .pe-table-wrap:has(.pe-empty-compacta) { min-height: 0; }

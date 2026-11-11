@@ -1,0 +1,22 @@
+{
+    "updated_at": "2026-08-23",
+    "owner": "security@seudominio.com",
+    "waf": {
+        "evidence_file": "docs/security/WAF_EVIDENCE.md",
+        "last_review_at": "2026-08-23",
+        "cadence_days": 30
+    },
+    "pentest": {
+        "evidence_file": "docs/security/PENTEST_FINDINGS.json",
+        "last_test_at": "2026-08-23",
+        "last_retest_at": "2026-08-23",
+        "cadence_days": 90
+    },
+    "dr_ir": {
+        "evidence_file": "docs/security/DR_DRILL_EVIDENCE.md",
+        "last_dr_drill_at": "2026-07-30",
+        "last_ir_tabletop_at": "2026-08-23",
+        "dr_cadence_days": 30,
+        "ir_cadence_days": 15
+    }
+}

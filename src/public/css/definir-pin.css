@@ -1,0 +1,150 @@
+.pin-page {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding-bottom: 32px;
+}
+
+.pin-page .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.pin-page-header {
+    max-width: 680px;
+    margin-bottom: 26px;
+}
+
+.pin-page-header h1 {
+    margin: 0 0 8px;
+    color: var(--brand-ink);
+    font-weight: 700;
+}
+
+.pin-page-header p {
+    max-width: 62ch;
+    margin: 0;
+}
+
+.pin-alert {
+    margin-bottom: 22px;
+}
+
+.pin-page-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+    align-items: start;
+    gap: 24px;
+}
+
+.pin-form-card {
+    width: 100%;
+    border: 1px solid var(--brand-border-strong);
+    border-radius: 18px;
+    background: var(--brand-surface);
+    box-shadow: var(--brand-shadow-sm);
+}
+
+.pin-form-card .card-body {
+    padding: 28px;
+}
+
+.pin-form-field {
+    margin-bottom: 20px;
+}
+
+.pin-form-field .form-label {
+    margin-bottom: 8px;
+    color: var(--brand-ink-soft);
+    font-weight: 600;
+}
+
+.pin-form-field input[inputmode="numeric"] {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.12em;
+}
+
+.pin-field-hint {
+    margin: 8px 0 0;
+    color: var(--brand-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.pin-submit {
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+}
+
+.pin-guidance {
+    padding: 24px;
+    border: 1px solid var(--brand-border);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.58);
+}
+
+.pin-guidance h2 {
+    margin: 0 0 10px;
+    color: var(--brand-ink);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.pin-guidance p {
+    margin: 0 0 18px;
+    color: var(--brand-muted);
+    line-height: 1.6;
+}
+
+.pin-guidance ul {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pin-guidance li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--brand-ink-soft);
+    line-height: 1.5;
+}
+
+.pin-guidance li i {
+    flex: 0 0 18px;
+    margin-top: 3px;
+    color: var(--brand-primary);
+}
+
+@media (max-width: 900px) {
+    .pin-page-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .pin-page {
+        max-width: 620px;
+    }
+}
+
+@media (max-width: 575px) {
+    .pin-page .back-btn {
+        margin-bottom: 14px;
+    }
+
+    .pin-page-header {
+        margin-bottom: 20px;
+    }
+
+    .pin-form-card .card-body,
+    .pin-guidance {
+        padding: 20px;
+    }
+}
