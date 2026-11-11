@@ -219,6 +219,7 @@ foreach ($apiFiles as $file) {
     }
 }
 $totalApi = count($apiFiles);
+// These routes use public-flow or dedicated session/PIN checks instead of api_guard().
 $expectedPublic = [
     'login_process.php',
     'login_simples.php',
@@ -227,18 +228,21 @@ $expectedPublic = [
     'reserva_publica.php',
     'gateway_webhook_plano.php',
     'notificar_cliente.php',
+    'retomar.php',
+    'sessao_estado.php',
+    'terminal_entrar.php',
 ];
 $unexpectedMissing = array_values(array_diff($missingGuard, $expectedPublic));
 $coverageStatus = count($unexpectedMissing) === 0 ? 'PASS' : 'WARN';
 $results[] = check_result(
     $coverageStatus,
     'API guard coverage',
-    sprintf('%d/%d endpoints with api_guard. Missing public/allowlisted endpoints: %s', $guardCount, $totalApi, implode(', ', $missingGuard))
+    sprintf('%d/%d endpoints with api_guard. Missing public/dedicated-auth endpoints: %s', $guardCount, $totalApi, implode(', ', $missingGuard))
 );
 
-// Public endpoint allowlist (without api_guard)
+// Public and dedicated-auth endpoint allowlist (without api_guard)
 if (count($unexpectedMissing) === 0) {
-    $results[] = check_result('PASS', 'Public endpoint allowlist', 'Only expected public/webhook/helper endpoints are outside api_guard.');
+    $results[] = check_result('PASS', 'Public endpoint allowlist', 'Only expected public or dedicated-auth endpoints are outside api_guard.');
 } else {
     $results[] = check_result('FAIL', 'Public endpoint allowlist', 'Unexpected endpoints without api_guard: ' . implode(', ', $unexpectedMissing));
     $criticalFailures++;

@@ -59,17 +59,28 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Prepare CI-only preflight environment
+        if: github.event_name != 'workflow_dispatch'
+        shell: bash
+        run: |
+          printf 'APP_ENV=production\nAPP_KEY=%s\nPLANO_WEBHOOK_SECRET=%s\n' \
+            "$(openssl rand -hex 32)" "$(openssl rand -hex 32)" > .env
+
       - name: Security preflight
+        if: github.event_name != 'workflow_dispatch'
         run: php tools/security_preflight.php --json
 
       - name: Security ops preflight
+        if: github.event_name == 'workflow_dispatch'
         run: php tools/security_ops_preflight.php --json
 
       - name: Monthly readiness report
+        if: github.event_name == 'workflow_dispatch'
         run: php tools/security_readiness_report.php --json
 
       - name: Upload readiness artifact
         uses: actions/upload-artifact@v4
+        if: github.event_name == 'workflow_dispatch'
         with:
           name: security-monthly-readiness
           path: docs/security/SECURITY_MONTHLY_READINESS.md
