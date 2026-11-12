@@ -51,6 +51,15 @@ RUN composer install --no-dev --prefer-dist --no-interaction --working-dir=/var/
     && printf '\n<Directory /data>\n Options -Indexes +FollowSymLinks\n AllowOverride None\n Require all granted\n</Directory>\n' >> /etc/apache2/apache2.conf \
     && chmod +x /var/www/html/scripts/docker-entrypoint.sh
 
+# Garantir mesmo um unico MPM: apagar todos os atalhos e deixar so o prefork.
+# O grep final escreve no registo do build onde estao as linhas LoadModule mpm,
+# para o caso de ainda aparecer alguma repetida.
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf \
+    && ln -s ../mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load \
+    && ln -s ../mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf \
+    && echo "=== LoadModule mpm encontrados ===" \
+    && grep -rn "LoadModule mpm" /etc/apache2/ || true
+
 ENV STORAGE_PATH=/data/storage
 
 ENTRYPOINT ["/var/www/html/scripts/docker-entrypoint.sh"]
