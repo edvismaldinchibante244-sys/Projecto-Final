@@ -89,7 +89,7 @@ try {
         'elapsed_ms' => (int)round((microtime(true) - $started) * 1000),
     ];
 
-    $logDir = APP_BASE . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'logs';
+    $logDir = nv_storage('logs');
     if (!is_dir($logDir)) {
         @mkdir($logDir, 0755, true);
     }

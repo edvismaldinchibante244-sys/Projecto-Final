@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/storage_path.php';
 
 /**
  * Notificações outbound de segurança (email + WhatsApp/SMS-like).
@@ -11,7 +12,7 @@ if (!function_exists('security_alert_notify_log_dir')) {
     function security_alert_notify_log_dir(): string
     {
         $baseDir = dirname(__DIR__, 2);
-        $logDir = $baseDir . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'logs';
+        $logDir = nv_storage('logs');
         if (!is_dir($logDir)) {
             @mkdir($logDir, 0755, true);
         }

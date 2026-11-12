@@ -20,9 +20,8 @@ try {
     $check(is_string($approvalSource) && $approvalSource !== '', 'fonte da aprovacao disponivel');
 
     $trial = plan_security_validate_request('BASICO', 'BASICO', 'MENSAL', 'TRIAL', true);
-    $check(!empty($trial['ok']), 'trial Basico mensal aceito');
-    $check((float)($trial['price'] ?? -1) === 0.0, 'trial tem valor zero');
-    $check(plan_security_trial_days('BASICO') === 30, 'trial dura 30 dias');
+    $check(empty($trial['ok']), 'trial Basico mensal recusado (periodo gratuito descontinuado)');
+    $check(plan_security_trial_days('BASICO') === 0, 'trial nao tem dias');
 
     $trialProfissional = plan_security_validate_request('BASICO', 'PROFISSIONAL', 'MENSAL', 'TRIAL', true);
     $check(empty($trialProfissional['ok']), 'trial Profissional bloqueado');
@@ -50,8 +49,8 @@ try {
     $check(str_contains($approvalSource, 'plan_security_purchase_trial_days($compra) ?: 30'), 'aprovacao aplica prazo do trial');
 
     $inicio = new DateTimeImmutable('2026-08-26');
-    $fim = $inicio->modify('+' . plan_security_trial_days('BASICO') . ' days');
-    $check($fim->format('Y-m-d') === '2026-09-25', 'prazo inicia na aprovacao e termina apos 30 dias');
+    $fim = $inicio->modify('+' . plan_security_days('MENSAL') . ' days');
+    $check($fim->format('Y-m-d') === '2026-09-25', 'prazo mensal inicia na aprovacao e termina apos 30 dias');
 
     echo "OK: fluxo solicitar_plano validado sem alterar a base ({$checks} verificacoes)." . PHP_EOL;
     exit(0);

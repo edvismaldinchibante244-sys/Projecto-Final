@@ -46,6 +46,13 @@ security_regenerate_session(15);
                             Já tenho conta — Entrar
                         </button>
                     </div>
+                    <div class="ed-oferta">
+                        <span class="ed-oferta__selo"><i class="fas fa-gift" aria-hidden="true"></i> Oferta de boas-vindas</span>
+                        <p class="ed-oferta__texto">
+                            <strong>14 dias no plano acima</strong>, logo no primeiro pagamento.
+                            <span class="ed-oferta__nota">Se nos primeiros 14 dias não for para si, devolvemos o valor.</span>
+                        </p>
+                    </div>
                 </div>
             </div>
         </section>

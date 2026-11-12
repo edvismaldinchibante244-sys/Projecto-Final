@@ -202,7 +202,7 @@ $mesaBalcaoLabel = mesa_rotulo($balcaoCanonicoNovoPedido['numero'] ?? 'B1');
 require_once APP_BASE . '/src/config/balcao_canal.php';
 $npBalcao2 = ['ativo' => false, 'nome' => '', 'mesa_id' => 0];
 try {
-    $npBalcao2 = balcao2_config($db, (int)$rid);
+    $npBalcao2 = balcao2_config($db, (int)$rid, $restauranteFeatureId);
 } catch (Throwable $e) {
     error_log('[novo_pedido][balcao2] ' . $e->getMessage());
 }

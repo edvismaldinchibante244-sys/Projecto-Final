@@ -261,9 +261,9 @@ try {
     $msg = trim((string)$e->getMessage());
     error_log('[venda_criar] ' . $msg);
     try {
-        $logDir = dirname(APP_BASE) . '/app/storage/logs';
+        $logDir = nv_storage('logs');
         if (!is_dir($logDir)) {
-            $logDir = APP_BASE . '/storage/logs';
+            $logDir = nv_storage('logs');
         }
         if (is_dir($logDir) || @mkdir($logDir, 0775, true)) {
             @file_put_contents(

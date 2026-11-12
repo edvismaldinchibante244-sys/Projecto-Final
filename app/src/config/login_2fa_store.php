@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/storage_path.php';
 
 /*
  * Armazenamento dos desafios 2FA pendentes do login.
@@ -10,7 +11,7 @@
 
 function login_api_2fa_storage_dir(): string
 {
-    $dir = APP_BASE . '/storage/2fa';
+    $dir = nv_storage('2fa');
     if (!is_dir($dir)) {
         @mkdir($dir, 0755, true);
     }

@@ -150,7 +150,7 @@ try {
 require_once APP_BASE . '/src/config/balcao_canal.php';
 $balcao2Pdv = ['ativo' => false, 'nome' => '', 'mesa_id' => 0];
 try {
-    $balcao2Pdv = balcao2_config($db, (int)$_SESSION['restaurante_id']);
+    $balcao2Pdv = balcao2_config($db, (int)$_SESSION['restaurante_id'], $restauranteFeatureId);
 } catch (Throwable $e) {
     error_log('[vendas][balcao2] ' . $e->getMessage());
 }

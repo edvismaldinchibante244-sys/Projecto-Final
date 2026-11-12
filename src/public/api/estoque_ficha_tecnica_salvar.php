@@ -227,7 +227,7 @@ try {
     error_log('estoque_ficha_tecnica_salvar: ' . $e->getMessage());
 
     try {
-        $debugDir = APP_BASE . '/storage';
+        $debugDir = nv_storage();
         if (!is_dir($debugDir)) {
             @mkdir($debugDir, 0755, true);
         }

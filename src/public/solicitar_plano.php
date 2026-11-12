@@ -15,6 +15,10 @@ include_once APP_BASE . '/src/config/plano_notificacoes.php';
 include_once APP_BASE . '/src/config/csrf.php';
 include_once APP_BASE . '/src/config/restaurante_status_helper.php';
 include_once APP_BASE . '/src/config/plan_security.php';
+require_once APP_BASE . '/src/config/plano_bonus.php';
+// O periodo gratuito foi descontinuado: o que ha agora e a oferta de
+// boas-vindas no primeiro pagamento (14 dias no plano de cima).
+$trialAtivo = plan_security_supports_trial('BASICO');
 include_once APP_BASE . '/src/config/audit.php';
 require_once APP_BASE . '/src/config/plano_pagamentos.php';
 require_once APP_BASE . '/src/config/legal_documents.php';
@@ -1003,7 +1007,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <div class="plan-icon"><i class="fas fa-user"></i></div>
                                                 <div class="plan-name">Básico</div>
                                                 <div class="plan-price"><?php echo format_mzn($preco_basico['mensal']); ?><span>MZN/mês</span></div>
-                                                <div class="plan-trial-note">Trial gratuito de 30 dias</div>
+                                                <?php if ($trialAtivo): ?>
+                                                    <div class="plan-trial-note">Trial gratuito de <?php echo (int)plan_security_trial_days('BASICO'); ?> dias</div>
+                                                <?php else: ?>
+                                                    <div class="plan-trial-note"><i class="fas fa-gift me-1"></i>1.º pagamento: <?php echo (int)BONUS_DIAS; ?> dias de Profissional</div>
+                                                <?php endif; ?>
                                                 <div class="plan-cycle">Tri <?php echo format_mzn($preco_basico['trimestral']); ?> · Anual <?php echo format_mzn($preco_basico['anual']); ?></div>
                                             </div>
                                             <ul class="plan-option-features">
@@ -1024,6 +1032,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <div class="plan-icon"><i class="fas fa-star"></i></div>
                                                 <div class="plan-name">Profissional</div>
                                                 <div class="plan-price"><?php echo format_mzn($preco_profissional['mensal']); ?><span>MZN/mês</span></div>
+                                                <?php if (!$trialAtivo): ?><div class="plan-trial-note"><i class="fas fa-gift me-1"></i>1.º pagamento: <?php echo (int)BONUS_DIAS; ?> dias de Empresarial</div><?php endif; ?>
                                                 <div class="plan-cycle">Tri <?php echo format_mzn($preco_profissional['trimestral']); ?> · Anual <?php echo format_mzn($preco_profissional['anual']); ?></div>
                                             </div>
                                             <ul class="plan-option-features">
@@ -1043,6 +1052,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <div class="plan-icon"><i class="fas fa-crown"></i></div>
                                                 <div class="plan-name">Empresarial</div>
                                                 <div class="plan-price"><?php echo format_mzn($preco_empresarial['mensal']); ?><span>MZN/mês</span></div>
+                                                <?php if (!$trialAtivo): ?><div class="plan-trial-note"><i class="fas fa-gift me-1"></i>1.º pagamento: <?php echo (int)BONUS_DIAS; ?> dias extra de plano</div><?php endif; ?>
                                                 <div class="plan-cycle">Tri <?php echo format_mzn($preco_empresarial['trimestral']); ?> · Anual <?php echo format_mzn($preco_empresarial['anual']); ?></div>
                                             </div>
                                             <ul class="plan-option-features">
@@ -1087,7 +1097,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <div class="col-12" id="plano_trial_info" style="display: none;">
                                                 <div class="alert alert-success mb-0">
                                                     <i class="fas fa-gift me-2"></i>
-                                                    Plano Básico mensal: <strong>trial gratuito de 30 dias</strong>. Não precisa de pagamento agora. Se preferir pagar já, escolha Trimestral ou Anual.
+                                                    Plano Básico mensal: <strong>trial gratuito de <?php echo (int)plan_security_trial_days('BASICO'); ?> dias</strong>. Não precisa de pagamento agora. Se preferir pagar já, escolha Trimestral ou Anual.
                                                 </div>
                                             </div>
 
@@ -1261,6 +1271,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         var cicloSelecionado = <?php echo json_encode($form['ciclo'], JSON_UNESCAPED_UNICODE); ?>;
         var valorPlano = 0;
         var metodoSelecionado = <?php echo json_encode($form['metodo'], JSON_UNESCAPED_UNICODE); ?>;
+        var TRIAL_ATIVO = <?php echo $trialAtivo ? 'true' : 'false'; ?>;
         var planoBasicoTrial = false;
         var planoPaymentInstructions = <?php echo json_encode($planoPaymentInstructions, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
 
@@ -1287,7 +1298,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             var camposPagos = document.getElementById('pagamento_campos_pagos');
             var campoComprovativo = document.getElementById('comprovativo');
 
-            planoBasicoTrial = planoSelecionado === 'BASICO' && cicloSelecionado === 'MENSAL';
+            planoBasicoTrial = TRIAL_ATIVO && planoSelecionado === 'BASICO' && cicloSelecionado === 'MENSAL';
 
             if (!planoSelecionado) {
                 secaoPagamento.style.display = 'none';

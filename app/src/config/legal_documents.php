@@ -30,7 +30,7 @@ if (!function_exists('legal_config')) {
             'jurisdiction' => legal_env('LEGAL_JURISDICTION', 'Moçambique'),
             'effective_date' => legal_env('LEGAL_EFFECTIVE_DATE', '2026-11-03'),
             'privacy_version' => legal_env('LEGAL_PRIVACY_VERSION', '2026.11.03'),
-            'terms_version' => legal_env('LEGAL_TERMS_VERSION', '2026.11.03'),
+            'terms_version' => legal_env('LEGAL_TERMS_VERSION', '2026.11.12'),
             'cookie_version' => legal_env('LEGAL_COOKIE_VERSION', '2026.11.03'),
         ];
     }
@@ -186,9 +186,12 @@ if (!function_exists('legal_document')) {
                         'Antes do fim do período, avisamos o Cliente da renovação. Nos 7 dias seguintes ao vencimento sem pagamento, a conta fica em modo limitado: é possível consultar e exportar os dados, mas não registar vendas. Depois desse prazo, o acesso fica bloqueado, excepto a exportação de dados pelo administrador em «Meus dados e plano», até à regularização.',
                         'Alterações de preço só se aplicam ao período seguinte e são comunicadas com pelo menos 30 dias de antecedência.',
                         'Subir de plano tem efeito imediato. Descer de plano tem efeito no período seguinte e não apaga dados, mas pode limitar funcionalidades.',
+                        'Oferta de boas-vindas: no primeiro pagamento de cada Cliente, o restaurante usa durante 14 dias o plano imediatamente acima do que pagou, sem custo. Quem paga o plano mais alto recebe, em vez disso, 14 dias extra de validade. A oferta é atribuída uma só vez por restaurante e por titular, não se aplica a períodos de experiência e não se acumula com outras ofertas.',
+                        'Terminados os 14 dias, o restaurante volta ao plano que pagou. Nada é apagado: os registos criados durante a oferta continuam acessíveis e editáveis; fica apenas suspensa a criação de novos registos nas categorias em que o plano pago já esteja no limite, até o Cliente voltar ao limite ou subir de plano.',
                     ]],
                     ['title' => '5. Cancelamento e reembolsos', 'paragraphs' => [
                         'O Cliente pode cancelar a qualquer momento em «Meus dados e plano» ou por email. O cancelamento produz efeitos no fim do período já pago, sem reembolso desse período, salvo nos casos previstos nas secções 2 e 8 ou quando a lei imperativamente o imponha.',
+                        'Devolução do primeiro pagamento: um Cliente novo que cancele nos primeiros 14 dias após o primeiro pagamento recebe a devolução integral desse pagamento, pedida em «Meus dados e plano» ou por email, processada no prazo de 14 dias pelo mesmo meio de pagamento. A devolução aplica-se uma só vez por restaurante e por titular e não se aplica a renovações nem a mudanças de plano posteriores.',
                         'Após o encerramento, o administrador do Cliente continua a poder entrar, apenas para exportar os dados, durante 30 dias. Os dados são apagados definitivamente nos 90 dias seguintes, com aviso por email 14 dias antes, salvo o que a lei obrigue a conservar; no momento da eliminação é emitida e enviada ao Cliente uma declaração de eliminação.',
                     ]],
                     ['title' => '6. Obrigações do Cliente', 'items' => [

@@ -144,7 +144,7 @@ try {
     security_json(['success' => true, 'message' => 'Ticket atualizado com sucesso']);
 } catch (Throwable $e) {
     @file_put_contents(
-        APP_BASE . '/storage/logs/support_ticket_error.log',
+        nv_storage('logs/support_ticket_error.log'),
         '[' . date('Y-m-d H:i:s') . '] super_admin_support_ticket_update: ' . $e->getMessage() . PHP_EOL,
         FILE_APPEND
     );

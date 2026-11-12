@@ -1463,6 +1463,7 @@ if ($cfgEmpresarial) {
             }
         }
     </style>
+    <link rel="stylesheet" href="css/bonus_faixa.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/bonus_faixa.css'); ?>">
 </head>
 
 <body class="premium-ui">
@@ -1478,6 +1479,11 @@ if ($cfgEmpresarial) {
                 </div>
 
                 <div class="content-area">
+<?php
+// Oferta de boas-vindas: dias que faltam, resumo final e aviso de limite.
+$bonusFaixaRid = (int)$restaurante_id;
+include __DIR__ . '/includes/bonus_faixa.php';
+?>
                     <?php if ($mensagem): ?>
                         <div class="alert alert-<?php echo $tipo_msg; ?> alert-dismissible fade show" role="alert">
                             <i class="fas fa-<?php echo $tipo_msg == 'success' ? 'check-circle' : 'exclamation-circle'; ?> me-2"></i>

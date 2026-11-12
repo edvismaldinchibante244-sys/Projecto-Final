@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../config/storage_path.php';
 
 /*
   Modelo de Autenticação
@@ -333,7 +334,7 @@ class Auth
         $stmt->execute();
 
         // Log de segurança
-        $logDir = dirname(__DIR__, 2) . '/storage/logs';
+        $logDir = nv_storage('logs');
         if (!is_dir($logDir)) {
             @mkdir($logDir, 0775, true);
         }

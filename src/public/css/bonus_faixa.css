@@ -1,0 +1,49 @@
+/* Oferta de boas-vindas: faixa com os dias que faltam e o resumo final */
+.bonus-faixa {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 13px 18px;
+    margin: 0 0 18px;
+    border-radius: 14px;
+    border: 1px solid #bae6fd;
+    background: linear-gradient(135deg, rgba(14, 165, 233, .10), rgba(14, 165, 233, .04));
+    color: #0f172a;
+}
+.bonus-faixa-icone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(14, 165, 233, .18);
+    color: #0369a1;
+    flex: 0 0 auto;
+}
+.bonus-faixa-texto { flex: 1 1 320px; min-width: 240px; font-size: 13.5px; line-height: 1.5; }
+.bonus-faixa-texto strong { display: block; font-size: 14.5px; }
+.bonus-faixa-texto span { color: #475569; }
+.bonus-faixa-btn {
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: #0284c7;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+.bonus-faixa-btn:hover { background: #0369a1; color: #fff; }
+.bonus-faixa.is-atencao { border-color: #fcd34d; background: linear-gradient(135deg, rgba(245, 158, 11, .12), rgba(245, 158, 11, .04)); }
+.bonus-faixa.is-atencao .bonus-faixa-icone { background: rgba(245, 158, 11, .2); color: #b45309; }
+.bonus-faixa.is-atencao .bonus-faixa-btn { background: #d97706; }
+.bonus-faixa.is-urgente { border-color: #fca5a5; background: linear-gradient(135deg, rgba(220, 38, 38, .12), rgba(220, 38, 38, .04)); }
+.bonus-faixa.is-urgente .bonus-faixa-icone { background: rgba(220, 38, 38, .18); color: #b91c1c; }
+.bonus-faixa.is-urgente .bonus-faixa-btn { background: #dc2626; }
+.bonus-faixa.is-fim { border-color: #cbd5e1; background: #f8fafc; }
+.bonus-faixa.is-fim .bonus-faixa-icone { background: #e2e8f0; color: #475569; }
+.bonus-faixa.is-limite { border-color: #fcd34d; background: rgba(245, 158, 11, .07); }
+.bonus-faixa.is-limite .bonus-faixa-icone { background: rgba(245, 158, 11, .2); color: #b45309; }
+.bonus-faixa.is-limite .bonus-faixa-btn { background: #475569; }

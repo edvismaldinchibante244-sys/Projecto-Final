@@ -115,7 +115,7 @@ try {
         support_tickets_notify_support_copy($subject, $body);
     } catch (Throwable $notifyError) {
         @file_put_contents(
-            APP_BASE . '/storage/logs/support_ticket_notify_error.log',
+            nv_storage('logs/support_ticket_notify_error.log'),
             '[' . date('Y-m-d H:i:s') . '] ticket #' . $ticketId . ' - ' . $notifyError->getMessage() . PHP_EOL,
             FILE_APPEND
         );
@@ -143,7 +143,7 @@ try {
         . ' | rid=' . (string)($rid ?? 0)
         . ' | uid=' . (string)($ctx['usuario_id'] ?? 0)
         . PHP_EOL;
-    @file_put_contents(APP_BASE . '/storage/logs/support_ticket_error.log', $line, FILE_APPEND);
+    @file_put_contents(nv_storage('logs/support_ticket_error.log'), $line, FILE_APPEND);
     @error_log('[support_ticket_create] ' . $e->getMessage());
     security_json(['success' => false, 'message' => 'Erro interno ao abrir ticket'], 500);
 }

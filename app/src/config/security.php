@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/storage_path.php';
 
 /*
    Security bootstrap helpers.
@@ -95,7 +96,7 @@ if (!function_exists('security_start_session')) {
         // Isola os ficheiros de sessao da pasta temporaria partilhada da hospedagem.
         $sessionStorageDir = trim((string)(getenv('SESSION_SAVE_PATH') ?: ''));
         if ($sessionStorageDir === '') {
-            $sessionStorageDir = dirname(__DIR__, 2) . '/storage/sessions';
+            $sessionStorageDir = nv_storage('sessions');
         }
         if ((is_dir($sessionStorageDir) || @mkdir($sessionStorageDir, 0700, true)) && is_writable($sessionStorageDir)) {
             session_save_path($sessionStorageDir);
@@ -1090,7 +1091,7 @@ if (!function_exists('security_log_event')) {
     function security_log_event(string $event, array $context = []): void
     {
         $baseDir = dirname(__DIR__, 2);
-        $logDir = $baseDir . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'logs';
+        $logDir = nv_storage('logs');
         if (!is_dir($logDir)) {
             @mkdir($logDir, 0755, true);
         }

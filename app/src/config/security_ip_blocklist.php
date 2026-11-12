@@ -1,10 +1,11 @@
 <?php
+require_once __DIR__ . '/storage_path.php';
 
 if (!function_exists('security_ip_blocklist_path')) {
     function security_ip_blocklist_path(): string
     {
         $baseDir = dirname(__DIR__, 2);
-        $dir = $baseDir . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'security';
+        $dir = nv_storage('security');
         if (!is_dir($dir)) {
             @mkdir($dir, 0755, true);
         }

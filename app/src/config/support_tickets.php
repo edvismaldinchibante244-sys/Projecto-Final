@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/storage_path.php';
 
 if (!function_exists('support_tickets_ensure_tables')) {
     function support_tickets_ensure_tables(PDO $db): void
@@ -345,7 +346,7 @@ if (!function_exists('support_tickets_store_attachment')) {
             return null;
         }
 
-        $baseDir = APP_BASE . '/storage/support_attachments';
+        $baseDir = nv_storage('support_attachments');
         if (!is_dir($baseDir) && !@mkdir($baseDir, 0755, true) && !is_dir($baseDir)) {
             $error = 'Nao foi possivel preparar a pasta de anexos';
             return null;

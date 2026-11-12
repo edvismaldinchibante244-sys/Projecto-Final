@@ -391,7 +391,7 @@ final class PedidoService
     {
         @error_log('pedido_novo: ' . $mensagem);
         if (defined('APP_BASE')) {
-            @file_put_contents(APP_BASE . '/storage/logs/pedido_novo_error.log', '[' . date('Y-m-d H:i:s') . '] ' . $mensagem . PHP_EOL, FILE_APPEND);
+            @file_put_contents(nv_storage('logs/pedido_novo_error.log'), '[' . date('Y-m-d H:i:s') . '] ' . $mensagem . PHP_EOL, FILE_APPEND);
         }
     }
 }

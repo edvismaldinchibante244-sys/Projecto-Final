@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/storage_path.php';
 /**
  * Encerramento de contas — cumpre os Termos de Uso (seccoes 4, 5 e 7):
  *  - o restaurante pede o cancelamento e ele so produz efeito no fim do periodo pago;
@@ -745,7 +746,7 @@ if (!function_exists('enc_estado')) {
         if (!$e) {
             throw new InvalidArgumentException('Restaurante nao encontrado.');
         }
-        $base = is_writable(sys_get_temp_dir()) ? sys_get_temp_dir() : (APP_BASE . '/storage');
+        $base = is_writable(sys_get_temp_dir()) ? sys_get_temp_dir() : (nv_storage());
         if (!is_dir($base) && !@mkdir($base, 0700, true)) {
             throw new RuntimeException('Não foi possível criar a pasta temporária (' . $base . ').');
         }
@@ -1105,7 +1106,7 @@ if (!function_exists('enc_exportar_zip_rede')) {
             return enc_exportar_zip($db, $matrizId);
         }
 
-        $base = is_writable(sys_get_temp_dir()) ? sys_get_temp_dir() : (APP_BASE . '/storage');
+        $base = is_writable(sys_get_temp_dir()) ? sys_get_temp_dir() : (nv_storage());
         $base = rtrim($base, '/\\') . DIRECTORY_SEPARATOR;
         $zipPath = $base . 'nv_export_rede_' . bin2hex(random_bytes(6)) . '.zip';
 

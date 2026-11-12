@@ -221,6 +221,51 @@ if ($isProfissionalCaixa && empty($isEmpresarialUi) && !empty($caixa_aberto['id'
     }
 }
 
+// Segundo canal de balcão (Empresarial): quanto entrou por cada canal neste caixa.
+require_once APP_BASE . '/src/config/mesa_display_helper.php';
+require_once APP_BASE . '/src/config/balcao_canal.php';
+$caixaBalcao2 = ['ativo' => false, 'nome' => '', 'mesa_id' => 0];
+$caixaPorCanal = [];
+try {
+    $caixaBalcao2 = balcao2_config($db, (int)($_SESSION['restaurante_id'] ?? 0), $planRidCaixa);
+    if (!empty($caixaBalcao2['ativo']) && !empty($caixa_aberto['id'])) {
+        $stCanal = $db->prepare("
+            SELECT COALESCE(m.numero, '') AS mesa_numero,
+                   COALESCE(SUM(v.total_final), 0) AS total, COUNT(*) AS qtd
+            FROM vendas v
+            LEFT JOIN mesas m ON m.id = v.mesa_id
+            WHERE v.caixa_id = :cid AND v.restaurante_id = :rid
+              AND UPPER(TRIM(COALESCE(v.status, ''))) = 'PAGO'
+            GROUP BY mesa_numero
+        ");
+        $stCanal->execute([
+            ':cid' => (int)$caixa_aberto['id'],
+            ':rid' => (int)($_SESSION['restaurante_id'] ?? 0),
+        ]);
+        $agregado = [
+            'mesa' => ['rotulo' => 'Salão', 'total' => 0.0, 'qtd' => 0],
+            'balcao' => ['rotulo' => 'Balcão', 'total' => 0.0, 'qtd' => 0],
+            'balcao2' => ['rotulo' => (string)$caixaBalcao2['nome'], 'total' => 0.0, 'qtd' => 0],
+        ];
+        foreach ($stCanal->fetchAll(PDO::FETCH_ASSOC) ?: [] as $linhaCanal) {
+            $numeroCanal = trim((string)$linhaCanal['mesa_numero']);
+            if ($numeroCanal !== '' && mesa_eh_balcao($numeroCanal)) {
+                $chaveCanal = ($numeroCanal === (string)$caixaBalcao2['numero']) ? 'balcao2' : 'balcao';
+            } elseif ($numeroCanal === '') {
+                $chaveCanal = 'balcao';
+            } else {
+                $chaveCanal = 'mesa';
+            }
+            $agregado[$chaveCanal]['total'] += (float)$linhaCanal['total'];
+            $agregado[$chaveCanal]['qtd'] += (int)$linhaCanal['qtd'];
+        }
+        $caixaPorCanal = $agregado;
+    }
+} catch (Throwable $e) {
+    error_log('[caixa][balcao2] ' . $e->getMessage());
+    $caixaPorCanal = [];
+}
+
 $historico = [];
 if (empty($isGerenteCaixa)) {
     $stmt_historico = $caixa->listar($_SESSION['restaurante_id'], 15);
@@ -977,6 +1022,33 @@ $top_iniciais = mb_strtoupper(
         .caixa-pro-forma strong { display: block; font-size: 16px; color: #0f172a; }
         .caixa-pro-forma small { color: #64748b; }
 
+        /* Totais por canal de balcão (segundo canal activo) */
+        .caixa-canais-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .caixa-canal {
+            background: #f8fafc;
+            border: 1px solid #eef2f7;
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .caixa-canal.is-canal2 { background: #f0f9ff; border-color: #bae6fd; }
+
+        .caixa-canal span {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #64748b;
+        }
+
+        .caixa-canal strong { display: block; font-size: 16px; color: #0f172a; }
+        .caixa-canal small { color: #64748b; }
+
     </style>
     <?php empresarial_head_assets(); ?>
     <style>
@@ -1278,6 +1350,26 @@ $top_iniciais = mb_strtoupper(
                                             <span><?php echo htmlspecialchars($rotulosFormaPro[$chaveFPro] ?? ucfirst(strtolower($chaveFPro)), ENT_QUOTES, 'UTF-8'); ?></span>
                                             <strong><?php echo number_format((float)$fPro['total'], 2, ',', '.'); ?> MZN</strong>
                                             <small><?php echo (int)$fPro['qtd']; ?> venda(s)</small>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($caixaPorCanal)): ?>
+                        <div class="card mb-3 caixa-canais">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                                    <strong><i class="fas fa-shuffle me-2 text-primary"></i>Entrou neste caixa, por canal</strong>
+                                    <small class="text-muted">vendas pagas desde a abertura</small>
+                                </div>
+                                <div class="caixa-canais-grid">
+                                    <?php foreach ($caixaPorCanal as $chaveCanalUi => $dadosCanal): ?>
+                                        <div class="caixa-canal<?php echo $chaveCanalUi === 'balcao2' ? ' is-canal2' : ''; ?>">
+                                            <span><?php echo htmlspecialchars((string)$dadosCanal['rotulo'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <strong><?php echo number_format((float)$dadosCanal['total'], 2, ',', '.'); ?> MZN</strong>
+                                            <small><?php echo (int)$dadosCanal['qtd']; ?> venda(s)</small>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>

@@ -47,7 +47,7 @@ try {
     security_json(['success' => true, 'data' => $rows]);
 } catch (Throwable $e) {
     @file_put_contents(
-        APP_BASE . '/storage/logs/support_ticket_error.log',
+        nv_storage('logs/support_ticket_error.log'),
         '[' . date('Y-m-d H:i:s') . '] support_ticket_list: ' . $e->getMessage() . PHP_EOL,
         FILE_APPEND
     );

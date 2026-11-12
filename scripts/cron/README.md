@@ -8,6 +8,7 @@ Estes ficheiros sao a implementacao real. Na raiz de `V00/` existem **wrappers**
 | `run_security_ops_cron.*` | Monitor + reator de seguranca |
 | `run_plano_lifecycle_cron.*` | Notificacoes de vencimento de planos |
 | `run_notificar_vencimento_planos.bat` | Alias do lifecycle |
+| `run_avisos_bonus_cron.bat` | Avisos da oferta de boas-vindas (7.o dia, 12.o dia e fim) |
 | `run_websocket_server.bat` | Servidor Socket.IO |
 
 Uso manual (a partir de `V00`):

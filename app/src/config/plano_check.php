@@ -326,6 +326,27 @@ function plano_sincronizar_restaurante_plano($restaurante_id, $plano, $dataFim =
         $dataFimObj = $hoje->modify('+30 days');
     }
 
+    // Oferta de boas-vindas no primeiro pagamento. Quem paga Empresarial
+    // recebe dias extra, por isso a data de fim e esticada antes de gravar.
+    $bonusConcedido = null;
+    if ($tipoPlano === 'PAGO') {
+        require_once __DIR__ . '/plano_bonus.php';
+        $bonusConcedido = bonus_conceder($db, $restaurante_id, $plano, null, false);
+        if (is_array($bonusConcedido) && (int)($bonusConcedido['dias_extra'] ?? 0) > 0) {
+            $dataFimObj = $dataFimObj->modify('+' . (int)$bonusConcedido['dias_extra'] . ' days');
+            $log('INFO', 'oferta de boas-vindas: dias extra de plano', [
+                'restaurante_id' => $restaurante_id,
+                'dias_extra' => (int)$bonusConcedido['dias_extra'],
+            ]);
+        } elseif (is_array($bonusConcedido)) {
+            $log('INFO', 'oferta de boas-vindas registada', [
+                'restaurante_id' => $restaurante_id,
+                'plano_bonus' => $bonusConcedido['plano_bonus'] ?? '',
+                'dias' => $bonusConcedido['dias'] ?? 0,
+            ]);
+        }
+    }
+
     $dataInicio = $hoje->format('Y-m-d');
     $dataFimFmt = $dataFimObj->format('Y-m-d');
 
@@ -508,6 +529,63 @@ function plano_dados_cache_limpar(int $restaurante_id): void
 function plano_get_dados_sem_cache($restaurante_id)
 {
     $db = Database::infra();
+    $dadosPlano = plano_get_dados_pago($restaurante_id);
+    return plano_aplicar_bonus($db, (int)$restaurante_id, $dadosPlano);
+}
+
+/**
+ * Oferta de boas-vindas: enquanto está a correr, o restaurante usa o plano de
+ * cima. É decidido aqui, pelas datas, para não depender de tarefa agendada.
+ */
+function plano_aplicar_bonus(PDO $db, int $restaurante_id, $dadosPlano)
+{
+    if (!is_array($dadosPlano)) {
+        return $dadosPlano;
+    }
+    require_once __DIR__ . '/plano_bonus.php';
+    $bonus = bonus_estado($db, $restaurante_id);
+    $dadosPlano['bonus_ativo'] = false;
+    if (!is_array($bonus)) {
+        return $dadosPlano;
+    }
+    $dadosPlano['bonus_estado'] = $bonus['estado'] ?? '';
+    $dadosPlano['bonus_fim'] = $bonus['fim_em'] ?? null;
+    $dadosPlano['bonus_dias_restantes'] = (int)($bonus['dias_restantes'] ?? 0);
+    $dadosPlano['bonus_plano'] = $bonus['plano_bonus'] ?? '';
+    if (empty($bonus['ativo'])) {
+        return $dadosPlano;
+    }
+
+    $planoPagoNome = plano_normalizar_nome($dadosPlano['plano_nome'] ?? 'BASICO');
+    $planoBonusNome = plano_normalizar_nome($bonus['plano_bonus'] ?? '');
+    if ($planoBonusNome === '' || $planoBonusNome === $planoPagoNome) {
+        return $dadosPlano;
+    }
+
+    $catalogo = require __DIR__ . '/planos.php';
+    $limites = $catalogo[$planoBonusNome]['limites'] ?? null;
+    if (!is_array($limites)) {
+        return $dadosPlano;
+    }
+
+    $dadosPlano['plano_pago_nome'] = $planoPagoNome;
+    $dadosPlano['plano_nome'] = $planoBonusNome;
+    $dadosPlano['nome_display'] = $catalogo[$planoBonusNome]['nome'] ?? $planoBonusNome;
+    $dadosPlano['limite_produtos'] = $limites['produtos'] ?? ($dadosPlano['limite_produtos'] ?? 0);
+    $dadosPlano['limite_usuarios'] = $limites['usuarios'] ?? ($dadosPlano['limite_usuarios'] ?? 0);
+    $dadosPlano['limite_mesas'] = $limites['mesas'] ?? ($dadosPlano['limite_mesas'] ?? 0);
+    $dadosPlano['limite_filiais'] = $limites['filiais'] ?? ($dadosPlano['limite_filiais'] ?? 0);
+    $dadosPlano['bonus_ativo'] = true;
+
+    return $dadosPlano;
+}
+
+/**
+ * O plano que o restaurante realmente pagou, sem a oferta por cima.
+ */
+function plano_get_dados_pago($restaurante_id)
+{
+    $db = Database::infra();
 
     // Primeiro tenta buscar da nova tabela
     try {
@@ -593,6 +671,12 @@ function plano_tem_funcionalidade_db($restaurante_id, $funcionalidade)
 
     if (isset($planos[$plano_nome]['funcionalidades'][$funcionalidade])) {
         return (bool) $planos[$plano_nome]['funcionalidades'][$funcionalidade];
+    }
+
+    // Com a oferta a correr, o plano efectivo ja veio do catalogo acima: nao se
+    // pode cair para a tabela, que so conhece o plano pago.
+    if (!empty($dados['bonus_ativo'])) {
+        return false;
     }
 
     try {

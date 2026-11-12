@@ -31,7 +31,7 @@ $mesa = new Mesa($db);
 $balcaoCanonico = mesa_garantir_balcao_canonico($db, (int)$restauranteId);
 require_once APP_BASE . '/src/config/balcao_canal.php';
 $balcao2Permitido = balcao2_max_permitido($restauranteFeatureId > 0 ? $restauranteFeatureId : $restauranteId) >= 2;
-$balcao2 = balcao2_config($db, (int)$restauranteId);
+$balcao2 = balcao2_config($db, (int)$restauranteId, $restauranteFeatureId > 0 ? $restauranteFeatureId : null);
 $mesas = $mesa->listar($restauranteId);
 $csrfToken = csrf_get_token();
 $dataHoje = date('Y-m-d');

@@ -178,6 +178,46 @@ body.edvistro-auth a {
     color: rgba(255, 246, 234, 0.78);
 }
 
+.ed-oferta {
+    margin: 26px 0 0;
+    max-width: 40ch;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 214, 148, 0.22);
+    background: rgba(255, 214, 148, 0.07);
+    backdrop-filter: blur(2px);
+}
+
+.ed-oferta__selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: rgba(255, 214, 148, 0.95);
+}
+
+.ed-oferta__texto {
+    margin: 7px 0 0;
+    font-size: clamp(.92rem, 1.35vw, 1.02rem);
+    line-height: 1.5;
+    color: rgba(255, 246, 234, 0.82);
+}
+
+.ed-oferta__texto strong {
+    color: rgba(255, 246, 234, 0.98);
+    font-weight: 700;
+}
+
+.ed-oferta__nota {
+    display: block;
+    margin-top: 4px;
+    font-size: .84rem;
+    color: rgba(255, 246, 234, 0.6);
+}
+
 .ed-cta-row {
     display: flex;
     flex-wrap: wrap;
@@ -374,6 +414,15 @@ body.edvistro-auth a {
         margin-bottom: 26px;
         text-wrap: balance;
     }
+
+    .ed-oferta {
+        max-width: 100%;
+        margin-top: 20px;
+        padding: 13px 16px;
+        text-align: center;
+    }
+
+    .ed-oferta__texto { text-wrap: balance; }
 
     .ed-cta-row {
         flex-direction: column;

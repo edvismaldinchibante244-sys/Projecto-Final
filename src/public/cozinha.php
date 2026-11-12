@@ -36,6 +36,36 @@ if (turno_usuario_exige_turno_ativo($perfil)) {
     }
 }
 
+// Segundo canal de balcão (Empresarial), quando activado em Mesas.
+require_once APP_BASE . '/src/config/mesa_display_helper.php';
+require_once APP_BASE . '/src/config/balcao_canal.php';
+$kdsBalcao2 = ['ativo' => false, 'nome' => '', 'mesa_id' => 0, 'numero' => ''];
+try {
+    $kdsBalcao2 = balcao2_config($db, (int)$restauranteId, $planRidCozinha);
+} catch (Throwable $e) {
+    error_log('[kds][balcao2] ' . $e->getMessage());
+}
+$kdsCanaisAtivo = !empty($kdsBalcao2['ativo']);
+
+/**
+ * Rótulo e canal de um item: "Mesa 5", "Balcão" ou o nome do segundo canal.
+ * Devolve [texto, chave do canal] — a chave serve para o filtro e para o CSS.
+ */
+function kds_origem_item(array $item, array $balcao2): array
+{
+    $numero = trim((string)($item['mesa_numero'] ?? ''));
+    if ($numero === '') {
+        return ['Balcão', 'balcao'];
+    }
+    if (!mesa_eh_balcao($numero)) {
+        return ['Mesa ' . $numero, 'mesa'];
+    }
+    if (!empty($balcao2['ativo']) && $numero === (string)$balcao2['numero']) {
+        return [(string)$balcao2['nome'], 'balcao2'];
+    }
+    return ['Balcão', 'balcao'];
+}
+
 // Busca itens destinados à cozinha, status em_preparo ou pronto
 $sql = "
     SELECT i.id, i.pedido_id, i.produto_id,
@@ -369,6 +399,47 @@ foreach ($grupos['em_preparo'] as $prepItem) {
                 padding: 12px;
             }
         }
+
+        /* Segundo canal de balcão: etiqueta no cartão e filtro por canal */
+        .kds-origem.is-canal2 {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 2px 10px;
+            border-radius: 999px;
+            background: rgba(14, 165, 233, .16);
+            color: #0369a1;
+            font-weight: 700;
+        }
+
+        .kds-canais {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 14px;
+        }
+
+        .kds-canal-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 15px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, .45);
+            background: transparent;
+            color: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .kds-canal-btn.is-on {
+            border-color: #0ea5e9;
+            background: rgba(14, 165, 233, .18);
+            color: #0369a1;
+        }
+
+        .card-item.is-filtrado { display: none; }
     </style>
     <link rel="stylesheet" href="css/kds-command.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/kds-command.css'); ?>">
 </head>
@@ -413,6 +484,15 @@ foreach ($grupos['em_preparo'] as $prepItem) {
         </div>
     <?php endif; ?>
 
+    <?php if ($kdsCanaisAtivo): ?>
+        <div class="kds-canais" id="kdsCanais" role="group" aria-label="Filtrar por canal">
+            <button type="button" class="kds-canal-btn is-on" data-canal-filtro="todos">Todos</button>
+            <button type="button" class="kds-canal-btn" data-canal-filtro="mesa">Salão</button>
+            <button type="button" class="kds-canal-btn" data-canal-filtro="balcao">Balcão</button>
+            <button type="button" class="kds-canal-btn" data-canal-filtro="balcao2"><i class="fas fa-bag-shopping" aria-hidden="true"></i> <?= htmlspecialchars((string)$kdsBalcao2['nome'], ENT_QUOTES, 'UTF-8') ?></button>
+        </div>
+    <?php endif; ?>
+
     <div class="board kds-refresh-root">
         <?php
         $preparoParticionado = kds_partition_preparation_items($grupos['em_preparo'] ?? [], (int)$kdsSlaCrit);
@@ -452,15 +532,15 @@ foreach ($grupos['em_preparo'] as $prepItem) {
                             $critico = $minutos > (int)$kdsSlaCrit ? 'critico' : '';
                             $antigo = $minutos > (int)$kdsSlaWarn ? 'antigo' : '';
                             $tempoTexto = $minutos <= 0 ? 'agora' : ($minutos . ' min atrás');
-                            $mesaTexto = $item['mesa_numero'] ? 'Mesa ' . (int)$item['mesa_numero'] : 'Balcão';
+                            [$mesaTexto, $kdsCanalItem] = kds_origem_item($item, $kdsBalcao2);
                             $qtd = (int)($item['quantidade'] ?? 1);
                             $produtoImagem = !empty($kdsShowProductImages)
                                 ? kds_product_image_url($item['produto_imagem'] ?? '')
                                 : '';
                         ?>
-                            <div class="card-item <?= $antigo ?> <?= $critico ?>" data-id="<?= (int)$item['id'] ?>" data-status="<?= htmlspecialchars($item['status']) ?>">
+                            <div class="card-item <?= $antigo ?> <?= $critico ?>" data-id="<?= (int)$item['id'] ?>" data-status="<?= htmlspecialchars($item['status']) ?>" data-canal="<?= htmlspecialchars($kdsCanalItem, ENT_QUOTES, 'UTF-8') ?>">
                                 <div class="card-top">
-                                    <span><?= htmlspecialchars($mesaTexto) ?></span>
+                                    <span class="kds-origem<?= ($kdsCanaisAtivo && $kdsCanalItem === 'balcao2') ? ' is-canal2' : '' ?>"><?php if ($kdsCanaisAtivo && $kdsCanalItem === 'balcao2'): ?><i class="fas fa-bag-shopping" aria-hidden="true"></i> <?php endif; ?><?= htmlspecialchars($mesaTexto) ?></span>
                                     <?php if ($critico !== ''): ?>
                                         <span class="sla-chip crit">Crítico</span>
                                     <?php elseif ($statusKey === 'em_preparo' && $minutos > (int)$kdsSlaWarn): ?>
@@ -547,6 +627,33 @@ foreach ($grupos['em_preparo'] as $prepItem) {
     <script src="js/nv_operacao.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/nv_operacao.js'); ?>"></script>
     <script src="js/kds_sound_alerts.js?v=20260814a"></script>
     <script nonce="<?php echo function_exists('security_csp_nonce') ? security_csp_nonce() : ''; ?>">
+        // Filtro por canal (só existe com o segundo balcão activo).
+        (function initKdsCanais() {
+            var barra = document.getElementById('kdsCanais');
+            if (!barra) return;
+            var escolhido = 'todos';
+            function aplicar() {
+                document.querySelectorAll('.card-item').forEach(function (card) {
+                    var canal = card.getAttribute('data-canal') || 'mesa';
+                    card.classList.toggle('is-filtrado', escolhido !== 'todos' && canal !== escolhido);
+                });
+            }
+            barra.addEventListener('click', function (ev) {
+                var btn = ev.target.closest('[data-canal-filtro]');
+                if (!btn) return;
+                escolhido = btn.getAttribute('data-canal-filtro') || 'todos';
+                barra.querySelectorAll('.kds-canal-btn').forEach(function (b) {
+                    b.classList.toggle('is-on', b === btn);
+                });
+                aplicar();
+            });
+            // O quadro recarrega sozinho: reaplica o filtro depois de cada actualização.
+            var alvo = document.querySelector('.kds-refresh-root');
+            if (alvo && window.MutationObserver) {
+                new MutationObserver(aplicar).observe(alvo, { childList: true, subtree: true });
+            }
+            aplicar();
+        })();
         OfflineSync.init({
             csrfToken: <?php echo json_encode($csrfToken, JSON_UNESCAPED_UNICODE); ?>,
             syncIntervalMs: 8000

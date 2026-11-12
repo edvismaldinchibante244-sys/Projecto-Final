@@ -27,7 +27,7 @@ try {
     security_monitor_ensure_tables($db);
 
     $baseDir = dirname(APP_BASE, 1);
-    $logDir = APP_BASE . '/storage/logs';
+    $logDir = nv_storage('logs');
     $securityLog = $logDir . '/security.log';
     $alertLog = $logDir . '/security_alerts.log';
 

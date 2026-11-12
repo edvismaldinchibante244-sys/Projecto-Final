@@ -14,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="lib/fontawesome-6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/dashboard.css?v=<?php echo (int)@filemtime(DASHBOARD_PUBLIC_DIR . '/css/dashboard.css'); ?>">
+    <link rel="stylesheet" href="css/bonus_faixa.css?v=<?php echo (int)@filemtime(DASHBOARD_PUBLIC_DIR . '/css/bonus_faixa.css'); ?>">
     <link rel="stylesheet" href="css/premium.css">
     <?php if (function_exists('empresarial_head_assets')) { empresarial_head_assets(); } ?>
     <style>
@@ -126,6 +127,13 @@
                 </div>
 
                 <div class="content-area">
+<?php
+// Oferta de boas-vindas: dias que faltam, resumo final e aviso de limite.
+$bonusFaixaRid = (int)($restauranteId ?? $_SESSION['restaurante_id'] ?? 0);
+if (isset($db) && $db instanceof PDO && is_file(__DIR__ . '/../../../src/public/includes/bonus_faixa.php')) {
+    include __DIR__ . '/../../../src/public/includes/bonus_faixa.php';
+}
+?>
 <?php require APP_BASE . '/views/dashboard/' . $dashboardVista . '.php'; ?>
                 </div>
             </main>

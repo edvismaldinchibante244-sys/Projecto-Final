@@ -22,8 +22,7 @@ if (!function_exists('auth_marca_sessao')) {
 }
 $authCheckIsApiRequest = strpos((string)($_SERVER['REQUEST_URI'] ?? ''), '/api/') !== false;
 // Sem uso: 45 min; com "Manter sessao iniciada neste computador": 12 h.
-// TESTE TEMPORARIO: 2 minutos (repor 720 : 45 depois do teste).
-if (!security_enforce_idle_timeout(!empty($_SESSION['manter_sessao']) ? 2 : 2)) {
+if (!security_enforce_idle_timeout(!empty($_SESSION['manter_sessao']) ? 720 : 45)) {
     auth_marca_sessao(false);
     if (
         $authCheckIsApiRequest ||

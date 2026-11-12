@@ -236,3 +236,86 @@ if (!function_exists('plano_notificar_vencimento_proximo')) {
         return $enviado;
     }
 }
+
+if (!function_exists('plano_notificar_bonus_lembrete')) {
+    /**
+     * Lembrete a meio da oferta de boas-vindas (7.º e 12.º dia).
+     */
+    function plano_notificar_bonus_lembrete($email, $telefone, $restauranteNome, $planoBonus, $planoPago, $diasRestantes, $url = null)
+    {
+        if (empty($email)) {
+            return false;
+        }
+
+        $nome = plano_notif_escape($restauranteNome);
+        $bonus = plano_notif_escape($planoBonus);
+        $pago = plano_notif_escape($planoPago);
+        $dias = max(0, (int)$diasRestantes);
+        $systemName = plano_notif_escape(plano_notif_system_name());
+        $link = plano_notif_escape($url ?: '');
+
+        $quando = $dias <= 0 ? 'Termina hoje' : ($dias === 1 ? 'Falta 1 dia' : 'Faltam ' . $dias . ' dias');
+        $assunto = $quando . ' no plano ' . $bonus . ' - ' . $nome;
+        $corpo = "
+        <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
+        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>
+            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName}</div>
+            <h2 style='color:#0284c7;'>{$quando} de oferta</h2>
+            <p>Ola, equipa <strong>{$nome}</strong>!</p>
+            <p>Esta a usar o plano <strong>{$bonus}</strong> por oferta de boas-vindas. {$quando} — depois o restaurante volta ao plano <strong>{$pago}</strong>, que e o que paga.</p>
+            <p>Nada se perde: tudo o que criou continua la. Se quiser ficar com o {$bonus}, pode mudar de plano no sistema.</p>"
+            . ($link !== '' ? "<p><a href='{$link}' style='display:inline-block;padding:10px 18px;background:#0284c7;color:#fff;border-radius:6px;text-decoration:none;'>Ficar com o {$bonus}</a></p>" : '') . "
+            <hr>
+            <p style='font-size:12px;color:#888;'>Este e um email automatico.</p>
+        </div></body></html>";
+
+        $enviado = saas_enviar_email($email, $assunto, $corpo);
+        plano_notif_tentar_whatsapp($telefone, $quando . ' no plano ' . $planoBonus . ' por oferta de boas-vindas.');
+        return $enviado;
+    }
+}
+
+if (!function_exists('plano_notificar_bonus_terminado')) {
+    /**
+     * Fim da oferta: o que o restaurante fez com o plano de cima.
+     *
+     * @param array $uso lista de ['rotulo' => string, 'valor' => int]
+     */
+    function plano_notificar_bonus_terminado($email, $telefone, $restauranteNome, $planoBonus, $planoPago, array $uso = [], $url = null)
+    {
+        if (empty($email)) {
+            return false;
+        }
+
+        $nome = plano_notif_escape($restauranteNome);
+        $bonus = plano_notif_escape($planoBonus);
+        $pago = plano_notif_escape($planoPago);
+        $systemName = plano_notif_escape(plano_notif_system_name());
+        $link = plano_notif_escape($url ?: '');
+
+        $linhasUso = '';
+        foreach ($uso as $item) {
+            $linhasUso .= "<tr><td style='padding:8px;background:#f8f9fa;font-weight:bold;width:40%;'>"
+                . (int)($item['valor'] ?? 0) . "</td><td style='padding:8px;'>"
+                . plano_notif_escape((string)($item['rotulo'] ?? '')) . "</td></tr>";
+        }
+
+        $assunto = 'A oferta no plano ' . $bonus . ' terminou - ' . $nome;
+        $corpo = "
+        <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
+        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>
+            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName}</div>
+            <h2 style='color:#475569;'>A oferta terminou</h2>
+            <p>Ola, equipa <strong>{$nome}</strong>!</p>
+            <p>Os dias no plano <strong>{$bonus}</strong> terminaram e o restaurante voltou ao plano <strong>{$pago}</strong>, que e o que paga. <strong>Nada foi apagado</strong>: tudo o que criou continua acessivel.</p>"
+            . ($linhasUso !== '' ? "<p>Durante a oferta:</p><table style='border-collapse:collapse;width:100%;margin:16px 0;'>{$linhasUso}</table>" : '')
+            . ($link !== '' ? "<p><a href='{$link}' style='display:inline-block;padding:10px 18px;background:#0284c7;color:#fff;border-radius:6px;text-decoration:none;'>Voltar ao {$bonus}</a></p>" : '') . "
+            <hr>
+            <p style='font-size:12px;color:#888;'>Este e um email automatico.</p>
+        </div></body></html>";
+
+        $enviado = saas_enviar_email($email, $assunto, $corpo);
+        plano_notif_tentar_whatsapp($telefone, 'A oferta no plano ' . $planoBonus . ' terminou. Nada foi apagado.');
+        return $enviado;
+    }
+}

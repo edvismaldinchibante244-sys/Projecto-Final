@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/storage_path.php';
 
 if (!function_exists('login_security_coluna_existe')) {
     function login_security_coluna_existe(PDO $db, string $tabela, string $coluna): bool
@@ -82,7 +83,7 @@ if (!function_exists('login_security_verify_otp')) {
 if (!function_exists('login_security_fingerprint_dir')) {
     function login_security_fingerprint_dir(): string
     {
-        $dir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'logs'
+        $dir = nv_storage('logs')
             . DIRECTORY_SEPARATOR . 'login_fingerprints';
         if (!is_dir($dir)) {
             @mkdir($dir, 0755, true);

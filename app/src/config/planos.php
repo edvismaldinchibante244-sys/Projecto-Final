@@ -17,7 +17,10 @@ $planos = [
             'trimestral' => 2157,
             'anual' => 7670
         ],
-        'trial_dias' => 30,
+        // Sem periodo gratuito: o Basico e pago desde o inicio. Em troca, quem
+        // paga pela primeira vez usa o plano de cima durante 14 dias (plano_bonus.php)
+        // e pode pedir a devolucao do primeiro mes nos primeiros 14 dias.
+        'trial_dias' => 0,
         'limites' => [
             'produtos' => 150,
             'insumos' => 30,

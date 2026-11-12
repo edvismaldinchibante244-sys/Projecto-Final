@@ -127,6 +127,9 @@ if (!function_exists('plan_security_validate_request')) {
         }
 
         if ($method === 'TRIAL') {
+            if (!plan_security_supports_trial('BASICO')) {
+                return ['ok' => false, 'message' => 'O periodo gratuito foi descontinuado. No primeiro pagamento recebe dias no plano acima.'];
+            }
             if ($newPlan !== 'BASICO' || !plan_security_supports_trial($newPlan)) {
                 return ['ok' => false, 'message' => 'Trial disponivel apenas para o plano Basico.'];
             }

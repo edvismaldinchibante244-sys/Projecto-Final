@@ -37,10 +37,17 @@ if (!function_exists('balcao2_config')) {
      *
      * @return array{ativo: bool, nome: string, mesa_id: int, numero: string}
      */
-    function balcao2_config(PDO $db, int $restauranteId): array
+    function balcao2_config(PDO $db, int $restauranteId, $capabilityId = null): array
     {
         $saida = ['ativo' => false, 'nome' => '', 'mesa_id' => 0, 'numero' => ''];
         if ($restauranteId <= 0) {
+            return $saida;
+        }
+        // O plano manda: se o restaurante deixar de ter direito ao segundo canal
+        // (por exemplo ao descer de Empresarial), o canal deixa de aparecer,
+        // sem se apagar nada. Volta a aparecer se o plano voltar a permitir.
+        $alvoPlano = ($capabilityId !== null && (int)$capabilityId > 0) ? (int)$capabilityId : $restauranteId;
+        if (balcao2_max_permitido($alvoPlano) < 2) {
             return $saida;
         }
         try {

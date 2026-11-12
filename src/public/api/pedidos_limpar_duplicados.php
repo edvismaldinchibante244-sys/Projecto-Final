@@ -33,7 +33,7 @@ if ($rid <= 0) {
 
 $db = (new Database())->getConnection();
 pedido_schema_garantir($db);
-$errorLog = APP_BASE . '/storage/logs/pedidos_limpar_duplicados_error.log';
+$errorLog = nv_storage('logs/pedidos_limpar_duplicados_error.log');
 
 try {
     $sql = "

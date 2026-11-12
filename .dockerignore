@@ -1,0 +1,23 @@
+# Fora da imagem: nada disto e preciso no servidor.
+.git
+.github
+node_modules
+dist
+docs
+tests
+design-qa.md
+phpunit.xml
+*.bat
+*.ps1
+*.cmd
+_to_delete
+app/storage/logs/*
+app/storage/sessions/*
+app/storage/backups/*
+app/storage/trabalhos/*
+app/storage/2fa/*
+app/storage/security/*
+app/debug_email.log
+.env
+.env.*
+src/public/Dockerfile

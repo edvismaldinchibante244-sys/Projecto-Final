@@ -10,6 +10,7 @@ $plans = require $root . '/app/src/config/planos.php';
 require_once $root . '/app/src/config/plan_security.php';
 require_once $root . '/app/src/config/promocao_schema.php';
 require_once $root . '/app/src/config/mesa_display_helper.php';
+require_once $root . '/app/src/config/plano_bonus.php';
 
 $checks = 0;
 $failures = [];
@@ -198,13 +199,26 @@ foreach (array_keys($expectedLimits['BASICO']) as $resource) {
     }
 }
 
-$check(plan_security_trial_days('BASICO') === 30, 'O trial Basico deve durar 30 dias.');
+$check(plan_security_trial_days('BASICO') === 0, 'O periodo gratuito do Basico foi descontinuado.');
+$check(!plan_security_supports_trial('BASICO'), 'O Basico nao pode aceitar trial.');
 $check(!plan_security_supports_trial('PROFISSIONAL'), 'O plano Profissional nao pode aceitar trial.');
 $check(!plan_security_supports_trial('EMPRESARIAL'), 'O plano Empresarial nao pode aceitar trial.');
 $check(plan_security_normalize_plan('enterprise') === 'EMPRESARIAL', 'O nome legado ENTERPRISE deve normalizar para EMPRESARIAL.');
 
+// Oferta de boas-vindas no primeiro pagamento
+$check(bonus_plano_acima('BASICO') === 'PROFISSIONAL', 'Quem paga Basico usa o Profissional na oferta.');
+$check(bonus_plano_acima('PROFISSIONAL') === 'EMPRESARIAL', 'Quem paga Profissional usa o Empresarial na oferta.');
+$check(bonus_plano_acima('EMPRESARIAL') === null, 'Nao ha plano acima do Empresarial: a oferta sao dias extra.');
+$check(BONUS_DIAS > 0 && BONUS_DIAS <= 30, 'A oferta tem de ter uma duracao util.');
+$check(BONUS_ESPERA_DIAS > 0 && BONUS_ESPERA_DIAS < BONUS_DIAS, 'A espera pela primeira venda tem de ser menor que a oferta.');
+foreach (['BASICO', 'PROFISSIONAL'] as $planoOferta) {
+    $acima = bonus_plano_acima($planoOferta);
+    $niveis = ['BASICO' => 1, 'PROFISSIONAL' => 2, 'EMPRESARIAL' => 3];
+    $check($niveis[$acima] === $niveis[$planoOferta] + 1, "A oferta de {$planoOferta} sobe exactamente um degrau.");
+}
+
 $trial = plan_security_validate_request('BASICO', 'BASICO', 'MENSAL', 'TRIAL', true);
-$check(!empty($trial['ok']) && (float)($trial['price'] ?? -1) === 0.0, 'Solicitacao valida de trial Basico deve ter custo zero.');
+$check(empty($trial['ok']), 'Solicitacao de trial Basico deve ser recusada.');
 $invalidTrial = plan_security_validate_request('BASICO', 'PROFISSIONAL', 'MENSAL', 'TRIAL');
 $check(empty($invalidTrial['ok']), 'Trial Profissional deve ser rejeitado no backend.');
 $downgrade = plan_security_validate_request('EMPRESARIAL', 'PROFISSIONAL', 'MENSAL', 'MPESA');

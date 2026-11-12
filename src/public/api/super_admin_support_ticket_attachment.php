@@ -49,7 +49,7 @@ if (!$row) {
 }
 
 $relative = ltrim((string)$row['anexo_path'], '/\\');
-$baseStorage = realpath(APP_BASE . '/storage');
+$baseStorage = realpath(nv_storage());
 $absolute = realpath(APP_BASE . '/' . $relative);
 if (!$baseStorage || !$absolute || strpos($absolute, $baseStorage) !== 0 || !is_file($absolute)) {
     http_response_code(404);

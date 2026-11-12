@@ -124,6 +124,15 @@ $plano_atual = plano_normalizar_nome($dados_plano['plano_nome'] ?? 'BASICO');
 $relExtrasPlano = in_array($plano_atual, ['EMPRESARIAL', 'PROFISSIONAL'], true);
 $relExtrasDetalhe = ($plano_atual === 'EMPRESARIAL');
 require_once __DIR__ . '/includes/empresarial_ui.php';
+// Segundo canal de balcão (Empresarial): totais por canal no relatório de vendas.
+require_once APP_BASE . '/src/config/mesa_display_helper.php';
+require_once APP_BASE . '/src/config/balcao_canal.php';
+$relBalcao2 = ['ativo' => false, 'nome' => '', 'numero' => ''];
+try {
+    $relBalcao2 = balcao2_config($db, (int)$restaurante_id, $restaurante_plan_id);
+} catch (Throwable $e) {
+    error_log('[relatorios][balcao2] ' . $e->getMessage());
+}
 // Sem relatório personalizado: forçar janela curta (7 dias)
 if (!$tem_relatorio_personalizado && !in_array($periodo, ['7'], true)) {
     $periodo = '7';
@@ -1313,6 +1322,53 @@ $top_iniciais = mb_strtoupper(
                                 </div>
                             </div>
                         </div>
+                    <?php endif; ?>
+
+                    <?php
+                    // Totais por canal de balcão, só com o segundo canal activo.
+                    $relCanais = [];
+                    if (!empty($relBalcao2['ativo']) && $tipo === 'vendas') {
+                        $relCanais = [
+                            'mesa' => ['rotulo' => 'Salão', 'qtd' => 0, 'total' => 0.0],
+                            'balcao' => ['rotulo' => 'Balcão', 'qtd' => 0, 'total' => 0.0],
+                            'balcao2' => ['rotulo' => (string)$relBalcao2['nome'], 'qtd' => 0, 'total' => 0.0],
+                        ];
+                        foreach ($vendas ?? [] as $vCanal) {
+                            $stCanalV = strtoupper(trim((string)($vCanal['status'] ?? '')));
+                            if ($stCanalV !== '' && $stCanalV !== 'PAGO') { continue; }
+                            $numCanal = trim((string)($vCanal['mesa_numero'] ?? ''));
+                            if ($numCanal === '') {
+                                $kCanal = 'balcao';
+                            } elseif (mesa_eh_balcao($numCanal)) {
+                                $kCanal = ($numCanal === (string)$relBalcao2['numero']) ? 'balcao2' : 'balcao';
+                            } else {
+                                $kCanal = 'mesa';
+                            }
+                            $relCanais[$kCanal]['qtd']++;
+                            $relCanais[$kCanal]['total'] += (float)($vCanal['total_final'] ?? $vCanal['total'] ?? 0);
+                        }
+                    }
+                    ?>
+                    <?php if (!empty($relCanais)): ?>
+                    <div class="card mb-4">
+                        <div class="card-header"><h5 class="card-title mb-0"><i class="fas fa-shuffle me-2"></i>Por canal de atendimento</h5></div>
+                        <div class="card-body">
+                            <table class="table table-sm mb-0 rel-mini-table">
+                                <thead><tr><th>Canal</th><th class="text-end">Vendas</th><th class="text-end">Total</th><?php if ($relExtrasDetalhe): ?><th class="text-end">%</th><?php endif; ?></tr></thead>
+                                <tbody>
+                                <?php $pctsCanal = caixa_percentagens(array_values(array_map(static fn($x) => (float)$x['total'], $relCanais))); $iCanal = 0; ?>
+                                <?php foreach ($relCanais as $linhaCanalRel): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars((string)$linhaCanalRel['rotulo'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td class="text-end"><?php echo (int)$linhaCanalRel['qtd']; ?></td>
+                                        <td class="text-end">MZN <?php echo number_format((float)$linhaCanalRel['total'], 2, ',', '.'); ?></td>
+                                        <?php if ($relExtrasDetalhe): ?><td class="text-end"><?php echo (int)($pctsCanal[$iCanal++] ?? 0); ?>%</td><?php endif; ?>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     <?php endif; ?>
 
                     <?php if ($relExtrasPlano && $tipo === 'vendas' && (!empty($pagamentos_resumo) || !empty($cancelados_resumo['qtd']))): ?>

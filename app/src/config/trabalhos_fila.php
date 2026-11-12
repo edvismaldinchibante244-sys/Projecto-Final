@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/storage_path.php';
 /**
  * Fila de trabalhos em segundo plano (tabela trabalhos_fila).
  *
@@ -29,7 +30,7 @@ if (!function_exists('fila_disponivel')) {
 
     function fila_pasta(): string
     {
-        $dir = rtrim(APP_BASE, '/\\') . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'trabalhos';
+        $dir = nv_storage('trabalhos');
         if (!is_dir($dir) && !@mkdir($dir, 0700, true)) {
             throw new RuntimeException('Não foi possível criar a pasta dos ficheiros (' . $dir . ').');
         }

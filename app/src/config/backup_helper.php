@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/storage_path.php';
 
 /*
   Helpers compartilhados para backup manual, automatico, historico e cron.
@@ -59,7 +60,7 @@ if (!function_exists('backup_storage_dir')) {
         $customBase = getenv('BACKUP_BASE_DIR');
         $baseRoot = $customBase && is_string($customBase) && $customBase !== ''
             ? rtrim($customBase, "/\\")
-            : __DIR__ . '/../../storage/backups';
+            : nv_storage('backups');
 
         $baseDir = $baseRoot . '/restaurante_' . $restauranteId;
         if (!is_dir($baseDir)) {
@@ -743,7 +744,7 @@ if (!function_exists('backup_executar_geracao')) {
         $externalDir = getenv('BACKUP_EXTERNAL_DIR');
         $externalKey = getenv('BACKUP_EXTERNAL_KEY'); // 32 chars recomendado
         if ($externalDir && is_dir($externalDir)) {
-            $logPath = dirname(__DIR__, 2) . '/storage/logs/backup.log';
+            $logPath = nv_storage('logs/backup.log');
             $target = rtrim($externalDir, "/\\") . DIRECTORY_SEPARATOR . $arquivoNome . ($externalKey ? '.enc' : '');
 
             try {
@@ -1032,7 +1033,7 @@ if (!function_exists('backup_enviar_notificacao_email')) {
 
         // Tentativa de envio; se falhar, apenas loga.
         if (!saas_enviar_email($emailDestino, $assunto, $body)) {
-            $logPath = dirname(__DIR__, 2) . '/storage/logs/backup.log';
+            $logPath = nv_storage('logs/backup.log');
             @file_put_contents($logPath, '[' . date('Y-m-d H:i:s') . "] ERRO email backup restaurante #{$restauranteId} ({$emailDestino})\n", FILE_APPEND);
         }
     }
