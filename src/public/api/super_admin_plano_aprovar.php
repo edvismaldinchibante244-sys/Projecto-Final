@@ -149,7 +149,7 @@ try {
         super_admin_plano_json(['success' => false, 'message' => 'Esta compra já foi processada'], 409);
     }
 
-    $integridadeCompra = plan_security_purchase_integrity($compra);
+    $integridadeCompra = plan_security_purchase_integrity($compra, $db);
     if (empty($integridadeCompra['ok'])) {
         audit_log($db, 'super_admin_plano_integridade_rejeitada', [
             'compra_id' => $compraId,

@@ -338,6 +338,57 @@ body.edvistro-plan .input-group .form-control {
     line-height: 1.1;
 }
 
+/* Preco de tabela, rasurado por cima do preco de lancamento. */
+.plan-price-tabela {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(255, 246, 234, 0.45);
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.plan-price-tabela s {
+    text-decoration-thickness: 1px;
+}
+
+/* Faixa da campanha de lancamento. */
+.ed-lancamento {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 640px;
+    margin: 0 auto 22px;
+    padding: 12px 18px;
+    border: 1px solid rgba(255, 192, 120, 0.35);
+    border-radius: 14px;
+    background: rgba(255, 192, 120, 0.08);
+    text-align: center;
+}
+
+.ed-lancamento__selo {
+    font-family: var(--ed-font-body, "Manrope", sans-serif);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #0f0b07;
+    background: #ffc078;
+    border-radius: 999px;
+    padding: 4px 12px;
+}
+
+.ed-lancamento__texto {
+    font-size: 0.88rem;
+    color: rgba(255, 246, 234, 0.82);
+    line-height: 1.45;
+}
+
+.ed-lancamento__texto strong {
+    color: #ffc078;
+}
+
 .plan-price {
     font-family: var(--ed-font-display, "Cormorant Garamond", Georgia, serif);
     font-size: 1.85rem;

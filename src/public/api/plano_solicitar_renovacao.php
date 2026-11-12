@@ -75,10 +75,9 @@ if ($isTrialRequest) {
         security_json(["success" => false, "message" => "Comprovativo obrigatorio"], 422);
     }
 
-    $valor = plan_security_price($plano_novo, $ciclo);
-    if ($valor <= 0) {
-        security_json(["success" => false, "message" => "Preco invalido para plano/ciclo selecionado"], 422);
-    }
+    // O valor e calculado mais abaixo, assim que se sabe de que restaurante se
+    // trata: o preco pode trazer o desconto de lancamento preso a esse cliente.
+    $valor = 0.0;
 
     $extensoes_permitidas = ['jpg', 'jpeg', 'png', 'pdf'];
     $mimes_permitidos = ['image/jpeg', 'image/png', 'application/pdf'];
@@ -122,6 +121,14 @@ if (!$db) {
 $restaurante_plano_id = plano_upgrade_restaurante_alvo_id($db);
 if (!plano_upgrade_usuario_pode_gerir($db, $sessaoUsuarioId, $restaurante_plano_id)) {
     security_json(["success" => false, "message" => "Apenas o dono/administrador principal do restaurante pode fazer upgrade de planos."], 403);
+}
+
+// Preco a cobrar, ja com o desconto de lancamento deste restaurante (se o tiver).
+if (!$isTrialRequest) {
+    $valor = plan_security_price($plano_novo, $ciclo, $db, $restaurante_plano_id);
+    if ($valor <= 0) {
+        security_json(["success" => false, "message" => "Preco invalido para plano/ciclo selecionado"], 422);
+    }
 }
 
 try {

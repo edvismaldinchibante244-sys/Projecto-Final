@@ -31,14 +31,28 @@ if (!function_exists('plan_security_normalize_method')) {
 }
 
 if (!function_exists('plan_security_price')) {
-    function plan_security_price(string $plan, string $cycle): float
+    /**
+     * Valor a cobrar. Com $restauranteId aplica o desconto de lancamento preso
+     * a esse restaurante (ou o da campanha a decorrer); sem ele devolve a tabela.
+     * E a unica funcao que decide quanto se cobra: o que a pagina mostra tem de
+     * sair daqui tambem, para nunca divergirem.
+     */
+    function plan_security_price(string $plan, string $cycle, ?PDO $db = null, $restauranteId = null): float
     {
         $plans = require __DIR__ . '/planos.php';
         $plan = plan_security_normalize_plan($plan);
         $cycle = plan_security_normalize_cycle($cycle);
         $cycleKey = ['MENSAL' => 'mensal', 'TRIMESTRAL' => 'trimestral', 'ANUAL' => 'anual'][$cycle] ?? '';
 
-        return (float)($plans[$plan]['precos'][$cycleKey] ?? 0);
+        $tabela = (float)($plans[$plan]['precos'][$cycleKey] ?? 0);
+        if ($tabela <= 0) {
+            return 0.0;
+        }
+
+        require_once __DIR__ . '/plano_lancamento.php';
+        $desconto = lancamento_desconto_restaurante($db, $restauranteId);
+
+        return lancamento_preco($tabela, $desconto);
     }
 }
 
@@ -95,7 +109,7 @@ if (!function_exists('plan_security_purchase_trial_days')) {
 }
 
 if (!function_exists('plan_security_validate_request')) {
-    function plan_security_validate_request(string $currentPlan, string $newPlan, string $cycle, string $method, bool $allowSamePlan = false): array
+    function plan_security_validate_request(string $currentPlan, string $newPlan, string $cycle, string $method, bool $allowSamePlan = false, ?PDO $db = null, $restauranteId = null): array
     {
         $newPlan = plan_security_normalize_plan($newPlan);
         $cycle = plan_security_normalize_cycle($cycle);
@@ -145,7 +159,7 @@ if (!function_exists('plan_security_validate_request')) {
             ];
         }
 
-        $price = plan_security_price($newPlan, $cycle);
+        $price = plan_security_price($newPlan, $cycle, $db, $restauranteId);
         if ($price <= 0) {
             return ['ok' => false, 'message' => 'Preco invalido para plano/ciclo selecionado.'];
         }
@@ -161,7 +175,7 @@ if (!function_exists('plan_security_validate_request')) {
 }
 
 if (!function_exists('plan_security_purchase_integrity')) {
-    function plan_security_purchase_integrity(array $purchase): array
+    function plan_security_purchase_integrity(array $purchase, ?PDO $db = null): array
     {
         $plan = plan_security_normalize_plan($purchase['plano_novo'] ?? '');
         $cycle = plan_security_normalize_cycle($purchase['ciclo'] ?? 'MENSAL');
@@ -183,7 +197,7 @@ if (!function_exists('plan_security_purchase_integrity')) {
             return ['ok' => true, 'expected' => 0.0, 'stored' => $storedValue];
         }
 
-        $expectedValue = plan_security_price($plan, $cycle);
+        $expectedValue = plan_security_price($plan, $cycle, $db, $purchase['restaurante_id'] ?? null);
         if ($expectedValue <= 0) {
             return ['ok' => false, 'message' => 'Plano ou ciclo invalido na compra.'];
         }

@@ -51,7 +51,9 @@ try {
         (string)($_POST['plano'] ?? ''),
         (string)($_POST['ciclo'] ?? 'MENSAL'),
         (string)($_POST['metodo'] ?? ''),
-        false
+        false,
+        $db,
+        $restaurantePlanoId
     );
 
     if (empty($validation['ok'])) {

@@ -16,6 +16,7 @@ include_once APP_BASE . '/src/config/csrf.php';
 include_once APP_BASE . '/src/config/restaurante_status_helper.php';
 include_once APP_BASE . '/src/config/plan_security.php';
 require_once APP_BASE . '/src/config/plano_bonus.php';
+require_once APP_BASE . '/src/config/plano_lancamento.php';
 // O periodo gratuito foi descontinuado: o que ha agora e a oferta de
 // boas-vindas no primeiro pagamento (14 dias no plano de cima).
 $trialAtivo = plan_security_supports_trial('BASICO');
@@ -157,9 +158,19 @@ if (!function_exists('solicitar_plano_risk_score')) {
     }
 }
 
-$preco_basico = $planos_catalogo['BASICO']['precos'] ?? ['mensal' => 799, 'trimestral' => 2157, 'anual' => 7670];
-$preco_profissional = $planos_catalogo['PROFISSIONAL']['precos'] ?? ['mensal' => 1999, 'trimestral' => 5397, 'anual' => 19190];
-$preco_empresarial = $planos_catalogo['EMPRESARIAL']['precos'] ?? ['mensal' => 3999, 'trimestral' => 10797, 'anual' => 38390];
+$preco_tabela_basico = $planos_catalogo['BASICO']['precos'] ?? ['mensal' => 799, 'trimestral' => 2157, 'anual' => 7670];
+$preco_tabela_profissional = $planos_catalogo['PROFISSIONAL']['precos'] ?? ['mensal' => 1999, 'trimestral' => 5397, 'anual' => 19190];
+$preco_tabela_empresarial = $planos_catalogo['EMPRESARIAL']['precos'] ?? ['mensal' => 3999, 'trimestral' => 10797, 'anual' => 38390];
+
+// Preco de lancamento. Quem chega a esta pagina ainda nao e cliente, por isso
+// vale o desconto da campanha a decorrer (zero quando nao ha campanha).
+$lancamento_desconto = lancamento_desconto_campanha();
+$lancamento_fim_data = lancamento_fim();
+$lancamento_a_decorrer = $lancamento_desconto > 0;
+
+$preco_basico = lancamento_precos_plano($preco_tabela_basico, $lancamento_desconto)['final'];
+$preco_profissional = lancamento_precos_plano($preco_tabela_profissional, $lancamento_desconto)['final'];
+$preco_empresarial = lancamento_precos_plano($preco_tabela_empresarial, $lancamento_desconto)['final'];
 $recursos_planos_catalogo = function_exists('plano_get_recursos_catalogo') ? [
     'BASICO' => plano_get_recursos_catalogo('BASICO'),
     'PROFISSIONAL' => plano_get_recursos_catalogo('PROFISSIONAL'),
@@ -724,6 +735,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 $stmt->execute($restauranteParams);
                                                 $restaurante_id = $db->lastInsertId();
 
+                                                // Preco de lancamento: fica preso a este restaurante, para
+                                                // as renovacoes seguirem o preco a que ele aderiu.
+                                                lancamento_registar($db, $restaurante_id);
+
                                                 $stmt_user = $db->prepare("
                                                 INSERT INTO usuarios (restaurante_id, nome, email, email_lookup, senha, perfil, ativo, created_at)
                                                 VALUES (?, ?, ?, ?, ?, 'ADMIN', 0, NOW())
@@ -999,6 +1014,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                 <!-- Seção: Escolha do Plano -->
                                 <div class="section-title"><i class="fas fa-crown me-2 text-warning"></i>Escolha o Plano</div>
+                                <?php if ($lancamento_a_decorrer): ?>
+                                    <div class="ed-lancamento">
+                                        <span class="ed-lancamento__selo">Lançamento</span>
+                                        <span class="ed-lancamento__texto">
+                                            <strong><?php echo number_format($lancamento_desconto, 0, ',', '.'); ?>% de desconto</strong> em todos os planos
+                                            <?php if ($lancamento_fim_data !== null): ?>
+                                                até <?php echo htmlspecialchars($lancamento_fim_data->format('d/m/Y'), ENT_QUOTES, 'UTF-8'); ?>.
+                                            <?php else: ?>
+                                                por tempo limitado.
+                                            <?php endif; ?>
+                                            Quem aderir agora mantém este preço enquanto for cliente.
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
                                 <div class="row g-3 mb-4 plans-grid align-items-stretch">
                                     <!-- Plano Básico -->
                                     <div class="col-md-4 plan-col">
@@ -1006,6 +1035,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <div class="plan-option-head">
                                                 <div class="plan-icon"><i class="fas fa-user"></i></div>
                                                 <div class="plan-name">Básico</div>
+                                                <?php if ($lancamento_a_decorrer): ?>
+                                                <div class="plan-price-tabela" aria-label="Preço normal"><s><?php echo format_mzn($preco_tabela_basico['mensal']); ?> MZN</s></div>
+                                                <?php endif; ?>
                                                 <div class="plan-price"><?php echo format_mzn($preco_basico['mensal']); ?><span>MZN/mês</span></div>
                                                 <?php if ($trialAtivo): ?>
                                                     <div class="plan-trial-note">Trial gratuito de <?php echo (int)plan_security_trial_days('BASICO'); ?> dias</div>
@@ -1031,6 +1063,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <div class="plan-option-head">
                                                 <div class="plan-icon"><i class="fas fa-star"></i></div>
                                                 <div class="plan-name">Profissional</div>
+                                                <?php if ($lancamento_a_decorrer): ?>
+                                                <div class="plan-price-tabela" aria-label="Preço normal"><s><?php echo format_mzn($preco_tabela_profissional['mensal']); ?> MZN</s></div>
+                                                <?php endif; ?>
                                                 <div class="plan-price"><?php echo format_mzn($preco_profissional['mensal']); ?><span>MZN/mês</span></div>
                                                 <?php if (!$trialAtivo): ?><div class="plan-trial-note"><i class="fas fa-gift me-1"></i>1.º pagamento: <?php echo (int)BONUS_DIAS; ?> dias de Empresarial</div><?php endif; ?>
                                                 <div class="plan-cycle">Tri <?php echo format_mzn($preco_profissional['trimestral']); ?> · Anual <?php echo format_mzn($preco_profissional['anual']); ?></div>
@@ -1051,6 +1086,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <div class="plan-option-head">
                                                 <div class="plan-icon"><i class="fas fa-crown"></i></div>
                                                 <div class="plan-name">Empresarial</div>
+                                                <?php if ($lancamento_a_decorrer): ?>
+                                                <div class="plan-price-tabela" aria-label="Preço normal"><s><?php echo format_mzn($preco_tabela_empresarial['mensal']); ?> MZN</s></div>
+                                                <?php endif; ?>
                                                 <div class="plan-price"><?php echo format_mzn($preco_empresarial['mensal']); ?><span>MZN/mês</span></div>
                                                 <?php if (!$trialAtivo): ?><div class="plan-trial-note"><i class="fas fa-gift me-1"></i>1.º pagamento: <?php echo (int)BONUS_DIAS; ?> dias extra de plano</div><?php endif; ?>
                                                 <div class="plan-cycle">Tri <?php echo format_mzn($preco_empresarial['trimestral']); ?> · Anual <?php echo format_mzn($preco_empresarial['anual']); ?></div>

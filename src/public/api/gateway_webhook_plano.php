@@ -129,7 +129,7 @@ try {
 
     $statusRejeitadoCompra = plan_security_purchase_status_value($db, 'REJECTED');
 
-    $integrity = plan_security_purchase_integrity($compra);
+    $integrity = plan_security_purchase_integrity($compra, $db);
     if (empty($integrity['ok'])) {
         $obs = 'Rejeitado por integridade: ' . ($integrity['message'] ?? 'valor/plano invalido');
         $stmtReject = $db->prepare(in_array('observacao', $columns, true)

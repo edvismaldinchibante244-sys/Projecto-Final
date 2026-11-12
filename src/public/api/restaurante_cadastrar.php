@@ -6,6 +6,7 @@ require_once __DIR__ . '/../app_base.php';
 */
 
 require_once APP_BASE . '/src/config/api_guard.php';
+require_once APP_BASE . '/src/config/plano_lancamento.php';
 include_once APP_BASE . '/src/config/database.php';
 include_once APP_BASE . '/src/config/restaurante_status_helper.php';
 include_once APP_BASE . '/src/config/super_admin_permissions.php';
@@ -92,6 +93,10 @@ try {
     );
     $stmt->execute($restauranteParams);
     $restaurante_id = (int)$db->lastInsertId();
+
+    // Preco de lancamento: fica preso a este restaurante, para as renovacoes
+    // seguirem o preco a que ele aderiu.
+    lancamento_registar($db, $restaurante_id);
 
     $stmt = $db->prepare("INSERT INTO usuarios (restaurante_id, nome, email, email_lookup, senha, perfil, ativo, created_at, two_factor_email) VALUES (?, ?, ?, ?, ?, 'ADMIN', 0, NOW(), ?)");
     $stmt->execute([$restaurante_id, $nome, $emailEncrypted, $emailLookup, $senha_hash, $emailEncrypted]);

@@ -237,6 +237,27 @@ $plano_atual = plano_normalizar_nome($dados_plano['plano_nome'] ?? ($restaurante
 // Carregar configuração dos planos
 $planos_config = require APP_BASE . '/src/config/planos.php';
 
+// Preco de lancamento deste restaurante (o que ficou preso ao aderir ou, se
+// ainda nao aderiu, o da campanha a decorrer). O catalogo passa a trazer os
+// precos ja com desconto, e guarda a tabela em 'precos_tabela' para a mostrar
+// rasurada ao lado. Assim nenhuma parte da pagina mostra um valor diferente
+// daquele que a cobranca vai usar.
+require_once APP_BASE . '/src/config/plano_lancamento.php';
+$lancamento_desconto = lancamento_desconto_restaurante($db, $restaurante_id);
+$lancamento_fim_data = lancamento_fim();
+$lancamento_a_decorrer = $lancamento_desconto > 0;
+
+if ($lancamento_a_decorrer) {
+    foreach (['BASICO', 'PROFISSIONAL', 'EMPRESARIAL'] as $planoCodigo) {
+        if (!isset($planos_config[$planoCodigo]['precos'])) {
+            continue;
+        }
+        $calculo = lancamento_precos_plano($planos_config[$planoCodigo]['precos'], $lancamento_desconto);
+        $planos_config[$planoCodigo]['precos_tabela'] = $calculo['tabela'];
+        $planos_config[$planoCodigo]['precos'] = $calculo['final'];
+    }
+}
+
 $basico_e_gratis = (bool)($planos_config['BASICO']['e_gratis'] ?? false);
 $basico_preco_mensal = (float)($planos_config['BASICO']['precos']['mensal'] ?? 0);
 $basico_preco_trimestral = (float)($planos_config['BASICO']['precos']['trimestral'] ?? 0);

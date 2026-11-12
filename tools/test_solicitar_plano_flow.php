@@ -43,7 +43,9 @@ try {
     $check(str_contains($requestSource, '$db->beginTransaction()') && str_contains($requestSource, '$db->commit()'), 'cadastro protegido por transacao');
     $check(str_contains($requestSource, 'legal_record_acceptance(') && str_contains($requestSource, "audit_log(\$db, 'plano_solicitacao_publica_recebida'"), 'termos e auditoria registrados');
 
-    $check(str_contains($approvalSource, 'plan_security_purchase_integrity($compra)'), 'aprovacao revalida integridade');
+    // O $db vai junto para a revalidacao poder ter em conta o desconto de
+    // lancamento preso ao restaurante, em vez de comparar sempre com a tabela.
+    $check(str_contains($approvalSource, 'plan_security_purchase_integrity($compra, $db)'), 'aprovacao revalida integridade');
     $check(str_contains($approvalSource, "UPDATE usuarios SET ativo = 1"), 'aprovacao ativa administrador');
     $check(str_contains($approvalSource, "\$compraIsTrial ? 'TRIAL' : 'PAGO'"), 'aprovacao distingue trial e pagamento');
     $check(str_contains($approvalSource, 'plan_security_purchase_trial_days($compra) ?: 30'), 'aprovacao aplica prazo do trial');
