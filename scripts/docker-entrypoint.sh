@@ -48,6 +48,25 @@ if [ ! -e /etc/apache2/mods-enabled/mpm_prefork.load ]; then
     ln -s ../mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
 fi
 
+# Endereco publico: sem isto o Apache constroi os redireccionamentos com o seu
+# proprio nome e porta interna (:8080), que de fora nao existe. O SetEnvIf faz
+# o PHP reconhecer que o visitante chegou em HTTPS, atraves do proxy.
+dominio="${RAILWAY_PUBLIC_DOMAIN:-}"
+if [ -z "$dominio" ] && [ -n "${APP_URL:-}" ]; then
+    dominio=$(echo "$APP_URL" | sed -e 's~^https\?://~~' -e 's~/.*$~~')
+fi
+
+conf=/etc/apache2/conf-enabled/nivora-proxy.conf
+: > "$conf"
+if [ -n "$dominio" ]; then
+    echo "ServerName $dominio" >> "$conf"
+fi
+cat >> "$conf" <<'EOF'
+UseCanonicalName On
+UseCanonicalPhysicalPort Off
+SetEnvIf X-Forwarded-Proto "^https$" HTTPS=on
+EOF
+
 echo "=== MPM activos no arranque ==="
 ls /etc/apache2/mods-enabled/ | grep -i mpm || echo "(nenhum)"
 apache2ctl -t 2>&1 || true
