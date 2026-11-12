@@ -91,8 +91,13 @@ if [ "${CRON_EM_CONTENTOR:-1}" = "1" ] && [ -f "$APP_DIR/src/public/cron/dispatc
         printf 'export %s=%s\n' "$nome" "$(printf '%s' "$valor" | sed "s/'/'\\\\''/g; s/^/'/; s/\$/'/")" >> "$env_file"
     done
 
-    printf '*/5 * * * * root . %s; php %s/src/public/cron/dispatch.php >> %s/storage/logs/cron.log 2>&1\n' \
-        "$env_file" "$APP_DIR" "$DATA_DIR" > /etc/cron.d/nivora
+    # Caminho absoluto do PHP: o cron corre com um PATH minimo, que nao inclui
+    # /usr/local/bin, onde esta o php desta imagem.
+    php_bin=$(command -v php 2>/dev/null || echo /usr/local/bin/php)
+
+    printf 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n' > /etc/cron.d/nivora
+    printf '*/5 * * * * root . %s; %s %s/src/public/cron/dispatch.php >> %s/storage/logs/cron.log 2>&1\n' \
+        "$env_file" "$php_bin" "$APP_DIR" "$DATA_DIR" >> /etc/cron.d/nivora
     chmod 644 /etc/cron.d/nivora
     service cron start >/dev/null 2>&1 || cron
     echo "Rotinas agendadas activas (cron, de 5 em 5 minutos)."
