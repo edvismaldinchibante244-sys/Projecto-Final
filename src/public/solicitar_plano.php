@@ -1132,12 +1132,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 </div>
                                             </div>
 
+                                            <?php if ($trialAtivo): ?>
                                             <div class="col-12" id="plano_trial_info" style="display: none;">
                                                 <div class="alert alert-success mb-0">
                                                     <i class="fas fa-gift me-2"></i>
                                                     Plano Básico mensal: <strong>trial gratuito de <?php echo (int)plan_security_trial_days('BASICO'); ?> dias</strong>. Não precisa de pagamento agora. Se preferir pagar já, escolha Trimestral ou Anual.
                                                 </div>
                                             </div>
+                                            <?php endif; ?>
 
                                             <div class="col-12">
                                                 <div class="payment-summary">
