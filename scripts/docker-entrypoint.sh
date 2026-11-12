@@ -39,4 +39,15 @@ port="${PORT:-8080}"
 sed -ri "s/^Listen .*/Listen ${port}/" /etc/apache2/ports.conf
 sed -ri "s/<VirtualHost \*:[0-9]+>/<VirtualHost *:${port}>/" /etc/apache2/sites-available/000-default.conf
 
+# Diagnostico: estado real do Apache dentro do contentor.
+echo "=== mods-enabled com mpm ==="
+ls -l /etc/apache2/mods-enabled/ | grep -i mpm || echo "(nenhum)"
+echo "=== Includes do apache2.conf ==="
+grep -n "^Include" /etc/apache2/apache2.conf || true
+echo "=== Teste de configuracao ==="
+apache2ctl -t 2>&1 || true
+echo "=== Modulos carregados ==="
+apache2ctl -t -D DUMP_MODULES 2>&1 | grep -i mpm || true
+echo "=== Fim do diagnostico ==="
+
 exec "$@"
