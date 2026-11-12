@@ -72,18 +72,30 @@ ls /etc/apache2/mods-enabled/ | grep -i mpm || echo "(nenhum)"
 apache2ctl -t 2>&1 || true
 
 # Rotinas agendadas. O plano nao permite um servico de cron proprio, por isso
-# o despachante corre aqui ao lado do Apache, de 5 em 5 minutos. Usa a linha de
-# comandos (sem token) e guarda a marca de cada tarefa no volume, por isso uma
-# execucao falhada e recuperada na seguinte em vez de se perder.
+# o despachante corre aqui ao lado do Apache, de 5 em 5 minutos, entregue ao
+# cron do sistema (um ciclo em segundo plano nao sobrevive ao exec do Apache).
+# O cron nao herda as variaveis do contentor, por isso ficam num ficheiro so
+# legivel pelo root, que a tarefa carrega antes de correr.
 if [ "${CRON_EM_CONTENTOR:-1}" = "1" ] && [ -f "$APP_DIR/src/public/cron/dispatch.php" ]; then
-    (
-        sleep 60
-        while true; do
-            php "$APP_DIR/src/public/cron/dispatch.php" >> "$DATA_DIR/storage/logs/cron.log" 2>&1
-            sleep 300
-        done
-    ) &
-    echo "Rotinas agendadas activas (de 5 em 5 minutos)."
+    env_file=/etc/nivora-cron.env
+    : > "$env_file"
+    chmod 600 "$env_file"
+    # Apenas as variaveis que as rotinas precisam, uma por linha, escapadas.
+    for nome in APP_ENV APP_KEY APP_URL APP_TIMEZONE STORAGE_PATH \
+                DB_HOST DB_PORT DB_NAME DB_USER DB_PASS \
+                EMAIL_PROVIDER BREVO_API_KEY BREVO_FROM RESEND_API_KEY RESEND_FROM \
+                USE_SMTP SMTP_HOST SMTP_PORT SMTP_USERNAME SMTP_PASSWORD SMTP_SECURE SMTP_FROM \
+                REALTIME_URL REALTIME_SECRET CRON_HTTP_TOKEN; do
+        valor=$(printenv "$nome" 2>/dev/null) || continue
+        [ -z "$valor" ] && continue
+        printf 'export %s=%s\n' "$nome" "$(printf '%s' "$valor" | sed "s/'/'\\\\''/g; s/^/'/; s/\$/'/")" >> "$env_file"
+    done
+
+    printf '*/5 * * * * root . %s; php %s/src/public/cron/dispatch.php >> %s/storage/logs/cron.log 2>&1\n' \
+        "$env_file" "$APP_DIR" "$DATA_DIR" > /etc/cron.d/nivora
+    chmod 644 /etc/cron.d/nivora
+    service cron start >/dev/null 2>&1 || cron
+    echo "Rotinas agendadas activas (cron, de 5 em 5 minutos)."
 fi
 
 exec "$@"

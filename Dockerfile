@@ -14,6 +14,7 @@ RUN apt-get update \
         libonig-dev \
         libzip-dev \
         unzip \
+        cron \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" pdo_mysql mysqli mbstring curl gd zip opcache \
     && rm -rf /var/lib/apt/lists/*

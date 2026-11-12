@@ -35,6 +35,33 @@ try {
     $agora = new DateTimeImmutable('now', new DateTimeZone('UTC'));
 }
 
+// A base de dados tambem adormece em alojamentos economicos: a primeira
+// ligacao serve para a acordar e pode falhar. Insiste algumas vezes antes de
+// desistir; se nao acordar, sai sem marcar nada e tenta tudo de novo daqui a
+// cinco minutos, em vez de dar as tarefas como feitas.
+include_once APP_BASE . '/src/config/database.php';
+
+$ligou = false;
+for ($tentativa = 1; $tentativa <= 5; $tentativa++) {
+    try {
+        $db = (new Database())->getConnection();
+        if ($db instanceof PDO) {
+            $ligou = true;
+            break;
+        }
+    } catch (Throwable $e) {
+        // segue para nova tentativa
+    }
+    if ($tentativa < 5) {
+        sleep(10);
+    }
+}
+
+if (!$ligou) {
+    echo "Base de dados indisponivel; nada executado. Nova tentativa na proxima passagem.\n";
+    exit($porHttp ? 0 : 1);
+}
+
 $marcas = nv_storage('cron');
 if (!is_dir($marcas)) {
     @mkdir($marcas, 0775, true);
