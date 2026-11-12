@@ -71,4 +71,19 @@ echo "=== MPM activos no arranque ==="
 ls /etc/apache2/mods-enabled/ | grep -i mpm || echo "(nenhum)"
 apache2ctl -t 2>&1 || true
 
+# Rotinas agendadas. O plano nao permite um servico de cron proprio, por isso
+# o despachante corre aqui ao lado do Apache, de 5 em 5 minutos. Usa a linha de
+# comandos (sem token) e guarda a marca de cada tarefa no volume, por isso uma
+# execucao falhada e recuperada na seguinte em vez de se perder.
+if [ "${CRON_EM_CONTENTOR:-1}" = "1" ] && [ -f "$APP_DIR/src/public/cron/dispatch.php" ]; then
+    (
+        sleep 60
+        while true; do
+            php "$APP_DIR/src/public/cron/dispatch.php" >> "$DATA_DIR/storage/logs/cron.log" 2>&1
+            sleep 300
+        done
+    ) &
+    echo "Rotinas agendadas activas (de 5 em 5 minutos)."
+fi
+
 exec "$@"
