@@ -9,6 +9,20 @@ RewriteEngine On
 # URLs limpas para todas as páginas PHP públicas.
 # /src/public/pedidos.php e /pedidos.php passam a /pedidos.
 # APIs são excluídas para preservar os contratos existentes.
+# Atras de um proxy (X-Forwarded-Proto: https) o endereco tem de ir completo:
+# com destino relativo, o Apache monta-o com a sua porta interna (:8080), que
+# de fora nao existe. Estas duas regras tratam esse caso e vem primeiro.
+RewriteCond %{HTTP:X-Forwarded-Proto} =https
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$ [NC]
+RewriteCond %{THE_REQUEST} \s/+(.*/)?index\.php(?:[\s?]) [NC]
+RewriteRule ^(?:.*/)?index\.php$ https://%{HTTP_HOST}/ [R=301,L,NE]
+
+RewriteCond %{HTTP:X-Forwarded-Proto} =https
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$ [NC]
+RewriteCond %{THE_REQUEST} \s/+(.*/)?(?!api/)([^/?\s]+)\.php(?:[\s?]) [NC]
+RewriteRule ^(?!api/)(?:.*/)?([^/]+)\.php$ https://%{HTTP_HOST}/$1 [R=301,L,NE]
+
+# Sem proxy (XAMPP local), destino relativo como antes.
 RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$ [NC]
 RewriteCond %{THE_REQUEST} \s/+(.*/)?index\.php(?:[\s?]) [NC]
 RewriteRule ^(?:.*/)?index\.php$ / [R=301,L,NE]
