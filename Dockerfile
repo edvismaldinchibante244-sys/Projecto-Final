@@ -16,8 +16,12 @@ RUN apt-get update \
         unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" pdo_mysql mysqli mbstring curl gd zip opcache \
-    && a2enmod rewrite headers access_compat \
     && rm -rf /var/lib/apt/lists/*
+
+# Um unico MPM (prefork, o que o mod_php usa). Sem isto o Apache recusa
+# arrancar com "More than one MPM loaded".
+RUN a2dismod mpm_event mpm_worker 2>/dev/null; \
+    a2enmod mpm_prefork rewrite headers access_compat
 
 # OPcache ligado (exigido pela verificacao de producao do sistema).
 RUN { \
@@ -44,6 +48,7 @@ COPY . .
 RUN composer install --no-dev --prefer-dist --no-interaction --working-dir=/var/www/html/app \
     && sed -ri 's!/var/www/html!/var/www/html/src/public!g' /etc/apache2/sites-available/000-default.conf \
     && printf '\n<Directory /var/www/html/src/public>\n Options -Indexes +FollowSymLinks\n AllowOverride All\n Require all granted\n</Directory>\n' >> /etc/apache2/apache2.conf \
+    && printf '\n<Directory /data>\n Options -Indexes +FollowSymLinks\n AllowOverride None\n Require all granted\n</Directory>\n' >> /etc/apache2/apache2.conf \
     && chmod +x /var/www/html/scripts/docker-entrypoint.sh
 
 ENV STORAGE_PATH=/data/storage
