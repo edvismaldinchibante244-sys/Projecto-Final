@@ -43,9 +43,29 @@ if (getenv('NIVORA_SENHA_INICIAL') === false || getenv('NIVORA_SENHA_INICIAL') =
 }
 
 $db->beginTransaction();
-$rid = (int)($db->query("SELECT r.id FROM restaurantes r JOIN usuarios u ON u.restaurante_id = r.id AND u.super_admin = 1 LIMIT 1")->fetchColumn() ?: 0);
+// Reaproveita o registo interno da plataforma, se ja existir. Procura
+// primeiro pela marca (vale mesmo quando o super admin anterior foi apagado)
+// e so depois pela ligacao ao utilizador, para funcionar em bancos onde a
+// migracao da coluna ainda nao correu.
+$rid = 0;
+try {
+    $rid = (int)($db->query("SELECT id FROM restaurantes WHERE plataforma = 1 ORDER BY id LIMIT 1")->fetchColumn() ?: 0);
+} catch (Throwable $e) {
+    // Coluna ainda inexistente; segue para o criterio antigo.
+}
+if ($rid === 0) {
+    $rid = (int)($db->query("SELECT r.id FROM restaurantes r JOIN usuarios u ON u.restaurante_id = r.id AND u.super_admin = 1 LIMIT 1")->fetchColumn() ?: 0);
+}
 if ($rid === 0) {
     $rid = cli_criar_restaurante($db, 'Nivora (Plataforma)', $email, 'EMPRESARIAL');
+}
+
+// Marca sempre, para o registo nunca ser contado como cliente.
+try {
+    $marca = $db->prepare("UPDATE restaurantes SET plataforma = 1 WHERE id = ? AND plataforma = 0");
+    $marca->execute([$rid]);
+} catch (Throwable $e) {
+    fwrite(STDERR, "AVISO: nao foi possivel marcar o restaurante interno (falta a migracao da coluna 'plataforma'). Ele vai aparecer na lista de clientes ate a migracao correr.\n");
 }
 $uid = cli_criar_usuario($db, $rid, $nome, $email, $senha, 'ADMIN', 1);
 $db->commit();

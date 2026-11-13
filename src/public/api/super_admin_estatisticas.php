@@ -40,41 +40,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 
     try {
-        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes");
+        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE plataforma = 0");
         $totalRestaurantes = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE criado_em < DATE_FORMAT(CURDATE(), '%Y-%m-01')");
+        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE plataforma = 0 AND criado_em < DATE_FORMAT(CURDATE(), '%Y-%m-01')");
         $totalRestaurantesMesAnterior = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE status = 'ATIVO'");
+        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE plataforma = 0 AND status = 'ATIVO'");
         $restaurantesAtivos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE status = 'ATIVO' AND criado_em < DATE_FORMAT(CURDATE(), '%Y-%m-01')");
+        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE plataforma = 0 AND status = 'ATIVO' AND criado_em < DATE_FORMAT(CURDATE(), '%Y-%m-01')");
         $restaurantesAtivosMesAnterior = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE status = 'BLOQUEADO' OR status = 'CANCELADO'");
+        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE plataforma = 0 AND (status = 'BLOQUEADO' OR status = 'CANCELADO')");
         $restaurantesSuspensos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
         $stmt = $db->query("
             SELECT COUNT(*) AS total
             FROM restaurantes r
-            WHERE r.status IN ('PENDENTE','AGUARDANDO_APROVACAO')
+            WHERE r.plataforma = 0
+              AND (r.status IN ('PENDENTE','AGUARDANDO_APROVACAO')
                OR EXISTS (
                     SELECT 1
                     FROM compras_planos cp
                     WHERE cp.restaurante_id = r.id
                       AND cp.status = 'PENDENTE'
-               )
+               ))
         ");
         $restaurantesEmAvaliacao = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE status = 'ATIVO' AND data_fim BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)");
+        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE plataforma = 0 AND status = 'ATIVO' AND data_fim BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)");
         $assinaturasExpirando = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE status = 'ATIVO' AND data_fim BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND DATE_ADD(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), INTERVAL 7 DAY)");
+        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE plataforma = 0 AND status = 'ATIVO' AND data_fim BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND DATE_ADD(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), INTERVAL 7 DAY)");
         $assinaturasExpirandoMesAnterior = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE status = 'ATIVO' AND data_fim >= CURDATE() AND plano = 'BASICO'");
+        $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE plataforma = 0 AND status = 'ATIVO' AND data_fim >= CURDATE() AND plano = 'BASICO'");
         $restaurantesEmTeste = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
         $stmt = $db->query("
@@ -86,12 +87,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     ELSE 799
                 END) as receita_mensal
             FROM restaurantes
-            WHERE status = 'ATIVO'
+            WHERE plataforma = 0 AND status = 'ATIVO'
         ");
         $receitaMensal = $stmt->fetch(PDO::FETCH_ASSOC)['receita_mensal'] ?? 0;
         $receitaAnualProjetada = (float)$receitaMensal * 12;
 
-        $stmt = $db->query("SELECT COUNT(*) as total FROM usuarios WHERE ativo = 1");
+        $stmt = $db->query("SELECT COUNT(*) as total FROM usuarios u
+            JOIN restaurantes r ON r.id = u.restaurante_id
+            WHERE u.ativo = 1 AND r.plataforma = 0");
         $utilizadoresAtivos = (int)($stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0);
 
         $stmt = $db->query("

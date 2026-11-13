@@ -72,6 +72,7 @@ try {
                 (SELECT COUNT(*) FROM produtos WHERE restaurante_id = r.id) as total_produtos,
                 (SELECT COUNT(*) FROM mesas WHERE restaurante_id = r.id) as total_mesas
               FROM restaurantes r
+              WHERE r.plataforma = 0
               ORDER BY r.id DESC";
 
     $stmt = $db->query($query);

@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $stmt = $db->query("
         SELECT plano, COUNT(*) as total
         FROM restaurantes
+        WHERE plataforma = 0
         GROUP BY plano
     ");
     $restaurantesPorPlano = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -45,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $stmt = $db->query("
         SELECT status, COUNT(*) as total
         FROM restaurantes
+        WHERE plataforma = 0
         GROUP BY status
     ");
     $restaurantesPorStatus = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -54,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             DATE_FORMAT(criado_em, '%Y-%m') as mes,
             COUNT(*) as total
         FROM restaurantes
-        WHERE criado_em >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+        WHERE plataforma = 0 AND criado_em >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
         GROUP BY DATE_FORMAT(criado_em, '%Y-%m')
         ORDER BY mes
     ");
@@ -70,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     ELSE 799
                 END) as receita
         FROM restaurantes
-        WHERE status = 'ATIVO'
+        WHERE plataforma = 0 AND status = 'ATIVO'
         GROUP BY plano
     ");
     $receitaPorPlano = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -79,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         SELECT r.nome, COUNT(u.id) as total_usuarios
         FROM restaurantes r
         LEFT JOIN usuarios u ON r.id = u.restaurante_id
+        WHERE r.plataforma = 0
         GROUP BY r.id, r.nome
         ORDER BY total_usuarios DESC
         LIMIT 5
