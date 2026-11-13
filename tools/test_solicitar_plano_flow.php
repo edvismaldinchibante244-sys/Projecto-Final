@@ -50,6 +50,22 @@ try {
     $check(str_contains($approvalSource, "\$compraIsTrial ? 'TRIAL' : 'PAGO'"), 'aprovacao distingue trial e pagamento');
     $check(str_contains($approvalSource, 'plan_security_purchase_trial_days($compra) ?: 30'), 'aprovacao aplica prazo do trial');
 
+    // Colunas obrigatorias sem valor por omissao tem de constar das insercoes.
+    // Um MariaDB permissivo (XAMPP) preenche-as em silencio; um em modo
+    // estrito (producao) recusa a insercao inteira. Foi assim que a inscricao
+    // de restaurantes falhou em producao funcionando localmente.
+    $cadastroSource = file_get_contents(__DIR__ . '/../src/public/api/restaurante_cadastrar.php') ?: '';
+    foreach (['data_inicio', 'data_fim'] as $colunaObrigatoria) {
+        $check(
+            str_contains($requestSource, "'" . $colunaObrigatoria . "'"),
+            'solicitar_plano preenche ' . $colunaObrigatoria
+        );
+        $check(
+            str_contains($cadastroSource, "'" . $colunaObrigatoria . "'"),
+            'restaurante_cadastrar preenche ' . $colunaObrigatoria
+        );
+    }
+
     $inicio = new DateTimeImmutable('2026-08-26');
     $fim = $inicio->modify('+' . plan_security_days('MENSAL') . ' days');
     $check($fim->format('Y-m-d') === '2026-09-25', 'prazo mensal inicia na aprovacao e termina apos 30 dias');

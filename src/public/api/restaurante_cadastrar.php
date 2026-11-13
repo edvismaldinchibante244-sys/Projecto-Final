@@ -7,6 +7,7 @@ require_once __DIR__ . '/../app_base.php';
 
 require_once APP_BASE . '/src/config/api_guard.php';
 require_once APP_BASE . '/src/config/plano_lancamento.php';
+require_once APP_BASE . '/src/config/plan_security.php';
 include_once APP_BASE . '/src/config/database.php';
 include_once APP_BASE . '/src/config/restaurante_status_helper.php';
 include_once APP_BASE . '/src/config/super_admin_permissions.php';
@@ -72,14 +73,23 @@ try {
     $db->beginTransaction();
 
     $statusInicial = restaurante_status_resolver_inicial($db);
-    $restauranteCols = ['nome', 'email', 'email_lookup', 'telefone', 'endereco', 'created_at'];
-    $restauranteVals = ['?', '?', '?', '?', '?', 'NOW()'];
+
+    // data_inicio e data_fim sao obrigatorias e nao tem valor por omissao:
+    // sem elas, um MariaDB em modo estrito recusa a insercao. A validade
+    // definitiva e fixada na aprovacao; aqui fica o periodo do ciclo pedido.
+    $dataInicio = date('Y-m-d');
+    $dataFim = date('Y-m-d', strtotime('+' . max(1, plan_security_days('MENSAL')) . ' days'));
+
+    $restauranteCols = ['nome', 'email', 'email_lookup', 'telefone', 'endereco', 'data_inicio', 'data_fim', 'created_at'];
+    $restauranteVals = ['?', '?', '?', '?', '?', '?', '?', 'NOW()'];
     $restauranteParams = [
         $nome,
         $emailEncrypted,
         $emailLookup,
         $telefone === '' ? null : personal_data_encrypt($telefone),
         $endereco === '' ? null : personal_data_encrypt($endereco),
+        $dataInicio,
+        $dataFim,
     ];
 
     if ($statusInicial !== null) {

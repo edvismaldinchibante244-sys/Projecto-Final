@@ -673,6 +673,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             $diasPlanoSolicitado = $metodo === 'TRIAL'
                                                 ? plan_security_trial_days($plano)
                                                 : plan_security_days($ciclo);
+                                            $data_inicio = date('Y-m-d');
                                             $data_fim = date('Y-m-d', strtotime('+' . max(1, $diasPlanoSolicitado) . ' days'));
                                             $colunasRestaurante = [];
                                             $stmt_cols_rest = $db->query('SHOW COLUMNS FROM restaurantes');
@@ -683,8 +684,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             try {
                                                 $db->beginTransaction();
 
-                                                $restauranteCols = ['nome', 'email', 'email_lookup', 'telefone', 'endereco', 'cidade', 'nuit', 'nuit_lookup', 'plano', 'data_fim', 'created_at'];
-                                                $restauranteVals = ['?', '?', '?', '?', '?', '?', '?', '?', '?', '?', 'NOW()'];
+                                                // data_inicio e obrigatoria na tabela e nao tem valor por
+                                                // omissao: sem ela, um MariaDB em modo estrito recusa a
+                                                // insercao (em modo permissivo passava em silencio).
+                                                $restauranteCols = ['nome', 'email', 'email_lookup', 'telefone', 'endereco', 'cidade', 'nuit', 'nuit_lookup', 'plano', 'data_inicio', 'data_fim', 'created_at'];
+                                                $restauranteVals = ['?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', 'NOW()'];
                                                 $restauranteParams = [
                                                     $nome,
                                                     $emailEncrypted,
@@ -695,6 +699,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     $nuit === '' ? null : personal_data_encrypt($nuit),
                                                     personal_data_nuit_lookup($nuit),
                                                     $plano,
+                                                    $data_inicio,
                                                     $data_fim,
                                                 ];
 
