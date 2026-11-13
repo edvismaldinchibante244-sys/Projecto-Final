@@ -247,7 +247,42 @@ class Database
         ];
 
         try {
-            $this->conn = new PDO($dsn, $user, $pass, $options);
+            // Alojamentos economicos poem a base de dados a dormir quando nao
+            // ha trafego, e a primeira ligacao depois disso e recusada enquanto
+            // ela acorda. Insistir algumas vezes evita que o primeiro visitante
+            // apanhe "Servico temporariamente indisponivel" e desista.
+            // So para falhas de ligacao: credenciais erradas ou base inexistente
+            // nao se resolvem esperando, e ai desiste-se de imediato.
+            $esperas = $isProduction ? [0, 1500000, 2500000, 4000000] : [0];
+            $erroLigacao = null;
+
+            foreach ($esperas as $indice => $espera) {
+                if ($espera > 0) {
+                    usleep($espera);
+                }
+
+                try {
+                    $this->conn = new PDO($dsn, $user, $pass, $options);
+                    $erroLigacao = null;
+                    break;
+                } catch (PDOException $tentativaErro) {
+                    $erroLigacao = $tentativaErro;
+                    if (!self::erroDeLigacao($tentativaErro)) {
+                        break;
+                    }
+                    error_log(sprintf(
+                        'Database indisponivel (tentativa %d de %d): %s',
+                        $indice + 1,
+                        count($esperas),
+                        $tentativaErro->getMessage()
+                    ));
+                }
+            }
+
+            if ($erroLigacao !== null) {
+                throw $erroLigacao;
+            }
+
             $this->conn->setAttribute(PDO::ATTR_STATEMENT_CLASS, [PersonalDataPDOStatement::class]);
             $this->debugConfig('pdo-connected', [
                 'server_version' => $this->conn->getAttribute(PDO::ATTR_SERVER_VERSION),
@@ -324,6 +359,28 @@ class Database
             var_dump($stage, $context);
             die('DB_DEBUG_DUMP interrompeu a execucao.');
         }
+    }
+
+    /**
+     * Distingue uma base inacessivel (adormecida, a reiniciar, rede em baixo)
+     * de um erro que nao se resolve com tempo (credenciais, base inexistente).
+     * So a primeira justifica insistir.
+     */
+    private static function erroDeLigacao(PDOException $e): bool
+    {
+        $codigo = (string)$e->getCode();
+        if (in_array($codigo, ['2002', '2003', '2006', '2013'], true)) {
+            return true;
+        }
+
+        $msg = strtolower($e->getMessage());
+        foreach (['connection refused', 'can\'t connect', 'gone away', 'timed out', 'lost connection', 'no such host', 'name or service not known'] as $pista) {
+            if (str_contains($msg, $pista)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function fail(string $message): void
