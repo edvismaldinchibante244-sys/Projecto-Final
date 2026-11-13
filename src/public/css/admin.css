@@ -582,6 +582,13 @@
                 transform: translateX(-100%);
             }
 
+            /* Aberta: volta ao ecra. Sem esta regra, a de cima mantinha a barra
+               fora do ecra mesmo depois de o JavaScript a marcar como aberta,
+               e o botao do menu parecia nao fazer nada em ecra estreito. */
+            .sidebar:not(.sidebar-hidden) {
+                transform: translateX(0);
+            }
+
             .main-content {
                 margin-left: 0;
                 padding-top: 98px;
