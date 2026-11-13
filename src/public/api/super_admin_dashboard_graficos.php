@@ -62,20 +62,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     ");
     $crescimentoRestaurantes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Receita por plano, pelos mesmos criterios do cartao de receita: precos
+    // do catalogo, desconto de lancamento de cada cliente, e ciclos
+    // trimestrais/anuais reduzidos ao equivalente mensal.
+    require_once APP_BASE . '/src/config/plano_lancamento.php';
+
     $stmt = $db->query("
-        SELECT
-            plano,
-            SUM(CASE
-                    WHEN plano IN ('ENTERPRISE', 'EMPRESARIAL') THEN 3999
-                    WHEN plano = 'PROFISSIONAL' THEN 1999
-                    WHEN plano = 'BASICO' THEN 799
-                    ELSE 799
-                END) as receita
+        SELECT plano,
+               COALESCE(plano_duracao, 'mensal') AS ciclo,
+               COALESCE(desconto_lancamento, 0) AS desconto,
+               COUNT(*) AS quantos
         FROM restaurantes
         WHERE plataforma = 0 AND status = 'ATIVO'
-        GROUP BY plano
+        GROUP BY plano, ciclo, desconto
     ");
-    $receitaPorPlano = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $receitaAcumulada = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $grupo) {
+        $plano = (string)$grupo['plano'];
+        $ciclo = strtoupper((string)$grupo['ciclo']);
+        $cobrado = lancamento_preco(lancamento_preco_tabela($plano, $ciclo), (float)$grupo['desconto']);
+        $mensal = ($cobrado / lancamento_meses_ciclo($ciclo)) * (int)$grupo['quantos'];
+        $receitaAcumulada[$plano] = ($receitaAcumulada[$plano] ?? 0.0) + $mensal;
+    }
+
+    $receitaPorPlano = [];
+    foreach ($receitaAcumulada as $plano => $receita) {
+        $receitaPorPlano[] = ['plano' => $plano, 'receita' => round($receita, 2)];
+    }
 
     $stmt = $db->query("
         SELECT r.nome, COUNT(u.id) as total_usuarios

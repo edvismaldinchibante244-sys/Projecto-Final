@@ -39,17 +39,16 @@ if (!function_exists('plan_security_price')) {
      */
     function plan_security_price(string $plan, string $cycle, ?PDO $db = null, $restauranteId = null): float
     {
-        $plans = require __DIR__ . '/planos.php';
+        require_once __DIR__ . '/plano_lancamento.php';
+
         $plan = plan_security_normalize_plan($plan);
         $cycle = plan_security_normalize_cycle($cycle);
-        $cycleKey = ['MENSAL' => 'mensal', 'TRIMESTRAL' => 'trimestral', 'ANUAL' => 'anual'][$cycle] ?? '';
 
-        $tabela = (float)($plans[$plan]['precos'][$cycleKey] ?? 0);
+        $tabela = lancamento_preco_tabela($plan, $cycle);
         if ($tabela <= 0) {
             return 0.0;
         }
 
-        require_once __DIR__ . '/plano_lancamento.php';
         $desconto = lancamento_desconto_restaurante($db, $restauranteId);
 
         return lancamento_preco($tabela, $desconto);

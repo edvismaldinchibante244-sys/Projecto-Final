@@ -142,6 +142,38 @@ if (!function_exists('lancamento_preco')) {
     }
 }
 
+if (!function_exists('lancamento_preco_tabela')) {
+    /**
+     * Preco de tabela de um plano num ciclo, sem desconto nenhum.
+     * Unica porta de entrada ao catalogo: quem precisa do preco a cobrar
+     * usa isto e aplica depois lancamento_preco() com o desconto do cliente.
+     */
+    function lancamento_preco_tabela(string $plano, string $ciclo): float
+    {
+        static $planos = null;
+        if ($planos === null) {
+            $planos = require __DIR__ . '/planos.php';
+        }
+
+        $plano = strtoupper(trim($plano));
+        if ($plano === 'ENTERPRISE') {
+            $plano = 'EMPRESARIAL';
+        }
+
+        $chave = ['MENSAL' => 'mensal', 'TRIMESTRAL' => 'trimestral', 'ANUAL' => 'anual'][strtoupper(trim($ciclo))] ?? 'mensal';
+
+        return (float)($planos[$plano]['precos'][$chave] ?? 0);
+    }
+}
+
+if (!function_exists('lancamento_meses_ciclo')) {
+    /** Quantos meses cobre um ciclo de facturacao. */
+    function lancamento_meses_ciclo(string $ciclo): int
+    {
+        return ['MENSAL' => 1, 'TRIMESTRAL' => 3, 'ANUAL' => 12][strtoupper(trim($ciclo))] ?? 1;
+    }
+}
+
 if (!function_exists('lancamento_precos_plano')) {
     /**
      * Precos de um plano nos tres ciclos, com e sem desconto.

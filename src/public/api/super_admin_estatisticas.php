@@ -78,39 +78,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $stmt = $db->query("SELECT COUNT(*) as total FROM restaurantes WHERE plataforma = 0 AND status = 'ATIVO' AND data_fim >= CURDATE() AND plano = 'BASICO'");
         $restaurantesEmTeste = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
+        // Receita mensal recorrente: o que cada cliente activo paga por mes.
+        // Os precos vem do catalogo (planos.php), nao de valores escritos aqui,
+        // e levam o desconto de lancamento preso a cada restaurante. Ciclos
+        // trimestrais e anuais sao divididos pelos meses que cobrem, para o
+        // numero ser comparavel de mes para mes.
+        require_once APP_BASE . '/src/config/plano_lancamento.php';
+
         $stmt = $db->query("
-            SELECT
-                SUM(CASE
-                    WHEN plano = 'BASICO' THEN 799
-                    WHEN plano = 'PROFISSIONAL' THEN 1999
-                    WHEN plano IN ('ENTERPRISE', 'EMPRESARIAL') THEN 3999
-                    ELSE 799
-                END) as receita_mensal
+            SELECT plano,
+                   COALESCE(plano_duracao, 'mensal') AS ciclo,
+                   COALESCE(desconto_lancamento, 0) AS desconto,
+                   COUNT(*) AS quantos
             FROM restaurantes
             WHERE plataforma = 0 AND status = 'ATIVO'
+            GROUP BY plano, ciclo, desconto
         ");
-        $receitaMensal = $stmt->fetch(PDO::FETCH_ASSOC)['receita_mensal'] ?? 0;
-        $receitaAnualProjetada = (float)$receitaMensal * 12;
+
+        $receitaMensal = 0.0;
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $grupo) {
+            $ciclo = strtoupper((string)$grupo['ciclo']);
+            $tabela = lancamento_preco_tabela((string)$grupo['plano'], $ciclo);
+            $cobrado = lancamento_preco($tabela, (float)$grupo['desconto']);
+            $meses = lancamento_meses_ciclo($ciclo);
+            $receitaMensal += ($cobrado / $meses) * (int)$grupo['quantos'];
+        }
+
+        $receitaAnualProjetada = $receitaMensal * 12;
 
         $stmt = $db->query("SELECT COUNT(*) as total FROM usuarios u
             JOIN restaurantes r ON r.id = u.restaurante_id
             WHERE u.ativo = 1 AND r.plataforma = 0");
         $utilizadoresAtivos = (int)($stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0);
 
+        // Mes anterior: parte do valor realmente cobrado em cada compra
+        // aprovada, nao de uma reconstituicao a partir do plano. Assim reflecte
+        // descontos, correccoes manuais e tudo o que tenha acontecido na compra.
         $stmt = $db->query("
-            SELECT
-                SUM(CASE
-                    WHEN plano_novo = 'BASICO' THEN 799
-                    WHEN plano_novo = 'PROFISSIONAL' THEN 1999
-                    WHEN plano_novo IN ('ENTERPRISE', 'EMPRESARIAL') THEN 3999
-                    ELSE 799
-                END) as receita_mensal
-            FROM compras_planos
-            WHERE status = 'APROVADO'
-              AND criado_em >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
-              AND criado_em < DATE_FORMAT(CURDATE(), '%Y-%m-01')
+            SELECT cp.ciclo, SUM(cp.valor) AS total
+            FROM compras_planos cp
+            JOIN restaurantes r ON r.id = cp.restaurante_id AND r.plataforma = 0
+            WHERE cp.status = 'APROVADO'
+              AND cp.criado_em >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+              AND cp.criado_em < DATE_FORMAT(CURDATE(), '%Y-%m-01')
+            GROUP BY cp.ciclo
         ");
-        $receitaMensalMesAnterior = $stmt->fetch(PDO::FETCH_ASSOC)['receita_mensal'] ?? 0;
+
+        $receitaMensalMesAnterior = 0.0;
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $grupo) {
+            $meses = lancamento_meses_ciclo((string)$grupo['ciclo']);
+            $receitaMensalMesAnterior += (float)$grupo['total'] / $meses;
+        }
 
         $supportSla = ['authorized' => super_admin_has_permission('manage_support'), 'no_prazo' => 0, 'em_risco' => 0, 'vencidos' => 0, 'abertos' => 0];
         if ($supportSla['authorized']) {
