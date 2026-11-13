@@ -807,3 +807,55 @@
         transition-duration: 0.01ms !important;
     }
 }
+
+/* ===== Melhoramentos da barra lateral em ecras pequenos ===== */
+
+/* O nome da plataforma passa a quebrar em vez de ser cortado: o cabecalho
+   reserva espaco para o botao encostado e nao sobrava largura para ele
+   inteiro, aparecendo sempre como "Nivora Restaurant Ad...". */
+.sa-owner-brand-copy strong {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    line-height: 1.18;
+}
+
+@media (max-width: 991px) {
+    .super-admin-ui .sidebar.sa-owner-sidebar {
+        max-width: 320px;
+        /* Travar a altura ao ecra: a barra corta o que transborda, por isso
+           sem este limite os ultimos itens do menu ficavam inalcancaveis em
+           ecras baixos. Com ele, a lista passa a poder rolar. */
+        height: 100dvh;
+        max-height: 100dvh;
+        min-height: 0;
+    }
+
+    /* Em ecra estreito o botao do menu fica fixo no canto superior esquerdo,
+       por cima do emblema. O cabecalho recua desse lado para lhe dar lugar e
+       devolve a direita o espaco que no computador e reservado ao botao
+       encostado -- era isso que cortava o nome da plataforma. */
+    .super-admin-ui .sidebar.sa-owner-sidebar .sa-owner-brand {
+        min-height: 64px;
+        padding: 10px 12px 10px 72px;
+    }
+
+    /* Itens um pouco mais compactos, para caberem sem rolar. */
+    .super-admin-ui .sidebar.sa-owner-sidebar .sa-nav-group {
+        margin-top: 6px;
+    }
+
+    .super-admin-ui .sa-owner-sidebar .nav-item a.nav-link {
+        min-height: 34px;
+        padding: 7px 10px;
+    }
+}
+
+/* Telemovel estreito: o cabecalho encosta-se mais ao botao para o nome da
+   plataforma caber sem reticencias. */
+@media (max-width: 576px) {
+    .super-admin-ui .sidebar.sa-owner-sidebar .sa-owner-brand {
+        padding-left: 66px;
+        gap: 8px;
+    }
+}
