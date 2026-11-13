@@ -197,7 +197,11 @@ if (!function_exists('plano_lifecycle_apply_status')) {
         }
         $status = $map[$estado] ?? 'ATIVO';
         // Uma conta cancelada nunca volta a ATIVO/BLOQUEADO por calculo automatico.
-        $stmt = $db->prepare("UPDATE restaurantes SET status = :status WHERE id = :rid AND COALESCE(status, '') <> 'CANCELADO'");
+        // PENDENTE tambem fica de fora: um restaurante que ainda nao foi aprovado
+        // nao pode ser activado por um calculo de validade do plano. So a
+        // aprovacao o tira desse estado.
+        $stmt = $db->prepare("UPDATE restaurantes SET status = :status
+            WHERE id = :rid AND COALESCE(status, '') NOT IN ('CANCELADO', 'PENDENTE')");
         $stmt->execute([':status' => $status, ':rid' => $restauranteId]);
 
         // Propaga o status da matriz para todas as filiais (is_matriz = 0).

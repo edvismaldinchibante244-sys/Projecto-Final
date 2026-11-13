@@ -437,6 +437,17 @@ try {
         'plano' => (string)$compra['plano_novo'],
         'valor' => (float)$compra['valor'],
     ], 'INFO');
+    // A aprovacao e o unico momento em que um restaurante deixa de estar
+    // PENDENTE. O calculo do ciclo de vida nao lhe toca enquanto estiver nesse
+    // estado, para nenhuma rotina automatica poder activar uma inscricao que
+    // ninguem aprovou.
+    try {
+        $db->prepare("UPDATE restaurantes SET status = 'ATIVO' WHERE id = ? AND status = 'PENDENTE'")
+            ->execute([(int)$compra['restaurante_id']]);
+    } catch (Throwable $e) {
+        error_log('[APROVACAO] Falha a activar restaurante pendente: ' . $e->getMessage());
+    }
+
     plano_lifecycle_evaluate_restaurante($db, (int)$compra['restaurante_id']);
     plano_lifecycle_log($db, (int)$compra['restaurante_id'], 'desbloqueio_automatico', [
         'motivo' => 'pagamento_confirmado',
