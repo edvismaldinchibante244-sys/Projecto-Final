@@ -946,3 +946,22 @@ body.nv-pagina-travada {
         padding-top: 92px;
     }
 }
+
+/* ===== Ordem das camadas em ecras pequenos =====
+   Quatro paginas declaravam a barra lateral em z-index 1000 e o veu em
+   1800, ou seja o veu ficava por cima do proprio menu: o menu aparecia
+   esbatido e os toques iam parar ao veu em vez dos itens. A ordem certa,
+   de baixo para cima: conteudo, faixa do topo, veu, menu, botao. */
+@media (max-width: 991px) {
+    .super-admin-ui .sidebar-backdrop {
+        z-index: 1800;
+    }
+
+    .super-admin-ui .sidebar {
+        z-index: 2000;
+    }
+
+    .super-admin-ui .menu-toggle-btn {
+        z-index: 2100;
+    }
+}
