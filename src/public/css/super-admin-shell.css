@@ -913,3 +913,36 @@ body.nv-pagina-travada {
     width: 100%;
     overflow: hidden;
 }
+
+/* ===== Barra superior em ecras pequenos =====
+   O botao do menu e fixo, por isso flutuava por cima do conteudo e tapava
+   o que passasse por baixo dele ao rolar. Passa a ter uma faixa opaca por
+   tras: o conteudo deixa de desaparecer debaixo de um botao solto e passa
+   a desaparecer debaixo de uma barra, como em qualquer painel.
+   Fica abaixo do veu (1800) para o veu a cobrir com o menu aberto. */
+@media (max-width: 991px) {
+    .super-admin-ui::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 76px;
+        z-index: 1700;
+        background: rgba(245, 247, 255, 0.94);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+        pointer-events: none;
+    }
+
+    .super-admin-ui .menu-toggle-btn {
+        z-index: 2100;
+    }
+
+    /* Espaco para a barra, para o primeiro cartao nao nascer tapado. */
+    .super-admin-ui .main-content,
+    .super-admin-ui .privacy-main {
+        padding-top: 92px;
+    }
+}

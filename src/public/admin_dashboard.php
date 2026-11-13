@@ -235,8 +235,6 @@ if (super_admin_has_permission('manage_privacy') && privacy_request_table_exists
             .sidebar {
                 width: 86vw !important;
                 max-width: 320px !important;
-                min-height: 100vh !important;
-                display: block !important;
             }
 
             .main-content {
