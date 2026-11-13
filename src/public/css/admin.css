@@ -963,3 +963,14 @@
                 padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
             }
         }
+
+        /* ===== Com o menu aberto, quem rola e o menu, nao a pagina =====
+           Sem isto o gesto dentro da barra arrastava a pagina por tras e o
+           menu ficava parado. Travar a pagina enquanto a barra esta aberta
+           faz o gesto pertencer ao menu. Nao se usa aqui touch-action, que
+           se aplicaria a toda a cadeia e anularia o gesto dentro do menu. */
+        @media (max-width: 991px) {
+            body:has(.sidebar:not(.sidebar-hidden)) {
+                overflow: hidden;
+            }
+        }
