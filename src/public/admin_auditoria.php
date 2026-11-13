@@ -139,6 +139,7 @@ function audit_admin_severity_class(string $severity): string
 <body class="super-admin-ui">
 <button type="button" class="menu-toggle-btn" id="btnMenuToggle" aria-label="Abrir menu"><i class="fas fa-bars"></i></button>
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<script src="js/super_admin_sidebar.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/super_admin_sidebar.js'); ?>" defer></script>
 <?php
 $superAdminActiveSection = 'auditoria';
 $superAdminSectionLinks = false;
@@ -194,9 +195,6 @@ include __DIR__ . '/includes/super_admin_sidebar.php';
     </section>
 </main>
 <script nonce="<?php echo function_exists('security_csp_nonce') ? security_csp_nonce() : ''; ?>">
-const auditMobile=()=>window.matchMedia('(max-width:991px)').matches;
-function auditSetSidebar(open){const sidebar=document.querySelector('.sidebar');const backdrop=document.getElementById('sidebarBackdrop');const button=document.getElementById('btnMenuToggle');const icon=button?.querySelector('i');if(!sidebar)return;sidebar.classList.toggle('sidebar-hidden',!open);if(auditMobile()){document.body.classList.remove('layout-sidebar-collapsed');backdrop?.classList.toggle('show',open);button?.classList.remove('is-docked')}else{document.body.classList.toggle('layout-sidebar-collapsed',!open);backdrop?.classList.remove('show');button?.classList.toggle('is-docked',open)}icon?.classList.toggle('fa-bars',!open);icon?.classList.toggle('fa-times',open)}
-document.addEventListener('DOMContentLoaded',()=>{const sidebar=document.querySelector('.sidebar');auditSetSidebar(!auditMobile());document.getElementById('btnMenuToggle')?.addEventListener('click',()=>auditSetSidebar(sidebar?.classList.contains('sidebar-hidden')??true));document.getElementById('sidebarBackdrop')?.addEventListener('click',()=>auditSetSidebar(false));window.addEventListener('resize',()=>auditSetSidebar(!auditMobile()))});
 </script>
 </body>
 </html>

@@ -886,3 +886,30 @@
         padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
     }
 }
+
+/* ===== Veu e travao da pagina, para as paginas de super admin =====
+   O veu existia no HTML de todas as paginas mas so algumas o desenhavam --
+   no painel executivo o elemento estava la sem qualquer estilo, por isso
+   nunca aparecia. Fica aqui, onde todas as paginas o apanham. */
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1800;
+    display: none;
+    background: rgba(15, 23, 42, 0.44);
+}
+
+.sidebar-backdrop.show {
+    display: block;
+}
+
+/* Pagina travada com o menu aberto. Usa-se position:fixed e nao apenas
+   overflow:hidden porque o Safari do iOS ignora o overflow nesta situacao;
+   o deslocamento e reposto pelo JS ao fechar o menu. */
+body.nv-pagina-travada {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+    overflow: hidden;
+}

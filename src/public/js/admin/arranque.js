@@ -32,24 +32,6 @@
                 });
             });
 
-            const btnMenuToggle = document.getElementById('btnMenuToggle');
-            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-            const sidebar = document.querySelector('.sidebar');
-            const startOpen = !isMobileViewport();
-            setSidebarOpen(startOpen);
-
-            btnMenuToggle?.addEventListener('click', () => {
-                const isHidden = sidebar?.classList.contains('sidebar-hidden');
-                setSidebarOpen(!!isHidden);
-            });
-            sidebarBackdrop?.addEventListener('click', () => setSidebarOpen(false));
-            window.addEventListener('resize', () => {
-                if (isMobileViewport()) {
-                    setSidebarOpen(false);
-                } else {
-                    setSidebarOpen(true);
-                }
-            });
 
             document.getElementById('restauranteSelecionadoUsuarios')?.addEventListener('change', carregarUsuarios);
             document.getElementById('btnAcessarDashboard')?.addEventListener('click', acessarDashboard);

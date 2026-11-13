@@ -393,39 +393,6 @@ var __NIVORA_ADMIN = JSON.parse(document.getElementById('cfg-admin').textContent
             return host === 'localhost' || host === '127.0.0.1';
         }
 
-        function isMobileViewport() {
-            return window.matchMedia('(max-width: 991px)').matches;
-        }
-
-        function setSidebarOpen(open) {
-            const sidebar = document.querySelector('.sidebar');
-            const backdrop = document.getElementById('sidebarBackdrop');
-            const btn = document.getElementById('btnMenuToggle');
-            const icon = btn ? btn.querySelector('i') : null;
-            if (!sidebar) return;
-
-            if (isMobileViewport()) {
-                sidebar.classList.toggle('sidebar-hidden', !open);
-                if (backdrop) backdrop.classList.toggle('show', !!open);
-                document.body.classList.remove('layout-sidebar-collapsed');
-                if (btn) btn.classList.remove('is-docked');
-                if (icon) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add(open ? 'fa-times' : 'fa-bars');
-                }
-            } else {
-                sidebar.classList.toggle('sidebar-hidden', !open);
-                document.body.classList.toggle('layout-sidebar-collapsed', !open);
-                if (backdrop) backdrop.classList.remove('show');
-                if (btn) btn.classList.toggle('is-docked', !!open);
-                if (icon) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add(open ? 'fa-times' : 'fa-bars');
-                }
-            }
-        }
 
         // ==================== RESTAURANTES ====================
 

@@ -872,6 +872,7 @@ if ($secaoParam === 'restaurantes' && $can_manage_restaurants) {
     <script src="js/offline_sync.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/offline_sync.js'); ?>"></script>
     <script type="application/json" id="cfg-admin">{"v0": <?php echo json_encode($csrf_token, JSON_UNESCAPED_UNICODE); ?>, "v1": <?php echo json_encode($super_admin_permissions, JSON_UNESCAPED_UNICODE); ?>, "v2": <?php echo json_encode(array_values($restaurante_status_suportados), JSON_UNESCAPED_UNICODE); ?>, "v3": <?php echo json_encode($restaurante_status_labels, JSON_UNESCAPED_UNICODE); ?>, "v4": <?php echo json_encode($default_secao, JSON_UNESCAPED_UNICODE); ?>, "v5": <?php echo json_encode($default_secao, JSON_UNESCAPED_UNICODE); ?>}</script>
     <!-- Painel Super Admin: um ficheiro por area, carregados por esta ordem (partilham variaveis globais). -->
+    <script src="js/super_admin_sidebar.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/super_admin_sidebar.js'); ?>"></script>
     <script src="js/admin/comum.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/admin/comum.js'); ?>"></script>
     <script src="js/admin/arranque.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/admin/arranque.js'); ?>"></script>
     <script src="js/admin/restaurantes.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/admin/restaurantes.js'); ?>"></script>

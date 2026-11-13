@@ -653,47 +653,9 @@ function privacy_timing_class(string $state): string
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/feedback.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/feedback.js'); ?>"></script>
 <script src="js/nivora_dialogo.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/nivora_dialogo.js'); ?>"></script>
+<script src="js/super_admin_sidebar.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/super_admin_sidebar.js'); ?>"></script>
 <script nonce="<?php echo function_exists('security_csp_nonce') ? security_csp_nonce() : ''; ?>">
-    function privacyIsMobileViewport() {
-        return window.matchMedia('(max-width: 991px)').matches;
-    }
-
-    function privacySetSidebarOpen(open) {
-        const sidebar = document.querySelector('.sidebar');
-        const backdrop = document.getElementById('sidebarBackdrop');
-        const button = document.getElementById('btnMenuToggle');
-        const icon = button ? button.querySelector('i') : null;
-        if (!sidebar) return;
-
-        sidebar.classList.toggle('sidebar-hidden', !open);
-        if (privacyIsMobileViewport()) {
-            document.body.classList.remove('layout-sidebar-collapsed');
-            backdrop?.classList.toggle('show', open);
-            button?.classList.remove('is-docked');
-        } else {
-            document.body.classList.toggle('layout-sidebar-collapsed', !open);
-            backdrop?.classList.remove('show');
-            button?.classList.toggle('is-docked', open);
-        }
-        if (icon) {
-            icon.classList.toggle('fa-bars', !open);
-            icon.classList.toggle('fa-times', open);
-        }
-        button?.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
-        const sidebar = document.querySelector('.sidebar');
-        privacySetSidebarOpen(!privacyIsMobileViewport());
-        document.getElementById('btnMenuToggle')?.addEventListener('click', () => {
-            privacySetSidebarOpen(sidebar?.classList.contains('sidebar-hidden') ?? true);
-        });
-        document.getElementById('sidebarBackdrop')?.addEventListener('click', () => privacySetSidebarOpen(false));
-        document.querySelectorAll('.sidebar .nav-link').forEach((link) => {
-            link.addEventListener('click', () => {
-                if (privacyIsMobileViewport()) privacySetSidebarOpen(false);
-            });
-        });
         document.querySelectorAll('[data-confirm]').forEach((button) => {
             button.addEventListener('click', async (event) => {
                 if (button.dataset.confirmado === '1') { button.dataset.confirmado = ''; return; }
@@ -703,7 +665,6 @@ function privacy_timing_class(string $state): string
                 button.click();
             });
         });
-        window.addEventListener('resize', () => privacySetSidebarOpen(!privacyIsMobileViewport()));
         // Texto comprido: 3 linhas e "Ver mais" (so aparece se o texto for mesmo maior).
         const ajustarVerMais = (caso) => caso.querySelectorAll('.pv-descricao').forEach((d) => {
             const btn = d.nextElementSibling;

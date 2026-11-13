@@ -377,6 +377,7 @@ if (super_admin_has_permission('manage_privacy') && privacy_request_table_exists
         <i class="fas fa-bars"></i>
     </button>
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <script src="js/super_admin_sidebar.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/super_admin_sidebar.js'); ?>" defer></script>
 
     <div class="container-fluid">
         <div class="row">
@@ -538,52 +539,7 @@ if (super_admin_has_permission('manage_privacy') && privacy_request_table_exists
             enterprise: '#ffc107'
         };
 
-        // Carregar dados e inicializar gráficos
-        function isMobileViewport() {
-            return window.matchMedia('(max-width: 991px)').matches;
-        }
-
-        function setSidebarOpen(open) {
-            const sidebar = document.querySelector('.sidebar');
-            const backdrop = document.getElementById('sidebarBackdrop');
-            const btn = document.getElementById('btnMenuToggle');
-            const icon = btn ? btn.querySelector('i') : null;
-            if (!sidebar) return;
-
-            if (isMobileViewport()) {
-                sidebar.classList.toggle('sidebar-hidden', !open);
-                if (backdrop) backdrop.classList.toggle('show', !!open);
-                document.body.classList.remove('layout-sidebar-collapsed');
-                if (btn) btn.classList.remove('is-docked');
-                if (icon) {
-                    icon.classList.remove('fa-bars', 'fa-times');
-                    icon.classList.add(open ? 'fa-times' : 'fa-bars');
-                }
-            } else {
-                sidebar.classList.toggle('sidebar-hidden', !open);
-                document.body.classList.toggle('layout-sidebar-collapsed', !open);
-                if (backdrop) backdrop.classList.remove('show');
-                if (btn) btn.classList.toggle('is-docked', !!open);
-                if (icon) {
-                    icon.classList.remove('fa-bars', 'fa-times');
-                    icon.classList.add(open ? 'fa-times' : 'fa-bars');
-                }
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            const btnMenuToggle = document.getElementById('btnMenuToggle');
-            const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-            const sidebar = document.querySelector('.sidebar');
-            setSidebarOpen(!isMobileViewport());
-
-            btnMenuToggle?.addEventListener('click', () => {
-                const isHidden = sidebar?.classList.contains('sidebar-hidden');
-                setSidebarOpen(!!isHidden);
-            });
-            sidebarBackdrop?.addEventListener('click', () => setSidebarOpen(false));
-            window.addEventListener('resize', () => setSidebarOpen(!isMobileViewport()));
-
             carregarEstatisticas();
             carregarGraficos();
         });
