@@ -859,3 +859,30 @@
         gap: 8px;
     }
 }
+/* ===== A lista do menu tem de poder rolar em ecras pequenos =====
+   Se a barra perder o display:flex (por exemplo por uma regra antiga em
+   cache), a area de navegacao deixa de ter altura limitada, cresce ate ao
+   fim do conteudo e a barra -- que corta o que transborda -- esconde o
+   resto sem dar rolagem. Estas regras garantem a coluna e a rolagem. */
+@media (max-width: 991px) {
+    .super-admin-ui .sidebar.sa-owner-sidebar {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .super-admin-ui .sa-owner-sidebar .sa-owner-brand,
+    .super-admin-ui .sa-owner-sidebar .sa-owner-status {
+        flex: 0 0 auto;
+    }
+
+    .super-admin-ui .sa-owner-sidebar .sa-owner-nav {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        /* Folga no fim para o ultimo item nao ficar colado a barra do
+           navegador nem a zona de gestos do telemovel. */
+        padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+}

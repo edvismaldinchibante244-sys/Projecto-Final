@@ -945,3 +945,21 @@
             }
         }
     
+
+        /* ===== A barra lateral tem de poder rolar em ecras pequenos =====
+           A barra e fixa e cresce com o numero de itens; num telemovel baixo
+           os ultimos ficavam fora do ecra e sem forma de la chegar, porque um
+           elemento fixo nao acompanha a rolagem da pagina. Travar a altura ao
+           ecra e deixar a propria barra rolar resolve-o. */
+        @media (max-width: 991px) {
+            .sidebar {
+                box-sizing: border-box;
+                min-height: 0;
+                height: 100dvh;
+                max-height: 100dvh;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            }
+        }
