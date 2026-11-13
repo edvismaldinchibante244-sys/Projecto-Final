@@ -965,3 +965,15 @@ body.nv-pagina-travada {
         z-index: 2100;
     }
 }
+
+/* ===== A barra tem de voltar quando deixa de estar escondida =====
+   Algumas paginas declaram transform: translateX(-100%) na propria regra
+   .sidebar dentro do media query, sem condicao, e sem a regra que a traz de
+   volta. Nessas paginas tirar a classe sidebar-hidden nao fazia nada e o
+   menu nunca aparecia. Esta regra e mais especifica do que as das paginas,
+   por isso vale em todas elas. */
+@media (max-width: 991px) {
+    .super-admin-ui .sidebar:not(.sidebar-hidden) {
+        transform: translateX(0);
+    }
+}
