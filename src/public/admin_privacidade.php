@@ -367,8 +367,8 @@ function privacy_timing_class(string $state): string
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/adminpro-theme.css">
-    <link rel="stylesheet" href="css/premium.css">
+    <link rel="stylesheet" href="css/adminpro-theme.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/adminpro-theme.css'); ?>">
+    <link rel="stylesheet" href="css/premium.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/premium.css'); ?>">
     <style>
         :root { --nav:#0f172a; --accent:#ff7a1a; --ink:#0f172a; --muted:#64748b; --line:#dce3ed; --bg:#f4f7fb; }
         * { box-sizing:border-box; }
@@ -432,7 +432,7 @@ function privacy_timing_class(string $state): string
         @media(max-width:991px){.sidebar{z-index:2000;width:82vw;max-width:340px;min-width:230px;transform:translateX(-100%);box-shadow:2px 0 16px rgba(0,0,0,.08)}.sidebar:not(.sidebar-hidden){transform:translateX(0)}.privacy-main,body.layout-sidebar-collapsed .privacy-main{width:100%;margin-left:0;padding:98px 14px 50px}.menu-toggle-btn{top:16px;left:16px}.privacy-stats{grid-template-columns:1fr 1fr}.privacy-filters,.privacy-actions{grid-template-columns:1fr}.privacy-action-buttons{grid-column:auto;display:grid}.privacy-action-buttons .btn{width:100%}.privacy-request__top,.privacy-header{display:grid}}
         @media(max-width:560px){.sidebar{width:86vw!important;max-width:320px!important;min-height:100vh!important;display:block!important}.menu-toggle-btn{width:50px;height:50px;border-radius:14px}.privacy-stats{grid-template-columns:1fr}.privacy-header .btn{width:100%}.privacy-request{padding:16px}.privacy-meta{display:grid}.privacy-request__top .text-end{text-align:left!important}}
     </style>
-    <link rel="stylesheet" href="css/super-admin-shell.css">
+    <link rel="stylesheet" href="css/super-admin-shell.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/super-admin-shell.css'); ?>">
     <link rel="stylesheet" href="css/super-admin-secoes.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/super-admin-secoes.css'); ?>">
     <style>
         .pv-caso{border-bottom:1px solid var(--line)}

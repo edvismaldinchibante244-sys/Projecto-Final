@@ -90,11 +90,11 @@ if ($secaoParam === 'restaurantes' && $can_manage_restaurants) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/adminpro-theme.css">
-    <link rel="stylesheet" href="css/premium.css">
+    <link rel="stylesheet" href="css/adminpro-theme.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/adminpro-theme.css'); ?>">
+    <link rel="stylesheet" href="css/premium.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/premium.css'); ?>">
 
     <link rel="stylesheet" href="css/admin.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/admin.css'); ?>">
-    <link rel="stylesheet" href="css/super-admin-shell.css">
+    <link rel="stylesheet" href="css/super-admin-shell.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/super-admin-shell.css'); ?>">
     <link rel="stylesheet" href="css/super-admin-secoes.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/super-admin-secoes.css'); ?>">
 </head>
 
