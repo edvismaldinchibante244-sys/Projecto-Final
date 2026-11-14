@@ -50,6 +50,32 @@ $temComparativoFiliais = plano_tem_funcionalidade_db($planoCapabilityId, 'compar
     || plano_tem_funcionalidade_db($planoCapabilityId, 'dashboard_executivo');
 $temTransferenciaEstoqueFiliais = plano_tem_funcionalidade_db($planoCapabilityId, 'transferencia_estoque');
 
+// A gestao de filiais pode estar a ser usada por oferta de boas-vindas. Se
+// for o caso, o dono deve sabe-lo aqui -- no sitio onde cria as filiais --
+// e nao so quando a oferta acabar e o acesso desaparecer.
+$filiaisPorOferta = false;
+$filiaisOfertaDias = 0;
+$filiaisOfertaPlanoPago = '';
+try {
+    require_once APP_BASE . '/src/config/plano_bonus.php';
+    $bonusFiliais = bonus_estado($db, (int)$matrizId);
+    if (!empty($bonusFiliais['ativo'])) {
+        $planoPagoBonus = strtoupper((string)($bonusFiliais['plano_pago'] ?? ''));
+        $nomesPlanosBonus = ['BASICO' => 'Básico', 'PROFISSIONAL' => 'Profissional', 'EMPRESARIAL' => 'Empresarial'];
+        // So avisa se o plano pago nao tiver mesmo multi-filial: quem ja paga
+        // Empresarial nao perde nada quando a oferta acabar.
+        $pagoTemFiliais = function_exists('plano_tem_funcionalidade')
+            && plano_tem_funcionalidade($planoPagoBonus, 'multi_filial');
+        if (!$pagoTemFiliais) {
+            $filiaisPorOferta = true;
+            $filiaisOfertaDias = (int)($bonusFiliais['dias_restantes'] ?? 0);
+            $filiaisOfertaPlanoPago = $nomesPlanosBonus[$planoPagoBonus] ?? $planoPagoBonus;
+        }
+    }
+} catch (Throwable $eBonusFiliais) {
+    error_log('[FILIAIS][OFERTA] ' . $eBonusFiliais->getMessage());
+}
+
 $secao = $_GET['secao'] ?? 'inicio';
 $periodoDias = (int)($_GET['periodo'] ?? 30);
 if (!in_array($periodoDias, [7, 30, 90], true)) {
@@ -519,6 +545,27 @@ function filiais_moeda($valor): string
 </head>
 
 <body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui')); ?>">
+<?php if (!empty($filiaisPorOferta)): ?>
+    <div class="alert alert-info d-flex flex-wrap align-items-center gap-2" role="status" style="margin:16px;">
+        <i class="fas fa-gift"></i>
+        <div class="flex-grow-1">
+            <strong>Está a gerir filiais por oferta de boas-vindas.</strong>
+            <div class="small mt-1">
+                <?php if ($filiaisOfertaDias <= 0): ?>
+                    A oferta termina hoje.
+                <?php elseif ($filiaisOfertaDias === 1): ?>
+                    Falta 1 dia de oferta.
+                <?php else: ?>
+                    Faltam <?php echo (int)$filiaisOfertaDias; ?> dias de oferta.
+                <?php endif; ?>
+                Depois volta ao <?php echo htmlspecialchars($filiaisOfertaPlanoPago, ENT_QUOTES, 'UTF-8'); ?>:
+                as filiais que criar <strong>continuam guardadas com todos os dados</strong>, mas deixa de as poder gerir
+                por aqui até subir para Empresarial.
+            </div>
+        </div>
+        <a class="btn btn-sm btn-primary" href="solicitar_plano.php?plano=EMPRESARIAL">Ficar com o Empresarial</a>
+    </div>
+<?php endif; ?>
     <div class="container-fluid">
         <div class="row">
             <?php include_once __DIR__ . '/includes/sidebar.php'; ?>

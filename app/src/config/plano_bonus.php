@@ -509,7 +509,10 @@ if (!function_exists('bonus_avisar')) {
                         $nomes[$planoBonus] ?? $planoBonus,
                         $nomes[$planoPago] ?? $planoPago,
                         (int)($bonus['dias_restantes'] ?? 0),
-                        $url
+                        $url,
+                        // A mesma lista que o email do fim ja levava. Dita
+                        // agora, enquanto o cliente ainda pode decidir pagar.
+                        bonus_resumo_uso($db, $restauranteId, $bonus)
                     );
                 }
             } catch (Throwable $e) {

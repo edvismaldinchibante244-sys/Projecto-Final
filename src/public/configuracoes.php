@@ -1512,14 +1512,17 @@ $bonusFaixaRid = (int)$restaurante_id;
 include __DIR__ . '/includes/bonus_faixa.php';
 
 if (!empty($planoSemMultiFilial)):
-    $pmfFiliais = 0;
+    // Mostrar as filiais pelo nome, e nao so o numero: quem ve desaparecer o
+    // menu assume que perdeu os dados. Ve-las listadas mostra que estao la.
+    $pmfLista = [];
     try {
-        $stmtPmf = $db->prepare('SELECT COUNT(*) FROM restaurantes WHERE filial_id = :rid');
+        $stmtPmf = $db->prepare('SELECT nome FROM restaurantes WHERE filial_id = :rid ORDER BY nome LIMIT 20');
         $stmtPmf->execute([':rid' => (int)($restauranteId ?? $_SESSION['restaurante_id'] ?? 0)]);
-        $pmfFiliais = (int)$stmtPmf->fetchColumn();
+        $pmfLista = $stmtPmf->fetchAll(PDO::FETCH_COLUMN) ?: [];
     } catch (Throwable $ePmf) {
-        $pmfFiliais = 0;
+        $pmfLista = [];
     }
+    $pmfFiliais = count($pmfLista);
 ?>
     <div class="alert alert-warning d-flex flex-wrap align-items-center gap-2" role="alert" style="margin:16px;">
         <i class="fas fa-circle-info"></i>
@@ -1529,6 +1532,13 @@ if (!empty($planoSemMultiFilial)):
                 <?php if ($pmfFiliais > 0): ?>
                     <?php echo $pmfFiliais === 1 ? 'A filial que criou continua guardada' : 'As ' . $pmfFiliais . ' filiais que criou continuam guardadas'; ?>,
                     com todos os dados. Nada foi apagado &mdash; volta a ter acesso assim que subir de plano.
+                    <div class="mt-2 d-flex flex-wrap gap-2">
+                        <?php foreach ($pmfLista as $pmfNome): ?>
+                            <span class="badge bg-light text-dark border" style="font-weight:600;">
+                                <i class="fas fa-lock me-1" style="opacity:.6;"></i><?php echo htmlspecialchars((string)$pmfNome, ENT_QUOTES, 'UTF-8'); ?>
+                            </span>
+                        <?php endforeach; ?>
+                    </div>
                 <?php else: ?>
                     Suba para Empresarial para criar e gerir filiais.
                 <?php endif; ?>

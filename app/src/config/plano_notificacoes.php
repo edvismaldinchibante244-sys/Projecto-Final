@@ -241,7 +241,12 @@ if (!function_exists('plano_notificar_bonus_lembrete')) {
     /**
      * Lembrete a meio da oferta de boas-vindas (7.º e 12.º dia).
      */
-    function plano_notificar_bonus_lembrete($email, $telefone, $restauranteNome, $planoBonus, $planoPago, $diasRestantes, $url = null)
+    /**
+     * @param array $uso Lista de ['rotulo' => string, 'valor' => int] com o que
+     *                   o restaurante construiu durante a oferta. Dito agora,
+     *                   enquanto ainda da para decidir, e nao so no fim.
+     */
+    function plano_notificar_bonus_lembrete($email, $telefone, $restauranteNome, $planoBonus, $planoPago, $diasRestantes, $url = null, array $uso = [])
     {
         if (empty($email)) {
             return false;
@@ -256,6 +261,26 @@ if (!function_exists('plano_notificar_bonus_lembrete')) {
 
         $quando = $dias <= 0 ? 'Termina hoje' : ($dias === 1 ? 'Falta 1 dia' : 'Faltam ' . $dias . ' dias');
         $assunto = $quando . ' no plano ' . $bonus . ' - ' . $nome;
+
+        // O que construiu com o plano de cima. No fim da oferta isto ja era
+        // dito; dize-lo agora e que muda alguma coisa, porque ainda da tempo
+        // de decidir.
+        $blocoUso = '';
+        $linhasUsoLembrete = '';
+        foreach ($uso as $item) {
+            $valorUso = (int)($item['valor'] ?? 0);
+            if ($valorUso <= 0) {
+                continue;
+            }
+            $linhasUsoLembrete .= "<tr><td style='padding:8px;background:#f8f9fa;font-weight:bold;width:40%;'>"
+                . $valorUso . "</td><td style='padding:8px;'>"
+                . plano_notif_escape((string)($item['rotulo'] ?? '')) . "</td></tr>";
+        }
+        if ($linhasUsoLembrete !== '') {
+            $blocoUso = "<p style='margin-top:18px;'><strong>O que construiu com o {$bonus}:</strong></p>"
+                . "<table style='width:100%;border-collapse:collapse;margin:8px 0;'>{$linhasUsoLembrete}</table>"
+                . "<p style='font-size:13px;color:#555;'>Continua tudo guardado depois da oferta, mas deixa de poder geri-lo pelo {$pago}. Volta a ter acesso assim que subir de plano.</p>";
+        }
         $corpo = "
         <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
         <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>
@@ -264,6 +289,7 @@ if (!function_exists('plano_notificar_bonus_lembrete')) {
             <p>Ola, equipa <strong>{$nome}</strong>!</p>
             <p>Esta a usar o plano <strong>{$bonus}</strong> por oferta de boas-vindas. {$quando} — depois o restaurante volta ao plano <strong>{$pago}</strong>, que e o que paga.</p>
             <p>Nada se perde: tudo o que criou continua la. Se quiser ficar com o {$bonus}, pode mudar de plano no sistema.</p>"
+            . $blocoUso
             . ($link !== '' ? "<p><a href='{$link}' style='display:inline-block;padding:10px 18px;background:#0284c7;color:#fff;border-radius:6px;text-decoration:none;'>Ficar com o {$bonus}</a></p>" : '') . "
             <hr>
             <p style='font-size:12px;color:#888;'>Este e um email automatico.</p>
