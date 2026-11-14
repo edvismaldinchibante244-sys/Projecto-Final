@@ -1638,6 +1638,46 @@ if (!function_exists('mesas_tempo_conta_label')) {
                         <?php endif; ?>
                     <?php endif; ?>
 
+                    <!-- Lista de espera: quem ficou sem mesa. A fila e carregada
+                         por js/mesas.js a partir de api/reservas.php?route=espera. -->
+                    <?php if ($restauranteFeatureId > 0 && plano_tem_funcionalidade_db($restauranteFeatureId, 'reservas_lista_espera')): ?>
+                        <div class="mesas-emp-reservas mb-3" id="mesas-espera-card">
+                            <div class="mesas-emp-reservas-bar">
+                                <div>
+                                    <strong><i class="fas fa-hourglass-half me-2"></i>Lista de espera</strong>
+                                    <span class="text-muted ms-2 small" id="mesas-espera-resumo">a carregar...</span>
+                                    <div class="small text-muted mt-1">Quem ficou sem mesa. Se uma reserva for cancelada, o primeiro da fila e avisado.</div>
+                                </div>
+                                <div class="d-flex gap-2 align-items-center flex-wrap">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="abrirNovaEspera()">
+                                        <i class="fas fa-user-plus me-1"></i>Juntar a fila
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('mesas-espera-body').classList.toggle('is-open')">
+                                        Ver fila
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mesas-emp-reservas-body" id="mesas-espera-body">
+                                <div class="table-responsive">
+                                    <table class="table mb-0 align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Dia e hora</th>
+                                                <th>Cliente</th>
+                                                <th>Pessoas</th>
+                                                <th>Estado</th>
+                                                <th class="text-end">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="mesas-espera-linhas">
+                                            <tr><td colspan="5" class="text-muted">A carregar...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="mesas-emp-layout" id="mesas-emp-layout">
                         <div class="mesas-emp-main">
                             <div class="mesas-emp-toolbar">

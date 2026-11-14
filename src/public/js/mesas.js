@@ -1499,3 +1499,170 @@ function enviarQrReservaWhatsApp(sessaoId, reservaId) {
         showFeedback('Gere o QR, baixe a imagem, selecione o arquivo no formulario e depois abra o WhatsApp.', 'warning', 'alertReservaQr');
     }
 }
+
+/* Escapa texto vindo da base de dados antes de entrar em HTML.
+   Nomes de clientes sao escritos por pessoas e podem conter < ou &. */
+function esperaEscapar(valor) {
+    return String(valor === null || valor === undefined ? '' : valor)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+/* ===================== Lista de espera =====================
+   Quem ficou sem mesa fica aqui. Quando uma reserva e cancelada, o servidor
+   marca o primeiro da fila como avisado e diz quem e na resposta. */
+
+function esperaEstadoRotulo(estado) {
+    switch (String(estado || '').toUpperCase()) {
+        case 'AGUARDA': return { txt: 'Na fila', cls: 'badge-warning' };
+        case 'AVISADO': return { txt: 'Avisado', cls: 'badge-info' };
+        case 'CONVERTIDA': return { txt: 'Virou reserva', cls: 'badge-success' };
+        case 'CANCELADA': return { txt: 'Saiu da fila', cls: 'badge-secondary' };
+        default: return { txt: String(estado || '-'), cls: 'badge-secondary' };
+    }
+}
+
+async function carregarListaEspera() {
+    const corpo = document.getElementById('mesas-espera-linhas');
+    const resumo = document.getElementById('mesas-espera-resumo');
+    if (!corpo) return;
+
+    try {
+        const r = await fetch(buildReservaUrl('espera'), {
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const d = await r.json();
+        const fila = (d && d.fila) || [];
+
+        if (resumo) {
+            resumo.textContent = fila.length === 0
+                ? 'ninguem a espera'
+                : (fila.length === 1 ? '1 pessoa a espera' : fila.length + ' pessoas a espera');
+        }
+
+        if (!fila.length) {
+            corpo.innerHTML = '<tr><td colspan="5" class="text-muted">Ninguem na lista de espera.</td></tr>';
+            return;
+        }
+
+        corpo.innerHTML = fila.map(e => {
+            const est = esperaEstadoRotulo(e.status);
+            const hora = String(e.hora_reserva || '').slice(0, 5);
+            const tel = e.telefone_cliente ? esperaEscapar(String(e.telefone_cliente)) : 'Sem telefone';
+            return '<tr>'
+                + '<td><strong>' + esperaEscapar(String(e.data_reserva || '')) + '</strong><span class="text-muted ms-1">' + esperaEscapar(hora) + '</span></td>'
+                + '<td><strong>' + esperaEscapar(String(e.nome_cliente || '')) + '</strong><div class="small text-muted">' + tel + '</div></td>'
+                + '<td>' + Number(e.quantidade_pessoas || 0) + '</td>'
+                + '<td><span class="badge-custom ' + est.cls + '">' + est.txt + '</span></td>'
+                + '<td class="text-end">'
+                + '<button class="btn btn-success btn-action btn-sm" onclick="converterEspera(' + Number(e.id) + ')" title="Criar a reserva para este cliente"><i class="fas fa-calendar-check"></i></button> '
+                + '<button class="btn btn-outline-danger btn-action btn-sm" onclick="retirarDaEspera(' + Number(e.id) + ')" title="Retirar da fila"><i class="fas fa-xmark"></i></button>'
+                + '</td></tr>';
+        }).join('');
+    } catch (e) {
+        corpo.innerHTML = '<tr><td colspan="5" class="text-danger">Nao foi possivel carregar a lista de espera.</td></tr>';
+        if (resumo) resumo.textContent = '';
+    }
+}
+
+async function abrirNovaEspera() {
+    const zona = document.createElement('div');
+    zona.innerHTML = '<div style="display:grid;gap:10px;">'
+        + '<label style="font-size:13px;font-weight:600;">Nome<input id="esp-nome" class="nd-campo" style="width:100%;" maxlength="120"></label>'
+        + '<label style="font-size:13px;font-weight:600;">Telefone<input id="esp-tel" class="nd-campo" style="width:100%;" maxlength="40"></label>'
+        + '<label style="font-size:13px;font-weight:600;">Email (para o avisarmos se abrir mesa)<input id="esp-email" type="email" class="nd-campo" style="width:100%;" maxlength="180"></label>'
+        + '<label style="font-size:13px;font-weight:600;">Dia<input id="esp-data" type="date" class="nd-campo" style="width:100%;"></label>'
+        + '<label style="font-size:13px;font-weight:600;">Hora<input id="esp-hora" type="time" class="nd-campo" style="width:100%;"></label>'
+        + '<label style="font-size:13px;font-weight:600;">Pessoas<input id="esp-qtd" type="number" min="1" max="50" value="2" class="nd-campo" style="width:100%;"></label>'
+        + '</div>';
+
+    const ok = await nivoraConfirmar({
+        titulo: 'Juntar a lista de espera',
+        mensagem: 'Guardamos o pedido. Se uma reserva for cancelada, este cliente e o proximo a ser avisado.',
+        conteudo: zona,
+        confirmar: 'Juntar a fila'
+    });
+    if (!ok) return;
+
+    const val = id => {
+        const el = zona.querySelector('#' + id);
+        return el ? String(el.value || '').trim() : '';
+    };
+
+    const dados = {
+        nome_cliente: val('esp-nome'),
+        telefone_cliente: val('esp-tel'),
+        email_cliente: val('esp-email'),
+        data_reserva: val('esp-data'),
+        hora_reserva: val('esp-hora'),
+        quantidade_pessoas: Number(val('esp-qtd') || 0)
+    };
+
+    if (!dados.nome_cliente || !dados.data_reserva || !dados.hora_reserva || !dados.quantidade_pessoas) {
+        showFloatingNotice('Preencha nome, dia, hora e numero de pessoas.', 'warning');
+        return;
+    }
+
+    try {
+        const r = await fetch(buildReservaUrl('espera'), {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': getReservaToken()
+            },
+            body: JSON.stringify(dados)
+        });
+        const d = await r.json();
+        showFloatingNotice(d.message || 'Pedido registado.', d.success ? 'success' : 'warning');
+        if (d.success) carregarListaEspera();
+    } catch (e) {
+        showFloatingNotice('Nao foi possivel juntar a fila.', 'error');
+    }
+}
+
+async function converterEspera(esperaId) {
+    if (!(await nivoraConfirmar('Criar a reserva para este cliente?'))) return;
+    await accaoEspera(esperaId + '/converter', 'Reserva criada a partir da lista de espera.');
+}
+
+async function retirarDaEspera(esperaId) {
+    if (!(await nivoraConfirmar({ mensagem: 'Retirar este cliente da fila?', confirmar: 'Retirar', perigo: true }))) return;
+    await accaoEspera(esperaId + '/cancelar', 'Retirado da lista de espera.');
+}
+
+async function accaoEspera(rota, mensagemOk) {
+    try {
+        const r = await fetch(buildReservaUrl('espera/' + rota), {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': getReservaToken()
+            },
+            body: '{}'
+        });
+        const d = await r.json();
+        showFloatingNotice(d.message || mensagemOk, d.success ? 'success' : 'warning');
+        if (d.success) {
+            carregarListaEspera();
+            if (String(rota).includes('/converter')) {
+                setTimeout(() => window.location.reload(), 1200);
+            }
+        }
+    } catch (e) {
+        showFloatingNotice('A operacao falhou.', 'error');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('mesas-espera-card')) {
+        carregarListaEspera();
+    }
+});

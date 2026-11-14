@@ -363,3 +363,51 @@ if (!function_exists('reserva_notificacoes_enviar_status_cliente')) {
         return $enviado;
     }
 }
+
+if (!function_exists('reserva_espera_avisar_vaga')) {
+    /**
+     * Avisa quem estava na lista de espera que se libertou uma mesa.
+     *
+     * Nao reserva nada: a mesa continua livre para quem chegar primeiro, e
+     * o texto diz isso. Prometer a mesa sem o restaurante confirmar criaria
+     * a situacao pior de todas -- o cliente aparece e a mesa ja la nao esta.
+     */
+    function reserva_espera_avisar_vaga(array $espera, string $restauranteNome, string $restauranteTelefone = ''): bool
+    {
+        $email = trim((string)($espera['email'] ?? $espera['email_cliente'] ?? ''));
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        $nome = trim((string)($espera['nome'] ?? $espera['nome_cliente'] ?? 'cliente'));
+        $hora = substr(trim((string)($espera['hora_reserva'] ?? '')), 0, 5);
+        $nomeEsc = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
+        $restEsc = htmlspecialchars($restauranteNome !== '' ? $restauranteNome : 'restaurante', ENT_QUOTES, 'UTF-8');
+        $horaEsc = htmlspecialchars($hora, ENT_QUOTES, 'UTF-8');
+        $telEsc = htmlspecialchars($restauranteTelefone, ENT_QUOTES, 'UTF-8');
+
+        $contacto = $telEsc !== ''
+            ? '<p style="margin:14px 0 0;font-size:14px;color:#334155;line-height:1.6;">Ligue para <b>' . $telEsc . '</b> para confirmar.</p>'
+            : '<p style="margin:14px 0 0;font-size:14px;color:#334155;line-height:1.6;">Contacte o restaurante para confirmar.</p>';
+
+        $html = '<!doctype html><html><body style="margin:0;background:#f8fafc;font-family:Arial,Helvetica,sans-serif;">'
+            . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center" style="padding:28px 12px;">'
+            . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:560px;background:#ffffff;border-radius:18px;border:1px solid #e5e7eb;overflow:hidden;">'
+            . '<tr><td style="padding:24px 28px;background:linear-gradient(135deg,#111827 0%,#ea580c 100%);color:#ffffff;font-size:18px;font-weight:800;">Abriu uma mesa</td></tr>'
+            . '<tr><td style="padding:24px 28px;">'
+            . '<p style="margin:0;font-size:15px;color:#111827;line-height:1.6;">Ola ' . $nomeEsc . ',</p>'
+            . '<p style="margin:12px 0 0;font-size:15px;color:#111827;line-height:1.6;">Estava na nossa lista de espera e acabou de ficar uma mesa livre no <b>' . $restEsc . '</b>'
+            . ($horaEsc !== '' ? ' por volta das <b>' . $horaEsc . '</b>' : '') . '.</p>'
+            . '<p style="margin:12px 0 0;font-size:14px;color:#64748b;line-height:1.6;">A mesa ainda nao esta reservada em seu nome. Confirme connosco para a guardarmos.</p>'
+            . $contacto
+            . '</td></tr></table></td></tr></table></body></html>';
+
+        $assunto = 'Abriu uma mesa no ' . ($restauranteNome !== '' ? $restauranteNome : 'restaurante');
+
+        if (!function_exists('saas_enviar_email')) {
+            return false;
+        }
+
+        return (bool)saas_enviar_email($email, $assunto, $html);
+    }
+}

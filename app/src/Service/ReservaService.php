@@ -3,6 +3,7 @@
 namespace App\Service;
 
 require_once __DIR__ . '/../config/mesa_display_helper.php';
+require_once __DIR__ . '/ListaEsperaService.php';
 
 use App\Model\Reserva;
 use DateTimeImmutable;
@@ -410,7 +411,18 @@ class ReservaService
 
             $this->db->commit();
 
-            return ['success' => true, 'message' => 'Reserva cancelada com sucesso.'];
+            $resposta = ['success' => true, 'message' => 'Reserva cancelada com sucesso.'];
+
+            // Uma mesa que se liberta e a razao de existir da lista de espera:
+            // procurar quem estava a espera dela. Fora da transacao, porque
+            // uma falha aqui nao pode desfazer o cancelamento.
+            $vaga = $this->ofereceVagaAListaDeEspera($restauranteId, $reserva, $mesaId);
+            if ($vaga !== null) {
+                $resposta['lista_espera'] = $vaga;
+                $resposta['message'] .= ' ' . $vaga['message'];
+            }
+
+            return $resposta;
         } catch (Throwable $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
@@ -422,6 +434,65 @@ class ReservaService
                 'message' => 'Nao foi possivel cancelar a reserva.',
                 'error' => 'erro_interno',
             ];
+        }
+    }
+
+    /**
+     * Ve se alguem na lista de espera aproveita a mesa que acabou de vagar.
+     *
+     * Nao cria a reserva sozinho: quem decide e o restaurante, porque pode
+     * haver razoes que o sistema nao conhece. Limita-se a assinalar o
+     * candidato e a marca-lo como avisado.
+     */
+    private function ofereceVagaAListaDeEspera(int $restauranteId, array $reserva, int $mesaId): ?array
+    {
+        try {
+            if (!ListaEsperaService::disponivelNoPlano($restauranteId)) {
+                return null;
+            }
+
+            $capacidade = 0;
+            if ($mesaId > 0) {
+                $stmt = $this->db->prepare('SELECT capacidade FROM mesas WHERE id = :id AND restaurante_id = :rid');
+                $stmt->execute([':id' => $mesaId, ':rid' => $restauranteId]);
+                $capacidade = (int)$stmt->fetchColumn();
+            }
+            if ($capacidade <= 0) {
+                // Sem mesa conhecida, usa-se a dimensao do grupo que desistiu:
+                // e o tamanho que de certeza voltou a ficar livre.
+                $capacidade = (int)($reserva['quantidade_pessoas'] ?? 0);
+            }
+            if ($capacidade <= 0) {
+                return null;
+            }
+
+            $espera = new ListaEsperaService($this->db);
+            $candidato = $espera->proximoDaFila(
+                $restauranteId,
+                (string)($reserva['data_reserva'] ?? ''),
+                (string)($reserva['hora_reserva'] ?? ''),
+                $capacidade
+            );
+
+            if (!$candidato) {
+                return null;
+            }
+
+            $espera->marcarAvisado((int)$candidato['id'], $restauranteId);
+
+            return [
+                'espera_id' => (int)$candidato['id'],
+                'nome' => (string)($candidato['nome_cliente'] ?? ''),
+                'telefone' => (string)($candidato['telefone_cliente'] ?? ''),
+                'email' => (string)($candidato['email_cliente'] ?? ''),
+                'quantidade_pessoas' => (int)($candidato['quantidade_pessoas'] ?? 0),
+                'hora_reserva' => substr((string)($candidato['hora_reserva'] ?? ''), 0, 5),
+                'message' => 'Ha alguem na lista de espera para esta hora: '
+                    . (string)($candidato['nome_cliente'] ?? '') . '.',
+            ];
+        } catch (Throwable $e) {
+            error_log('[LISTA_ESPERA] Falha ao oferecer vaga: ' . $e->getMessage());
+            return null;
         }
     }
 

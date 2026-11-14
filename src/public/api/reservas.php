@@ -6,6 +6,7 @@ require_once APP_BASE . '/src/config/database.php';
 require_once APP_BASE . '/src/config/reserva_qr_schema.php';
 require_once APP_BASE . '/src/Model/Reserva.php';
 require_once APP_BASE . '/src/Service/ReservaService.php';
+require_once APP_BASE . '/src/Service/ListaEsperaService.php';
 require_once APP_BASE . '/src/api/reserva_notificacoes.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -183,9 +184,100 @@ try {
                     . ' Sem email do cliente ou o envio falhou.';
             }
             security_audit_event('reserva_cancelada', ['reserva_id' => $reservaId]);
+
+            // A mesa que vagou pode servir quem esta na lista de espera. O
+            // servico ja identificou o candidato; aqui avisa-se por email e
+            // diz-se ao restaurante quem e, para poder telefonar.
+            if (!empty($resultado['lista_espera']) && is_array($resultado['lista_espera'])) {
+                $espera = $resultado['lista_espera'];
+                $stmtRest = $db->prepare('SELECT nome, telefone FROM restaurantes WHERE id = :id');
+                $stmtRest->execute([':id' => $restauranteId]);
+                $dadosRest = $stmtRest->fetch(PDO::FETCH_ASSOC) ?: [];
+
+                $avisadoEmail = function_exists('reserva_espera_avisar_vaga')
+                    ? reserva_espera_avisar_vaga(
+                        $espera,
+                        (string)($dadosRest['nome'] ?? ''),
+                        (string)($dadosRest['telefone'] ?? '')
+                    )
+                    : false;
+
+                $resultado['lista_espera']['email_enviado'] = $avisadoEmail;
+                $resultado['message'] = trim((string)($resultado['message'] ?? ''))
+                    . ' ' . (string)($espera['message'] ?? '')
+                    . ($avisadoEmail
+                        ? ' Ja foi avisado por email.'
+                        : ' Sem email: contacte-o pelo telefone ' . (string)($espera['telefone'] ?? '') . '.');
+            }
         }
 
         security_json($resultado, !empty($resultado['success']) ? 200 : 422);
+    }
+
+    // ----- Lista de espera -----
+    if (strpos($requestPath, 'espera') === 0) {
+        $servicoEspera = new \App\Service\ListaEsperaService($db);
+
+        if (!\App\Service\ListaEsperaService::disponivelNoPlano($restauranteId)) {
+            security_json([
+                'success' => false,
+                'message' => 'A lista de espera esta disponivel nos planos Profissional e Empresarial.',
+                'code' => 'PLANO_SEM_LISTA_ESPERA',
+            ], 403);
+        }
+
+        if ($requestMethod === 'GET' && $requestPath === 'espera') {
+            $dataFiltro = trim((string)($_GET['data'] ?? ''));
+            $fila = $servicoEspera->listar($restauranteId, $dataFiltro, !empty($_GET['todas']));
+            security_json(['success' => true, 'fila' => $fila, 'total' => count($fila)]);
+        }
+
+        if ($requestMethod === 'POST' && $requestPath === 'espera') {
+            $dados = reservas_read_json_body();
+            if (empty($dados)) {
+                $dados = $_POST;
+            }
+            $r = $servicoEspera->adicionar($restauranteId, $dados);
+            if (!empty($r['success'])) {
+                security_audit_event('lista_espera_adicionada', ['espera_id' => (int)($r['espera_id'] ?? 0)]);
+            }
+            security_json($r, !empty($r['success']) ? 201 : 422);
+        }
+
+        if (preg_match('/^espera\/(\d+)\/cancelar$/', $requestPath, $m) && $requestMethod === 'POST') {
+            $ok = $servicoEspera->cancelar((int)$m[1], $restauranteId);
+            security_json([
+                'success' => $ok,
+                'message' => $ok ? 'Retirado da lista de espera.' : 'Nao foi possivel retirar da lista.',
+            ], $ok ? 200 : 422);
+        }
+
+        if (preg_match('/^espera\/(\d+)\/converter$/', $requestPath, $m) && $requestMethod === 'POST') {
+            $esperaId = (int)$m[1];
+            $registo = $servicoEspera->obter($esperaId, $restauranteId);
+            if (!$registo) {
+                security_json(['success' => false, 'message' => 'Registo nao encontrado.'], 404);
+            }
+
+            $criada = $serviceReserva->criarReserva([
+                'restaurante_id' => $restauranteId,
+                'nome_cliente' => $registo['nome_cliente'],
+                'email_cliente' => $registo['email_cliente'],
+                'telefone_cliente' => $registo['telefone_cliente'],
+                'data_reserva' => $registo['data_reserva'],
+                'hora_reserva' => $registo['hora_reserva'],
+                'quantidade_pessoas' => (int)$registo['quantidade_pessoas'],
+                'observacoes' => $registo['observacoes'],
+                'origem' => 'telefone',
+            ]);
+
+            if (!empty($criada['success'])) {
+                $servicoEspera->marcarConvertida($esperaId, $restauranteId, (int)($criada['reserva_id'] ?? 0));
+                security_audit_event('lista_espera_convertida', ['espera_id' => $esperaId]);
+            }
+
+            security_json($criada, !empty($criada['success']) ? 201 : 422);
+        }
     }
 
     security_json(['success' => false, 'message' => 'Endpoint de reservas nao encontrado.'], 404);
