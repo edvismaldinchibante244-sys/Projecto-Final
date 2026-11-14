@@ -1453,3 +1453,87 @@
             margin: 8px !important;
         }
     }
+
+    /* ===== Telemovel: a barra lateral rola como uma coluna unica =====
+       O cabecalho ocupava 284px e o rodape 276px num ecra de 624px uteis,
+       deixando 65px para o menu: a lista inteira ficava espremida numa
+       frincha que era preciso rolar as cegas, e os itens pareciam colidir
+       com o cartao do utilizador. Passa a rolar tudo em conjunto, como em
+       qualquer menu de telemovel. */
+    @media (max-width: 768px) {
+        .sidebar.sidebar-unified {
+            overflow-y: auto !important;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* A barra e uma grelha de tres filas com a do meio a ficar com o
+           que sobra. Em telemovel sobrava quase nada, por isso aqui as tres
+           filas passam a ter a altura do seu conteudo e e a barra inteira
+           que rola. */
+        .sidebar.sidebar-unified {
+            /* max-content e align-content:start impedem a grelha de
+               comprimir as filas para caberem na altura fixa: cada uma fica
+               com a altura do seu conteudo e e a barra que rola. */
+            grid-template-rows: max-content max-content max-content;
+            align-content: start;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: calc(100dvh - 16px) !important;
+            overflow: auto !important;
+        }
+
+        .sidebar.sidebar-unified .sidebar-menu {
+            min-height: 0;
+            height: auto !important;
+            max-height: none !important;
+            overflow-y: visible !important;
+        }
+
+        /* O emblema grande sozinho roubava um terco do ecra. O seletor
+           repete o das regras por nivel de plano, que sao mais especificas. */
+        .sidebar.sidebar-unified .sidebar-brand .sidebar-brand-media-wrap,
+        body.plan-theme-basico .sidebar-brand-media-wrap,
+        body.plan-theme-profissional .sidebar-brand-media-wrap,
+        body.plan-theme-empresarial .sidebar-brand-media-wrap {
+            max-width: 88px;
+        }
+
+        .sidebar.sidebar-unified .sidebar-brand {
+            padding: 14px 14px 12px;
+        }
+
+        /* Com o menu aberto o botao de fechar fica no canto superior
+           direito; o cabecalho recua desse lado para a etiqueta do plano
+           nao ficar por baixo dele. */
+        body.sidebar-mobile-open .sidebar.sidebar-unified .sidebar-emp-topline,
+        body.sidebar-mobile-open .sidebar.sidebar-unified .sidebar-brand-product {
+            padding-right: 52px;
+        }
+
+        /* A etiqueta nao deve encolher com o recuo: encolhida, ficava
+           reduzida a duas letras. */
+        body.sidebar-mobile-open .sidebar.sidebar-unified .sidebar-emp-topline > *,
+        body.sidebar-mobile-open .sidebar.sidebar-unified .sidebar-emp-topline > * * {
+            flex: 0 0 auto;
+            min-width: 0;
+            max-width: none;
+            overflow: visible;
+            text-overflow: clip;
+            white-space: nowrap;
+        }
+
+        /* O botao ficava escondido com o menu aberto, por isso so se podia
+           fechar tocando fora, sem nada que o indicasse. */
+        body.sidebar-mobile-open .sidebar-mobile-toggle {
+            display: flex !important;
+            /* Ha uma regra com position: static !important para este botao,
+               por isso a forca tem de ser a mesma. */
+            position: fixed !important;
+            top: 20px !important;
+            right: 20px !important;
+            left: auto !important;
+            bottom: auto !important;
+            z-index: 1150 !important;
+        }
+    }
