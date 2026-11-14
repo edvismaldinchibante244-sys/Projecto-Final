@@ -1207,9 +1207,16 @@ $csrf_token = csrf_get_token();
         body.plano-empresarial .emp-lote-bar .emp-lote-limpar { background: transparent; border-color: transparent; color: #cbd5e1; }
         body.plano-empresarial .emp-produtos-table tr.is-sel td { background: #fff7ed !important; }
     </style>
+    <link rel="stylesheet" href="css/bonus_faixa.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/bonus_faixa.css'); ?>">
 </head>
 
 <body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui')); ?>">
+<?php
+// Faixa da oferta de boas-vindas: o dono passa o dia nestas paginas, nao
+// nas Configuracoes, por isso o aviso do fim da oferta tem de aparecer aqui.
+include __DIR__ . '/includes/bonus_faixa.php';
+?>
+
     <div class="container-fluid">
         <div class="row">
             <!-- SIDEBAR -->

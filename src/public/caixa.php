@@ -1079,9 +1079,16 @@ $top_iniciais = mb_strtoupper(
         .caixa-cego-aviso { margin-top: 10px; padding: 9px 12px; border-radius: 10px; background: #eff6ff; color: #1e40af; font-size: 13px; font-weight: 600; }
         .caixa-hist-print { margin-left: 8px; color: #475569; }
     </style>
+    <link rel="stylesheet" href="css/bonus_faixa.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/bonus_faixa.css'); ?>">
 </head>
 
 <body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui')); ?>">
+<?php
+// Faixa da oferta de boas-vindas: o dono passa o dia nestas paginas, nao
+// nas Configuracoes, por isso o aviso do fim da oferta tem de aparecer aqui.
+include __DIR__ . '/includes/bonus_faixa.php';
+?>
+
     <div class="container-fluid">
         <div class="row">
             <!-- SIDEBAR -->

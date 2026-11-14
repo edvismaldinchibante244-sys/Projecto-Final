@@ -1037,9 +1037,16 @@ if (!function_exists('mesas_tempo_conta_label')) {
         .nv-qr-modal-acts button { flex: 1; padding: 10px; border-radius: 10px; font-weight: 700; border: 1px solid #e2e8f0; background: #fff; }
         .nv-qr-modal-acts button.primary { background: #ea580c; color: #fff; border-color: #ea580c; }
     </style>
+    <link rel="stylesheet" href="css/bonus_faixa.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/bonus_faixa.css'); ?>">
 </head>
 
 <body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui')); ?>">
+<?php
+// Faixa da oferta de boas-vindas: o dono passa o dia nestas paginas, nao
+// nas Configuracoes, por isso o aviso do fim da oferta tem de aparecer aqui.
+include __DIR__ . '/includes/bonus_faixa.php';
+?>
+
     <div class="container-fluid">
         <div class="row">
             <!-- Botão toggle do menu para mobile -->

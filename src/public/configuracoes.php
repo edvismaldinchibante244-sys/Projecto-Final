@@ -73,6 +73,12 @@ $planoRestrito = in_array($erro, ['plano_restrito', 'plano_modo_limitado'], true
 $planoModoLimitado = ($erro === 'plano_modo_limitado') || (($_SESSION['plano_lifecycle']['limite_nivel'] ?? '') === 'READ_ONLY');
 $planoAlertaSessao = is_array($_SESSION['plano_alerta'] ?? null) ? $_SESSION['plano_alerta'] : [];
 
+// A pagina das Filiais manda para aqui quando o plano deixa de ter
+// multi-filial -- tipicamente no fim da oferta de boas-vindas. Ate agora
+// ninguem lia este parametro: o cliente era atirado para outra pagina sem
+// explicacao nenhuma, e e dai que vem a reclamacao de que "perdeu" a filial.
+$planoSemMultiFilial = ($erro === 'plano_sem_multi_filial');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome     = trim($_POST['nome'] ?? '');
     $telefone = trim($_POST['telefone'] ?? '');
@@ -1504,6 +1510,34 @@ if ($cfgEmpresarial) {
 // Oferta de boas-vindas: dias que faltam, resumo final e aviso de limite.
 $bonusFaixaRid = (int)$restaurante_id;
 include __DIR__ . '/includes/bonus_faixa.php';
+
+if (!empty($planoSemMultiFilial)):
+    $pmfFiliais = 0;
+    try {
+        $stmtPmf = $db->prepare('SELECT COUNT(*) FROM restaurantes WHERE filial_id = :rid');
+        $stmtPmf->execute([':rid' => (int)($restauranteId ?? $_SESSION['restaurante_id'] ?? 0)]);
+        $pmfFiliais = (int)$stmtPmf->fetchColumn();
+    } catch (Throwable $ePmf) {
+        $pmfFiliais = 0;
+    }
+?>
+    <div class="alert alert-warning d-flex flex-wrap align-items-center gap-2" role="alert" style="margin:16px;">
+        <i class="fas fa-circle-info"></i>
+        <div class="flex-grow-1">
+            <strong>A gestao de filiais faz parte do plano Empresarial.</strong>
+            <div class="small mt-1">
+                <?php if ($pmfFiliais > 0): ?>
+                    <?php echo $pmfFiliais === 1 ? 'A filial que criou continua guardada' : 'As ' . $pmfFiliais . ' filiais que criou continuam guardadas'; ?>,
+                    com todos os dados. Nada foi apagado &mdash; volta a ter acesso assim que subir de plano.
+                <?php else: ?>
+                    Suba para Empresarial para criar e gerir filiais.
+                <?php endif; ?>
+            </div>
+        </div>
+        <a class="btn btn-sm btn-warning" href="solicitar_plano.php?plano=EMPRESARIAL">Ver o plano Empresarial</a>
+    </div>
+<?php
+endif;
 ?>
                     <?php if ($mensagem): ?>
                         <div class="alert alert-<?php echo $tipo_msg; ?> alert-dismissible fade show" role="alert">

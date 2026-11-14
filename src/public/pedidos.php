@@ -321,9 +321,16 @@ if (($plano_atual ?? '') === 'EMPRESARIAL' && $db instanceof PDO) {
     <?php if (!empty($isEmpresarialUi)): ?>
         <link rel="stylesheet" href="css/pedidos-empresarial.css?v=<?php echo (int)@filemtime(__DIR__ . "/css/pedidos-empresarial.css"); ?>">
     <?php endif; ?>
+    <link rel="stylesheet" href="css/bonus_faixa.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/bonus_faixa.css'); ?>">
 </head>
 
 <body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui' . (!empty($isEmpresarialUi) ? ' pedidos-emp-shell' : ''))); ?>">
+<?php
+// Faixa da oferta de boas-vindas: o dono passa o dia nestas paginas, nao
+// nas Configuracoes, por isso o aviso do fim da oferta tem de aparecer aqui.
+include __DIR__ . '/includes/bonus_faixa.php';
+?>
+
 
     <div class="container-fluid">
         <div class="row">

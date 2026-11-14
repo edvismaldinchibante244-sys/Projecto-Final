@@ -622,9 +622,14 @@ $top_iniciais = mb_strtoupper(
     <link rel="stylesheet" href="css/premium.css">
     <link rel="stylesheet" href="css/relatorios.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/relatorios.css'); ?>">
     <?php empresarial_head_assets(); ?>
+    <link rel="stylesheet" href="css/bonus_faixa.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/bonus_faixa.css'); ?>">
 </head>
 
 <body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui ' . ($tem_relatorios_avancados ? 'plan-advanced' : 'plan-basic'))); ?>">
+<?php
+// Faixa da oferta de boas-vindas: tem de aparecer onde o dono trabalha.
+include __DIR__ . '/includes/bonus_faixa.php';
+?>
     <div class="container-fluid">
         <div class="row">
             <!-- Botão toggle do menu para mobile -->

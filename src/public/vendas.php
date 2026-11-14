@@ -1255,9 +1255,16 @@ if (!function_exists('pdv_img_iniciais')) {
         }
         body.plano-empresarial .pdv-emp-cart #btnPagarEnviar, body.plano-empresarial .pdv-emp-cart #btnFinalizarVenda { padding-top: .8rem !important; padding-bottom: .8rem !important; }
     </style>
+    <link rel="stylesheet" href="css/bonus_faixa.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/bonus_faixa.css'); ?>">
 </head>
 
 <body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui')); ?>">
+<?php
+// Faixa da oferta de boas-vindas: o dono passa o dia nestas paginas, nao
+// nas Configuracoes, por isso o aviso do fim da oferta tem de aparecer aqui.
+include __DIR__ . '/includes/bonus_faixa.php';
+?>
+
     <div class="container-fluid">
         <div class="row">
             <?php include_once __DIR__ . '/includes/sidebar.php'; ?>
