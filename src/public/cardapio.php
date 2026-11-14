@@ -408,7 +408,7 @@ if ($isCardapioEmpresarial) {
                     <?php if ($logo_url): ?>
                         <img src="<?php echo htmlspecialchars($logo_url, ENT_QUOTES, 'UTF-8'); ?>" alt="Logo <?php echo htmlspecialchars($restaurante['nome']); ?>">
                     <?php else: ?>
-                        <span><?php echo substr(strtoupper($restaurante['nome']), 0, 2); ?></span>
+                        <span><?php echo htmlspecialchars(mb_substr(mb_strtoupper((string)($restaurante['nome'] ?? ''), 'UTF-8'), 0, 2, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?></span>
                     <?php endif; ?>
                 </div>
                 <h2 class="menu-sidebar-title"><?php echo htmlspecialchars($restaurante['nome']); ?></h2>
@@ -457,7 +457,7 @@ if ($isCardapioEmpresarial) {
                         <?php if ($logo_url): ?>
                             <img src="<?php echo htmlspecialchars($logo_url, ENT_QUOTES, 'UTF-8'); ?>" alt="" width="48" height="48" decoding="async">
                         <?php else: ?>
-                            <span><?php echo htmlspecialchars(substr(strtoupper($restaurante['nome']), 0, 2), ENT_QUOTES, 'UTF-8'); ?></span>
+                            <span><?php echo htmlspecialchars(mb_substr(mb_strtoupper((string)($restaurante['nome'] ?? ''), 'UTF-8'), 0, 2, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?></span>
                         <?php endif; ?>
                         <small>Cardápio de <?php echo htmlspecialchars($restaurante['nome'], ENT_QUOTES, 'UTF-8'); ?></small>
                     </div>
@@ -484,7 +484,7 @@ if ($isCardapioEmpresarial) {
                     <?php if ($logo_url): ?>
                         <img src="<?php echo htmlspecialchars($logo_url, ENT_QUOTES, 'UTF-8'); ?>" alt="Logo <?php echo htmlspecialchars($restaurante['nome']); ?>">
                     <?php else: ?>
-                        <span><?php echo substr(strtoupper($restaurante['nome']), 0, 2); ?></span>
+                        <span><?php echo htmlspecialchars(mb_substr(mb_strtoupper((string)($restaurante['nome'] ?? ''), 'UTF-8'), 0, 2, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?></span>
                     <?php endif; ?>
                 </div>
             </div>

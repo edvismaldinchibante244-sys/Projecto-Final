@@ -85,11 +85,33 @@ php_flag expose_php Off
 # Cabeçalhos de segurança
 <IfModule mod_headers.c>
   SetEnvIfNoCase Host "^(localhost|127\.0\.0\.1)(:\d+)?$" LOCAL_DEV=1
+
+  # O security.php ja envia estes cabecalhos nas paginas PHP e o Apache corre
+  # depois dele, por isso o navegador recebia os dois valores juntos
+  # ("DENY, DENY") e, no Referrer-Policy, dois valores em conflito.
+  #
+  # O "unset" vai SEM "always" de proposito. No mod_headers, "always" actua
+  # sobre uma tabela de cabecalhos diferente daquela onde o PHP escreve: um
+  # "always unset" nao apagaria nada. Prova disto no proprio sistema: a CSP,
+  # que usa "Header set" sem "always", nunca veio duplicada, enquanto todas as
+  # que usam "always set" vinham a dobrar.
+  #
+  # Se o mod_headers faltar, nada disto corre e os cabecalhos do PHP ficam a
+  # valer -- a rede de seguranca mantem-se.
+  Header unset Strict-Transport-Security
+  Header unset X-Frame-Options
+  Header unset X-XSS-Protection
+  Header unset X-Content-Type-Options
+  Header unset Referrer-Policy
+  Header unset Permissions-Policy
+
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=!LOCAL_DEV
   Header always set X-Frame-Options "DENY"
   Header always set X-XSS-Protection "1; mode=block"
   Header always set X-Content-Type-Options "nosniff"
-  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  # same-origin e mais restritivo que strict-origin-when-cross-origin: nao
+  # revela sequer a origem a sites externos. Igual ao que o security.php usa.
+  Header always set Referrer-Policy "same-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
   # CSP alinhada com security.php (inline ainda necessário até migrar scripts para ficheiros)
   Header set Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; connect-src 'self' https: wss:; upgrade-insecure-requests" env=!LOCAL_DEV
