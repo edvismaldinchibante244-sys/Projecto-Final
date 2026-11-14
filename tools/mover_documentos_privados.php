@@ -29,6 +29,47 @@ $aplicar = in_array('--aplicar', $argv, true);
 $publico = $base . '/src/public';
 $pastas = ['uploads/comprovativos', 'uploads/documentos_titularidade'];
 
+/**
+ * Quem e o utilizador do servidor web.
+ *
+ * Este script costuma ser corrido como root (por SSH no servidor). Uma pasta
+ * criada assim fica com dono root e modo 0700, e entao o Apache -- que corre
+ * como www-data -- nao consegue sequer entrar nela: os ficheiros estao la mas
+ * o sistema responde "nao encontrado". Por isso, tudo o que este script cria
+ * passa para o dono do servidor web.
+ */
+$donoWeb = null;
+if (function_exists('posix_geteuid') && posix_geteuid() === 0) {
+    foreach (['www-data', 'apache', 'nginx', 'nobody'] as $candidato) {
+        if (function_exists('posix_getpwnam') && posix_getpwnam($candidato) !== false) {
+            $donoWeb = $candidato;
+            break;
+        }
+    }
+    if ($donoWeb === null) {
+        echo "AVISO: a correr como root e nao encontrei o utilizador do servidor web.\n";
+        echo "       Depois de mover, confirme o dono das pastas em " . nv_storage('privado') . "\n\n";
+    }
+}
+
+/** Poe o caminho no dono do servidor web, quando sabemos quem e. */
+$darDono = static function (string $caminho) use ($donoWeb): void {
+    if ($donoWeb === null) {
+        return;
+    }
+    @chown($caminho, $donoWeb);
+    @chgrp($caminho, $donoWeb);
+};
+
+// As pastas acima destas tambem podem ter sido criadas por engano como root.
+if ($donoWeb !== null) {
+    foreach ([nv_storage('privado'), nv_storage('privado') . '/uploads'] as $acima) {
+        if (is_dir($acima)) {
+            $darDono($acima);
+        }
+    }
+}
+
 $movidos = 0;
 $jaLa = 0;
 $falhas = 0;
@@ -47,6 +88,7 @@ foreach ($pastas as $pasta) {
         $falhas++;
         continue;
     }
+    $darDono($destinoDir);
 
     foreach (scandir($origemDir) ?: [] as $nome) {
         if ($nome === '.' || $nome === '..' || $nome === '.htaccess') {
@@ -85,6 +127,7 @@ foreach ($pastas as $pasta) {
 
         if (@rename($origem, $destino)) {
             @chmod($destino, 0600);
+            $darDono($destino);
             $movidos++;
             echo "  movido: $pasta/$nome\n";
         } else {
@@ -92,6 +135,7 @@ foreach ($pastas as $pasta) {
             // servidor costuma ser outro disco): copiar e so depois apagar.
             if (@copy($origem, $destino) && is_file($destino) && filesize($destino) === filesize($origem)) {
                 @chmod($destino, 0600);
+                $darDono($destino);
                 if (@unlink($origem)) {
                     $movidos++;
                     echo "  copiado e removido: $pasta/$nome\n";
