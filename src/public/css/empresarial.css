@@ -5759,3 +5759,14 @@ body.plano-empresarial .rel-emp-acao-chip { justify-self: start; }
         .rel-cancel-total small { color: #64748b; margin-left: 4px; }
     
 .rel-mini-table + .small, .rel-mini-resumo { padding: 8px 16px; }
+
+/* ===== Telemovel: tabelas dentro dos cartoes de relatorio =====
+   As tabelas sao mais largas do que o cartao e o cartao corta o que passa,
+   por isso a ultima coluna ficava invisivel e sem forma de la chegar.
+   Passam a rolar na horizontal dentro do proprio cartao. */
+@media (max-width: 575.98px) {
+    body.plano-empresarial .rel-emp-intel-card .card-body {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}

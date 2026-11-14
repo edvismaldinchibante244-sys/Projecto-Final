@@ -720,6 +720,12 @@ $usuario_nome   = $_SESSION['nome'] ?? 'Garçom';
             #footer-status { padding-right: 96px; }
         }
         @media (max-width: 560px) {
+            /* A barra nao podia quebrar e o ultimo botao ficava cortado
+               fora do ecra. Com quebra, passa para a linha de baixo quando
+               nao cabe, em vez de desaparecer. */
+            .topbar { flex-wrap: wrap; row-gap: 8px; padding: 12px 14px; }
+            .topbar-left { min-width: 0; flex: 1 1 auto; }
+            .topbar-right { flex: 0 0 auto; margin-left: auto; }
             .topbar-right .gm-lbl { display: none; }
             .topbar-right .btn i { margin-right: 0 !important; }
             #toast-container { top: 64px; right: 10px; left: 10px; align-items: stretch; }

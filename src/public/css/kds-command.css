@@ -738,6 +738,16 @@ body.kds-command-v2.plan-theme-profissional:not(.kds-mode-simple) .tone-prep .kd
         padding: 0 14px 20px;
     }
 
+    /* As regras por nivel de plano acima sao mais especificas do que a de
+       cima e ganhavam mesmo dentro deste media query: o quadro ficava com
+       tres colunas de cerca de 99px num ecra de 360, com as palavras
+       cortadas a meio. Aqui repete-se a coluna unica com a mesma
+       especificidade delas. */
+    body.kds-command-v2.kds-layout-operational-kds:not(.kds-mode-simple) .board,
+    body.kds-command-v2.kds-layout-intelligent-command:not(.kds-mode-simple) .board {
+        grid-template-columns: 1fr;
+    }
+
     body.kds-command-v2:not(.kds-mode-simple) .column-critico { grid-column: auto; }
 }
 

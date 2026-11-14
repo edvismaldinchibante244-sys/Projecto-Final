@@ -548,3 +548,18 @@ body.plan-theme-empresarial .pedidos-qr-card {
     border-color: rgba(194, 65, 12, 0.22) !important;
     background: linear-gradient(135deg, rgba(255, 247, 237, 0.9), #fff);
 }
+
+
+/* ===== Telemovel: o titulo da pagina com a etiqueta do plano =====
+   Cada pagina define o seu proprio .page-title em flex sem permitir quebra,
+   por isso a etiqueta do plano saia para fora do ecra e ficava cortada.
+   Esta regra e mais especifica do que a de cada pagina, por isso vale em
+   todas elas sem as alterar uma a uma. */
+@media (max-width: 575.98px) {
+    .premium-ui .page-title,
+    .super-admin-ui .page-title {
+        flex-wrap: wrap;
+        row-gap: 6px;
+        min-width: 0;
+    }
+}
