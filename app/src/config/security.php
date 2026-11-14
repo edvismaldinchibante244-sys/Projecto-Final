@@ -802,15 +802,40 @@ if (!function_exists('security_validate_upload')) {
             $error = 'Arquivo temporário inválido.';
             return false;
         }
+        // Tipo real do conteudo, e nao a extensao: um .jpg pode ser qualquer
+        // coisa. Em caso de duvida recusa-se -- antes isto falhava em aberto,
+        // deixando passar o ficheiro quando nao conseguia determinar o tipo.
+        $mime = '';
         if (function_exists('finfo_open')) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mime = $finfo ? finfo_file($finfo, $file['tmp_name']) : '';
-            if ($finfo) finfo_close($finfo);
-            if ($mime && !in_array($mime, $allowedMime, true)) {
-                $error = 'Tipo de arquivo não permitido.';
+            if ($finfo) {
+                $mime = (string)finfo_file($finfo, $file['tmp_name']);
+                finfo_close($finfo);
+            }
+        }
+        if ($mime === '' && function_exists('mime_content_type')) {
+            $mime = (string)(mime_content_type($file['tmp_name']) ?: '');
+        }
+        if ($mime === '') {
+            $error = 'Nao foi possivel confirmar o tipo do ficheiro.';
+            return false;
+        }
+        if (!in_array($mime, $allowedMime, true)) {
+            $error = 'Tipo de arquivo não permitido.';
+            return false;
+        }
+
+        // Imagens: confirmar que abrem mesmo como imagem. Um ficheiro pode
+        // comecar com assinatura de PNG e levar codigo atras dela.
+        $extensoesImagem = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if (in_array($ext, $extensoesImagem, true)) {
+            $dimensoes = @getimagesize($file['tmp_name']);
+            if ($dimensoes === false || empty($dimensoes[0]) || empty($dimensoes[1])) {
+                $error = 'A imagem enviada nao e valida.';
                 return false;
             }
         }
+
         return true;
     }
 }

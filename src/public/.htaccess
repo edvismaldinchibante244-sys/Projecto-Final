@@ -105,4 +105,6 @@ php_flag expose_php Off
   </Files>
 </IfModule>
 
-# Garante que uploads não executem PHP (há regra própria em /uploads/.htaccess)
+# Uploads: a regra propria esta em /uploads/.htaccess (nega o acesso directo
+# e a execucao). Os documentos privados ja nao vivem ai -- estao fora da raiz
+# do site, em nv_storage('privado') -- mas a regra fica como segunda barreira.

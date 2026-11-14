@@ -73,3 +73,12 @@ phpunit.phar
 .phpunit.result.cache
 # Ficheiros movidos pela limpeza (apagar depois de verificar)
 _to_delete/
+
+# A regra que protege a pasta de uploads tem de ir para o repositorio.
+# Ate agora existia no computador mas estava ignorada aqui, por isso nunca
+# chegava ao servidor: em producao a pasta ficava sem protecao nenhuma.
+# As tres linhas sao precisas por esta ordem -- o git so permite excepcoes
+# dentro de uma pasta se a pasta em si nao estiver excluida.
+!src/public/uploads/
+src/public/uploads/*
+!src/public/uploads/.htaccess

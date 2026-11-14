@@ -1,0 +1,46 @@
+# Pasta de ficheiros enviados por utilizadores.
+#
+# Nada aqui e servido directamente. Os comprovativos de pagamento sao
+# documentos bancarios de clientes e so devem sair por comprovativo_arquivo.php,
+# que confirma a sessao antes de os entregar. Ate agora o Apache servia tambem
+# o caminho directo, sem passar por essa verificacao: quem tivesse o endereco
+# abria o documento sem estar autenticado.
+#
+# Segunda razao: nada aqui pode ser executado. Um ficheiro enviado nunca deve
+# correr como codigo, mesmo que consiga passar pela validacao de tipo.
+
+# Apache 2.4
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+# Apache 2.2
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
+
+# Mesmo que uma regra acima seja relaxada um dia, nada corre como PHP.
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+<FilesMatch "\.(php|php3|php4|php5|php7|php8|phtml|phar|pl|py|cgi|sh|htaccess)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+Options -Indexes -ExecCGI
+AddHandler default-handler .php .phtml .phar .cgi .pl .py .sh
+RemoveHandler .php .phtml .phar

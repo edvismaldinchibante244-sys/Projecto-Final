@@ -103,9 +103,18 @@ try {
     $deny();
 }
 
-$absolute = __DIR__ . '/' . $path;
+// O ficheiro vive agora fora da pasta publica. Os enviados antes desta
+// mudanca ainda estao em src/public/uploads, por isso procura-se primeiro no
+// sitio novo e so depois no antigo -- assim nada deixa de abrir.
+require_once APP_BASE . '/src/config/storage_path.php';
+$absolute = nv_ficheiro_privado($path);
 if (!is_file($absolute)) {
-    $deny();
+    $legado = __DIR__ . '/' . $path;
+    if (is_file($legado)) {
+        $absolute = $legado;
+    } else {
+        $deny();
+    }
 }
 
 $ext = strtolower(pathinfo($absolute, PATHINFO_EXTENSION));

@@ -569,11 +569,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $tipo_msg = 'danger';
                             } else {
                                 $dir_logo_absoluto = __DIR__ . '/uploads/restaurantes/logos';
-                                $dir_upload_absoluto = __DIR__ . '/uploads/comprovativos';
-                                $dir_documento_absoluto = __DIR__ . '/uploads/documentos_titularidade';
+                                // Comprovativo e documento de titularidade sao
+                                // documentos bancarios e de identidade: ficam
+                                // fora da pasta publica. O logotipo nao, que e
+                                // mostrado no site e nao tem nada de privado.
+                                require_once APP_BASE . '/src/config/storage_path.php';
+                                $dir_upload_absoluto = nv_ficheiro_privado('uploads/comprovativos');
+                                $dir_documento_absoluto = nv_ficheiro_privado('uploads/documentos_titularidade');
                                 if ((!is_dir($dir_logo_absoluto) && !mkdir($dir_logo_absoluto, 0755, true))
-                                    || (!is_dir($dir_upload_absoluto) && !mkdir($dir_upload_absoluto, 0755, true))
-                                    || (!is_dir($dir_documento_absoluto) && !mkdir($dir_documento_absoluto, 0755, true))
+                                    || (!is_dir($dir_upload_absoluto) && !mkdir($dir_upload_absoluto, 0700, true))
+                                    || (!is_dir($dir_documento_absoluto) && !mkdir($dir_documento_absoluto, 0700, true))
                                 ) {
                                     $mensagem = 'Nao foi possivel preparar os diretorios de upload.';
                                     $tipo_msg = 'danger';

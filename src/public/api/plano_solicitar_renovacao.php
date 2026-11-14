@@ -155,8 +155,11 @@ try {
     $statusPendenteCompra = plan_security_purchase_status_value($db, 'PENDING');
 
     if (!$isTrialRequest) {
-        $dir_upload_absoluto = __DIR__ . '/../uploads/comprovativos';
-        if (!is_dir($dir_upload_absoluto) && !mkdir($dir_upload_absoluto, 0755, true)) {
+        // Fora da pasta publica: um comprovativo e um documento bancario e so
+        // deve sair pelo comprovativo_arquivo.php, que confirma a sessao.
+        require_once APP_BASE . '/src/config/storage_path.php';
+        $dir_upload_absoluto = nv_ficheiro_privado('uploads/comprovativos');
+        if (!is_dir($dir_upload_absoluto) && !mkdir($dir_upload_absoluto, 0700, true)) {
             security_json(["success" => false, "message" => "Nao foi possivel preparar diretorio de comprovativos"], 500);
         }
 

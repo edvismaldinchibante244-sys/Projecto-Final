@@ -1,11 +1,32 @@
-<IfModule mod_php7.c>
-    php_flag engine off
-</IfModule>
+# Imagens publicas (logotipos, fotos de produtos, fotos de perfil).
+#
+# Sao servidas directamente, ao contrario dos documentos privados, mas nada
+# aqui pode correr como codigo: um ficheiro enviado por um utilizador nunca
+# deve ser executado, mesmo que consiga passar pela validacao de tipo.
+#
+# Este ficheiro continha um unico caracter ("x"), que nao e directiva nenhuma
+# e nao protegia nada.
+
 <IfModule mod_php.c>
     php_flag engine off
 </IfModule>
-<FilesMatch "\.(php|phtml|phar)$">
-    Order allow,deny
-    Deny from all
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+<FilesMatch "\.(php|php3|php4|php5|php7|php8|phtml|phar|pl|py|cgi|sh|htaccess)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
-Options -ExecCGI
+
+Options -Indexes -ExecCGI
+AddHandler default-handler .php .phtml .phar .cgi .pl .py .sh
+RemoveHandler .php .phtml .phar
