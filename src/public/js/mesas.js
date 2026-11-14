@@ -497,8 +497,77 @@ function abrirModalReservaQr() {
 }
 
 async function confirmarReserva(reservaId) {
-    if (!(await nivoraConfirmar('Confirmar esta reserva?'))) return;
-    executarAcaoReserva(reservaId + '/confirmar', {}, 'Reserva confirmada com sucesso.');
+    // A mesa escolhida aqui vai na mensagem ao cliente, por isso mostra-se
+    // qual e e deixa-se trocar antes de confirmar, em vez de o sistema
+    // escolher sozinho sem ninguem ver.
+    let reserva = null;
+    let mesas = [];
+    try {
+        const rResp = await fetch(buildReservaUrl(String(reservaId)), { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        const rJson = await rResp.json();
+        reserva = rJson && (rJson.reserva || rJson.data || rJson);
+        if (reserva && reserva.data_reserva) {
+            const dUrl = buildReservaUrl('disponibilidade', {
+                data: reserva.data_reserva,
+                hora: String(reserva.hora_reserva || '').slice(0, 5),
+                quantidade: reserva.quantidade_pessoas || 2
+            });
+            const d = await (await fetch(dUrl, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })).json();
+            mesas = (d && d.mesas_disponiveis) || [];
+        }
+    } catch (e) {
+        reserva = null;
+    }
+
+    const mesaAtual = Number((reserva && reserva.mesa_atribuida) || 0);
+    if (mesaAtual > 0 && !mesas.some(m => Number(m.id) === mesaAtual)) {
+        // A mesa ja atribuida continua a ser uma escolha valida.
+        mesas.unshift({ id: mesaAtual, numero: (reserva && reserva.mesa_numero) || mesaAtual, capacidade: '' });
+    }
+
+    // O conteudo vai como elemento, e nao como texto: o dialogo remove-o do
+    // ecra ao fechar, mas a referencia mantem o valor escolhido.
+    const zona = document.createElement('div');
+    let campo = null;
+    if (mesas.length) {
+        const rot = document.createElement('label');
+        rot.textContent = 'Mesa para esta reserva';
+        rot.style.cssText = 'display:block;font-size:13px;font-weight:600;margin-bottom:6px;';
+        campo = document.createElement('select');
+        campo.className = 'nd-campo';
+        campo.style.width = '100%';
+        mesas.forEach(m => {
+            const op = document.createElement('option');
+            op.value = String(Number(m.id));
+            op.textContent = 'Mesa ' + String(m.numero) + (m.capacidade ? ' (' + m.capacidade + ' lugares)' : '');
+            if (Number(m.id) === mesaAtual) { op.selected = true; }
+            campo.appendChild(op);
+        });
+        rot.setAttribute('for', 'nv-mesa-confirmar');
+        campo.id = 'nv-mesa-confirmar';
+        const nota = document.createElement('p');
+        nota.textContent = 'O cliente recebe este numero na mensagem de confirmacao.';
+        nota.style.cssText = 'font-size:12px;color:#64748b;margin:8px 0 0;line-height:1.5;';
+        zona.appendChild(rot);
+        zona.appendChild(campo);
+        zona.appendChild(nota);
+    } else {
+        const aviso = document.createElement('p');
+        aviso.textContent = 'Nao ha mesas disponiveis para esta hora. A confirmacao pode falhar.';
+        aviso.style.cssText = 'font-size:13px;color:#b45309;margin:0;';
+        zona.appendChild(aviso);
+    }
+
+    const ok = await nivoraConfirmar({
+        titulo: 'Confirmar reserva',
+        mensagem: 'O cliente vai receber a confirmacao com a mesa indicada.',
+        conteudo: zona,
+        confirmar: 'Confirmar reserva'
+    });
+    if (!ok) return;
+
+    const mesaId = campo ? Number(campo.value || 0) : 0;
+    executarAcaoReserva(reservaId + '/confirmar', mesaId > 0 ? { mesa_id: mesaId } : {}, 'Reserva confirmada com sucesso.');
 }
 
 async function cancelarReserva(reservaId) {

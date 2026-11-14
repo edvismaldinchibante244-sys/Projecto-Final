@@ -116,7 +116,14 @@ try {
 
     if (preg_match('/^(\d+)\/confirmar$/', $requestPath, $m) && in_array($requestMethod, ['PUT', 'POST'], true)) {
         $reservaId = (int)$m[1];
-        $resultado = $serviceReserva->confirmarReserva($reservaId, $restauranteId);
+        // Mesa escolhida pelo restaurante ao confirmar: e a que vai na
+        // mensagem ao cliente, por isso nao pode ser trocada em silencio.
+        $dadosConfirmar = reservas_read_json_body();
+        if (empty($dadosConfirmar)) {
+            $dadosConfirmar = $_POST;
+        }
+        $mesaConfirmar = (int)($dadosConfirmar['mesa_id'] ?? 0);
+        $resultado = $serviceReserva->confirmarReserva($reservaId, $restauranteId, $mesaConfirmar);
         if (!empty($resultado['success'])) {
             $notif = reservas_notificar_cliente_status($db, $reservaId, $restauranteId, 'confirmado');
             $resultado = array_merge($resultado, $notif);

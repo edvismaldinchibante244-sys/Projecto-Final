@@ -55,7 +55,7 @@ try {
     $serviceReserva = new \App\Service\ReservaService($db, $modelReserva);
 
     $resultado = match ($acao) {
-        'confirmar' => $serviceReserva->confirmarReserva($reservaId, $restauranteId),
+        'confirmar' => $serviceReserva->confirmarReserva($reservaId, $restauranteId, $mesaId),
         'cancelar' => $serviceReserva->cancelarReserva($reservaId, $restauranteId),
         'no-show' => $serviceReserva->marcarNoShow($reservaId, $restauranteId),
         'checkin' => $mesaId > 0

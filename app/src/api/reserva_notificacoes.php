@@ -43,6 +43,11 @@ if (!function_exists('reserva_notificacoes_textos_status')) {
         $dataReserva = trim((string)($reserva['data_reserva'] ?? ''));
         $horaReserva = substr(trim((string)($reserva['hora_reserva'] ?? '')), 0, 5);
 
+        // A mesa so e comunicada ao confirmar e no check-in. Nos outros
+        // estados nao faz sentido, e numa reserva cancelada seria confuso.
+        $mesaNumero = trim((string)($reserva['mesa_numero'] ?? ''));
+        $mostraMesa = $mesaNumero !== '' && in_array($status, ['confirmado', 'checkin'], true);
+
         $assunto = 'Atualizacao da sua reserva';
         $frase = 'teve o status atualizado';
 
@@ -66,6 +71,11 @@ if (!function_exists('reserva_notificacoes_textos_status')) {
         }
 
         $mensagemWhatsapp = "Ola {$nomeCliente}, sua reserva no {$restauranteNome} para {$dataReserva} as {$horaReserva} {$frase}.";
+        if ($mostraMesa) {
+            // "Reservamos ... para si" e informativo sem soar a garantia:
+            // a sala muda, e o lugar pode ter de ser trocado a chegada.
+            $mensagemWhatsapp .= " Reservamos a mesa {$mesaNumero} para si.";
+        }
 
         $nomeClienteEsc = htmlspecialchars($nomeCliente, ENT_QUOTES, 'UTF-8');
         $restauranteNomeEsc = htmlspecialchars($restauranteNome, ENT_QUOTES, 'UTF-8');
@@ -81,6 +91,23 @@ if (!function_exists('reserva_notificacoes_textos_status')) {
         $horaReservaEsc = htmlspecialchars($horaReserva, ENT_QUOTES, 'UTF-8');
         $fraseEsc = htmlspecialchars($frase, ENT_QUOTES, 'UTF-8');
         $year = date('Y');
+
+        $mesaHtml = '';
+        if ($mostraMesa) {
+            $mesaNumeroEsc = htmlspecialchars($mesaNumero, ENT_QUOTES, 'UTF-8');
+            $mesaHtml = '
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top:10px;">
+                      <tr>
+                        <td style="padding:0;">
+                          <div style="border:1px solid #e5e7eb;border-radius:16px;padding:15px;background:#ffffff;">
+                            <div style="font-size:12px;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:.08em;">A sua mesa</div>
+                            <div style="font-size:15px;color:#111827;font-weight:800;margin-top:6px;">Mesa ' . $mesaNumeroEsc . '</div>
+                            <div style="font-size:12px;color:#64748b;margin-top:6px;line-height:1.5;">Reservamos este lugar para si. Se a sala estiver diferente no dia, a equipa indica-lhe a mesa a chegada.</div>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>';
+        }
 
         $statusEmail = match ($status) {
             'confirmado' => [
@@ -205,6 +232,7 @@ if (!function_exists('reserva_notificacoes_textos_status')) {
                         </td>
                       </tr>
                     </table>
+                    ' . $mesaHtml . '
 
                     ' . $contatoHtml . '
 
@@ -253,6 +281,8 @@ if (!function_exists('reserva_notificacoes_buscar_reserva')) {
                 r.data_reserva,
                 r.hora_reserva,
                 r.status,
+                r.mesa_atribuida,
+                m.numero AS mesa_numero,
                 c.email AS cliente_email,
                 c.telefone AS cliente_telefone,
                 rest.nome AS restaurante_nome,
@@ -260,6 +290,7 @@ if (!function_exists('reserva_notificacoes_buscar_reserva')) {
                 rest.endereco AS restaurante_endereco,
                 rest.cidade AS restaurante_cidade
             FROM reservas r
+            LEFT JOIN mesas m ON m.id = r.mesa_atribuida AND m.restaurante_id = r.restaurante_id
             LEFT JOIN clientes c ON c.id = r.cliente_id
             INNER JOIN restaurantes rest ON rest.id = r.restaurante_id
             WHERE r.id = :id

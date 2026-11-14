@@ -124,7 +124,11 @@ class ReservaService
         }
     }
 
-    public function confirmarReserva(int $reservaId, int $restauranteId): array
+    /**
+     * @param int $mesaPreferida Mesa escolhida pelo restaurante ao confirmar.
+     *                           0 mantem a mesa ja atribuida ou escolhe uma.
+     */
+    public function confirmarReserva(int $reservaId, int $restauranteId, int $mesaPreferida = 0): array
     {
         $reserva = $this->modelReserva->obter($reservaId, $restauranteId);
         if (!$reserva) {
@@ -135,7 +139,9 @@ class ReservaService
             return ['success' => false, 'message' => 'A reserva nao pode mais ser confirmada.'];
         }
 
-        $mesaId = (int)($reserva['mesa_atribuida'] ?? 0);
+        // A mesa escolhida pelo restaurante ao confirmar tem precedencia sobre
+        // a que estivesse guardada: e ela que vai na mensagem ao cliente.
+        $mesaId = $mesaPreferida > 0 ? $mesaPreferida : (int)($reserva['mesa_atribuida'] ?? 0);
         $mesasDisponiveis = $this->validarDisponibilidade(
             $restauranteId,
             (string)$reserva['data_reserva'],
@@ -145,6 +151,14 @@ class ReservaService
         );
 
         if ($mesaId > 0 && !$this->mesaDisponivelNaLista($mesasDisponiveis, $mesaId)) {
+            if ($mesaPreferida > 0) {
+                // Pedida explicitamente: avisar em vez de trocar em silencio,
+                // porque o numero da mesa vai ser comunicado ao cliente.
+                return [
+                    'success' => false,
+                    'message' => 'A mesa escolhida nao esta disponivel para esta reserva.',
+                ];
+            }
             $mesaId = 0;
         }
 
