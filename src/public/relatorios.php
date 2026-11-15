@@ -626,10 +626,6 @@ $top_iniciais = mb_strtoupper(
 </head>
 
 <body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui ' . ($tem_relatorios_avancados ? 'plan-advanced' : 'plan-basic'))); ?>">
-<?php
-// Faixa da oferta de boas-vindas: tem de aparecer onde o dono trabalha.
-include __DIR__ . '/includes/bonus_faixa.php';
-?>
     <div class="container-fluid">
         <div class="row">
             <!-- Botão toggle do menu para mobile -->
@@ -663,6 +659,12 @@ include __DIR__ . '/includes/bonus_faixa.php';
 
             <!-- MAIN CONTENT -->
             <main class="main-content">
+                <?php
+                // Faixa da oferta de boas-vindas. Fica DENTRO do conteudo, nao a seguir
+                // ao <body>: o menu lateral e de posicao fixa e tapava-lhe o lado
+                // esquerdo, cortando o inicio das frases.
+                include __DIR__ . '/includes/bonus_faixa.php';
+                ?>
                 <div class="top-bar">
                     <div>
                         <h1 class="page-title mb-0"><i class="fas fa-chart-bar"></i> Relatórios <?php include __DIR__ . '/includes/plan_page_badge.php'; ?></h1>

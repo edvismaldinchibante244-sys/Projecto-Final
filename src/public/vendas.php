@@ -1259,11 +1259,6 @@ if (!function_exists('pdv_img_iniciais')) {
 </head>
 
 <body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui')); ?>">
-<?php
-// Faixa da oferta de boas-vindas: o dono passa o dia nestas paginas, nao
-// nas Configuracoes, por isso o aviso do fim da oferta tem de aparecer aqui.
-include __DIR__ . '/includes/bonus_faixa.php';
-?>
 
     <div class="container-fluid">
         <div class="row">
@@ -1281,6 +1276,12 @@ include __DIR__ . '/includes/bonus_faixa.php';
             <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
 
             <main class="main-content col-md-9 ms-sm-auto col-lg-10">
+                <?php
+                // Faixa da oferta de boas-vindas. Fica DENTRO do conteudo, nao a seguir
+                // ao <body>: o menu lateral e de posicao fixa e tapava-lhe o lado
+                // esquerdo, cortando o inicio das frases.
+                include __DIR__ . '/includes/bonus_faixa.php';
+                ?>
                 <div class="top-bar">
                     <div class="top-bar-main">
                         <h1 class="page-title mb-0"><i class="fas fa-cash-register"></i> PDV - Ponto de Venda <?php include __DIR__ . '/includes/plan_page_badge.php'; ?></h1>

@@ -1041,11 +1041,6 @@ if (!function_exists('mesas_tempo_conta_label')) {
 </head>
 
 <body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui')); ?>">
-<?php
-// Faixa da oferta de boas-vindas: o dono passa o dia nestas paginas, nao
-// nas Configuracoes, por isso o aviso do fim da oferta tem de aparecer aqui.
-include __DIR__ . '/includes/bonus_faixa.php';
-?>
 
     <div class="container-fluid">
         <div class="row">
@@ -1080,6 +1075,12 @@ include __DIR__ . '/includes/bonus_faixa.php';
 
             <!-- MAIN CONTENT -->
             <main class="main-content col-md-9 ms-sm-auto col-lg-10">
+                <?php
+                // Faixa da oferta de boas-vindas. Fica DENTRO do conteudo, nao a seguir
+                // ao <body>: o menu lateral e de posicao fixa e tapava-lhe o lado
+                // esquerdo, cortando o inicio das frases.
+                include __DIR__ . '/includes/bonus_faixa.php';
+                ?>
                 <div class="content-area">
                     <?php
                     $total = 0;
