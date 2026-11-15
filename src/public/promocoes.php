@@ -463,6 +463,11 @@ $bodyClasses = trim('premium-ui plan-theme-' . $temaPlano . ' ' . empresarial_bo
     <link href="lib/bootstrap-5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="lib/fontawesome-6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- A Poppins e usada pelo css/style.css (body, .btn, textarea). Vinha
+         por @import dentro desse ficheiro, que o navegador ignorava. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="css/style.css">
     <?php empresarial_head_assets(); ?>
     <link rel="stylesheet" href="css/promocoes-empresarial.css?v=<?= (int)filemtime(__DIR__ . '/css/promocoes-empresarial.css') ?>">

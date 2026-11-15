@@ -118,6 +118,11 @@ $fmt = static fn($d) => $d ? date('d/m/Y H:i', strtotime((string)$d)) : '—';
     <title>Terminais - Nivora</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link href="lib/bootstrap-5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- A Poppins e usada pelo css/style.css (body, .btn, textarea). Vinha
+         por @import dentro desse ficheiro, que o navegador ignorava. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="lib/fontawesome-6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/premium.css">
