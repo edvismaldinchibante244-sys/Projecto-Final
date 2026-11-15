@@ -15,6 +15,24 @@ if (!function_exists('turno_schema_tabela_existe')) {
 
         return (bool)$stmt->fetchColumn();
     }
+
+    /** Tipo da coluna em minusculas ("varchar", "enum", "int"...), ou '' se nao existir. */
+    function turno_schema_tipo_coluna(PDO $db, string $tabela, string $coluna): string
+    {
+        $stmt = $db->prepare("
+            SELECT DATA_TYPE
+            FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = :tabela
+              AND COLUMN_NAME = :coluna
+            LIMIT 1
+        ");
+        $stmt->bindValue(':tabela', $tabela, PDO::PARAM_STR);
+        $stmt->bindValue(':coluna', $coluna, PDO::PARAM_STR);
+        $stmt->execute();
+
+        return strtolower((string)$stmt->fetchColumn());
+    }
 }
 
 if (!function_exists('turno_schema_coluna_existe')) {
@@ -274,6 +292,35 @@ if (!function_exists('turno_schema_garantir')) {
             INNER JOIN usuarios u ON u.id = ft.usuario_id
             SET ft.cargo = UPPER(REPLACE(COALESCE(NULLIF(ft.cargo, ''), u.perfil), 'Ç', 'C'))
             WHERE ft.cargo IS NULL OR ft.cargo = '' OR ft.cargo = 'GARÇOM'
+        ") && $ok;
+
+        // Instalacoes antigas tem funcionarios_turnos.status como
+        // enum('planejado','ativo','finalizado','ausente'), vindo do
+        // schema_base.sql. O sistema usa outro vocabulario -- ATIVO, ENCERRADO,
+        // PLANEJADO, AUSENTE -- e 'ENCERRADO' nao existe naquele enum: ao fechar
+        // o turno o MySQL guardava vazio e avisava
+        // "Warning: 1265 Data truncated for column 'status'".
+        //
+        // Instalacoes novas ja nascem com VARCHAR(20) (ver o CREATE TABLE acima).
+        // Esta conversao poe as antigas em linha com elas. Tem de vir ANTES da
+        // normalizacao de valores mais abaixo, ou essa truncava na mesma.
+        if (turno_schema_tipo_coluna($db, 'funcionarios_turnos', 'status') === 'enum') {
+            $ok = turno_schema_exec($db, "
+                ALTER TABLE funcionarios_turnos
+                MODIFY status VARCHAR(20) NOT NULL DEFAULT 'ATIVO'
+            ") && $ok;
+        }
+
+        // Turnos fechados enquanto a coluna era o enum ficaram com o estado em
+        // branco, em vez de ENCERRADO. Quem tem saida registada foi mesmo
+        // fechado; os outros continuam abertos.
+        $ok = turno_schema_exec($db, "
+            UPDATE funcionarios_turnos
+            SET status = CASE
+                WHEN hora_saida IS NOT NULL OR data_saida IS NOT NULL THEN 'ENCERRADO'
+                ELSE 'ATIVO'
+            END
+            WHERE status IS NULL OR status = ''
         ") && $ok;
 
         $ok = turno_schema_exec($db, "
