@@ -1,12 +1,24 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/../app_base.php';
-require_once APP_BASE . '/src/config/api_guard.php';
+// Ponto de acesso PUBLICO: quem o chama e o cliente que leu o QR da mesa, e
+// esse nunca tem sessao. Antes carregava o api_guard.php, que puxa o
+// auth_check.php e respondia com o cabecalho "X-Nv-Sessao: expirada"; o
+// nv_acoes.js reage a esse cabecalho mandando o visitante para o index.php.
+// Resultado: a ementa abria e logo a seguir saltava para a pagina inicial.
+//
+// A autenticacao deste ponto de acesso e o proprio token do QR, verificado
+// mais abaixo contra o restaurante. Segue o mesmo padrao do
+// api/reserva_publica.php: security.php directo e limite de pedidos a mao.
+require_once APP_BASE . '/src/config/security.php';
 require_once APP_BASE . '/src/config/database.php';
 require_once APP_BASE . '/src/config/reserva_qr_schema.php';
 
 header('Content-Type: application/json; charset=utf-8');
-api_guard(['rate_key' => 'cardapio_evento', 'rate_max' => 180, 'rate_window' => 60, 'skip_turno' => true]);
+security_set_headers();
+if (!security_rate_limit('cardapio_evento', 180, 60)) {
+    security_json(['success' => false, 'message' => 'Muitas requisicoes. Tente novamente em instantes.'], 429);
+}
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') security_json(['success' => false, 'message' => 'Metodo nao permitido.'], 405);
 
 $payload = json_decode((string)file_get_contents('php://input'), true);
