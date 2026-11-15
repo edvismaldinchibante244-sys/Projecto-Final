@@ -1,26 +1,35 @@
 # Pasta de ficheiros enviados por utilizadores.
 #
-# Nada aqui e servido directamente. Os comprovativos de pagamento sao
-# documentos bancarios de clientes e so devem sair por comprovativo_arquivo.php,
-# que confirma a sessao antes de os entregar. Ate agora o Apache servia tambem
-# o caminho directo, sem passar por essa verificacao: quem tivesse o endereco
-# abria o documento sem estar autenticado.
+# Esta pasta tem conteudo de dois tipos e eles NAO podem ser tratados da mesma
+# maneira:
 #
-# Segunda razao: nada aqui pode ser executado. Um ficheiro enviado nunca deve
-# correr como codigo, mesmo que consiga passar pela validacao de tipo.
+#   PUBLICO   restaurantes/logos  (logotipo mostrado nas paginas e no cardapio)
+#             reserva-qr          (QR enviado ao cliente; abre pelo endereco)
+#             usuarios            (fotos de perfil)
+#
+#   PRIVADO   comprovativos             (documentos bancarios)
+#             documentos_titularidade   (documentos de identidade)
+#
+# Os privados vivem hoje fora da raiz do site, em nv_storage('privado'), e so
+# saem pelo comprovativo_arquivo.php, que confirma a sessao. As regras abaixo
+# ficam como segunda barreira, para o caso de algum ficheiro antigo ter ficado
+# para tras ou de alguem voltar a gravar aqui por engano.
+#
+# ATENCAO a quem mexer nisto: um "Require all denied" aplicado a esta pasta
+# inteira bloqueia tambem os logotipos e os QR das reservas. Ja aconteceu.
 
-# Apache 2.4
-<IfModule mod_authz_core.c>
-    Require all denied
+# --- 1) As duas pastas privadas: nada sai daqui pelo endereco directo.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(comprovativos|documentos_titularidade)(/|$) - [F,L]
 </IfModule>
 
-# Apache 2.2
-<IfModule !mod_authz_core.c>
-    Order allow,deny
-    Deny from all
-</IfModule>
+# Se o mod_rewrite nao existir, o acesso directo a essas pastas fica a cargo
+# do armazenamento privado, que e onde os ficheiros realmente estao.
 
-# Mesmo que uma regra acima seja relaxada um dia, nada corre como PHP.
+# --- 2) Em toda a pasta: nada corre como codigo.
+# Um ficheiro enviado nunca deve ser executado, mesmo que passe pela validacao
+# de tipo. Isto vale tanto para o publico como para o privado.
 <IfModule mod_php.c>
     php_flag engine off
 </IfModule>
