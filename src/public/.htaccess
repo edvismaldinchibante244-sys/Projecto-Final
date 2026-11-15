@@ -54,7 +54,20 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </FilesMatch>
 
 # Bloqueia diretórios internos
-RedirectMatch 404 ^/(vendor|storage|config|tests|backup_.*|dump_.*|\.git)/?
+# Pastas internas que nunca devem ser servidas pela web.
+#
+# A barra no fim e OBRIGATORIA aqui, ou o fim da linha. A versao anterior tinha
+# "/?" (barra opcional) e nenhuma ancora no fim, por isso "^/config" casava com
+# o inicio de /configuracoes e a pagina de Configuracoes do sistema respondia
+# 404 -- o Apache recusava antes sequer de olhar para o ficheiro, que estava la.
+# Ao mexer nesta linha, lembre-se de que ela compara prefixos de caminho: um
+# prefixo sem ancora apanha qualquer pagina que comece pelas mesmas letras.
+RedirectMatch 404 ^/(vendor|storage|config|tests|\.git)(/|$)
+
+# Ficheiros de copia de seguranca largados na raiz por engano. Aqui o prefixo e
+# mesmo intencional: apanha backup_2026.sql, dump_db.sql e afins. Nao colide com
+# a pagina /backup, que nao tem o sublinhado.
+RedirectMatch 404 ^/(backup_|dump_)
 
 # Impede leitura de .git, composer, package configs
 <FilesMatch "^(composer\.(json|lock)|package-lock\.json|package\.json|\.gitignore|\.gitconfig)$">
