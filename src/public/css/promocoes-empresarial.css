@@ -1033,6 +1033,10 @@ body.promo-page {
     display: flex;
     align-items: center;
     gap: 10px;
+    /* Sem isto a barra nao quebra linha e os filtros saiam pela direita do
+       ecra: 41px de fora a 1366px, 153px a 1200px. So cabiam a partir de
+       1440px, que e onde o defeito passava despercebido. */
+    flex-wrap: wrap;
 }
 
 .promo-list-search {

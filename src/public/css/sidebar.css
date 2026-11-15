@@ -1537,3 +1537,27 @@
             z-index: 1150 !important;
         }
     }
+
+/* ------------------------------------------------------------------
+   O conteudo tem de se afastar exactamente a largura do menu.
+
+   O menu e fixo com 280px, mas o conteudo usava as classes de grelha do
+   Bootstrap (col-lg-10 + ms-sm-auto), que dao uma margem em PERCENTAGEM:
+   1/6 da largura do ecra. Fixo contra percentagem: os dois so coincidem
+   quando o ecra tem 1680px. Abaixo disso o menu tapava o inicio do
+   conteudo -- 24px a 1536, 52px a 1366, 67px a 1280 -- e escondia o lado
+   esquerdo de tudo o que la estivesse.
+
+   Num ecra de 1920 nao se nota, que e onde o problema passou despercebido.
+   ------------------------------------------------------------------ */
+@media (min-width: 1201px) {
+    body:not(.sidebar-desktop-collapsed) .main-content,
+    body:not(.sidebar-desktop-collapsed) .filiais-page,
+    body:not(.sidebar-desktop-collapsed) .usuarios-page,
+    body:not(.sidebar-desktop-collapsed) .estoque-page {
+        margin-left: 280px !important;
+        width: auto !important;
+        max-width: none !important;
+        flex: 1 1 auto !important;
+    }
+}
