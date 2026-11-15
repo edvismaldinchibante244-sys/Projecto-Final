@@ -504,7 +504,16 @@ if (!function_exists('reserva_qr_session_plain_token')) {
 if (!function_exists('reserva_qr_base_public_url')) {
     function reserva_qr_base_public_url(): string
     {
-        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        // Atras de um proxy (Railway, Cloudflare, nginx) o TLS termina na borda e
+        // a aplicacao recebe HTTP simples: $_SERVER['HTTPS'] nao vem definido e
+        // o endereco dentro do QR saia em http://. O protocolo real chega no
+        // cabecalho X-Forwarded-Proto, que o resto do sistema ja consulta
+        // (security.php, password_reset_helper.php e outros).
+        $scheme = (
+            (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off')
+            || strtolower((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https'
+            || (int)($_SERVER['SERVER_PORT'] ?? 0) === 443
+        ) ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
         $scriptName = str_replace('\\', '/', (string)($_SERVER['SCRIPT_NAME'] ?? ''));
         $baseDir = preg_replace('#/api$#', '', rtrim(dirname($scriptName), '/'));
