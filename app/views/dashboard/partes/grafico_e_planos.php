@@ -16,7 +16,13 @@
                     <div class="row g-3 mb-3 align-items-stretch <?php echo $empAnalytics ? 'dash-emp-analytics' : ''; ?>">
                         <?php if ($plano_atual !== 'BASICO'): ?>
                             <div class="<?php echo $chartColClass; ?>">
-                                <div class="card receita-tendencia-card h-100 <?php echo $empAnalytics ? 'dash-emp-card' : ($proAnalytics ? 'dash-pro-card' : ''); ?>">
+                                <?php
+                                // O acabamento do Empresarial nao estava preso ao perfil, estava preso
+                                // ao painel do dono ($empAnalytics exige $isAdminDashboard). Quem
+                                // trabalha no salao com plano Empresarial via um cartao simples.
+                                $empCartaoEquipa = ($plano_atual === 'EMPRESARIAL' && !$isAdminDashboard);
+                                ?>
+                                <div class="card receita-tendencia-card h-100 <?php echo ($empAnalytics || $empCartaoEquipa) ? 'dash-emp-card' : ($proAnalytics ? 'dash-pro-card' : ''); ?>">
                                     <div class="card-header">
                                         <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                                             <div>
@@ -51,6 +57,8 @@
                                                         Série diária das vendas pagas · total do período e média nos dias com movimento.
                                                     <?php elseif ($perfil === 'GERENTE'): ?>
                                                         Visão rápida do salão nos últimos dias — para antecipar picos e turnos.
+                                                    <?php elseif ($perfil === 'GARCOM'): ?>
+                                                        Os pedidos que atendeu nos últimos 7 dias — só os seus, não os da casa.
                                                     <?php else: ?>
                                                         Visão rápida do desempenho recente e da tendência do período.
                                                     <?php endif; ?>
@@ -123,6 +131,64 @@
                                                         <?php echo ($tendencia_delta_pct >= 0 ? '+' : ''); ?><?php echo number_format($tendencia_delta_pct, 1, ',', '.'); ?>%
                                                     </div>
                                                 </div>
+                                            </div>
+                                        <?php elseif ($perfil === 'GARCOM'):
+                                            // Resumo da propria semana de quem atende.
+                                            //
+                                            // Nao ha consulta nova: o $dados_grafico que alimenta o grafico
+                                            // ja vem filtrado por garcom_id (ver DashboardService), ou seja
+                                            // sao os pedidos desta pessoa, e o $garcom_dashboard ja traz os
+                                            // numeros de hoje. Nada aqui e sobre a casa -- e o trabalho dela.
+                                            //
+                                            // Antes o grafico aparecia sem numero nenhum por cima, ao
+                                            // contrario do painel do dono, e por isso parecia generico.
+                                            $gSerie = [];
+                                            foreach ((array)($dados_grafico ?: []) as $gLinha) {
+                                                $gData = trim((string)($gLinha['data'] ?? ''));
+                                                if ($gData === '') { continue; }
+                                                $gSerie[] = ['data' => $gData, 'total' => (float)($gLinha['total'] ?? 0)];
+                                            }
+                                            $gTotal = 0.0; $gMelhor = null; $gDiasComMovimento = 0;
+                                            foreach ($gSerie as $gD) {
+                                                $gTotal += $gD['total'];
+                                                if ($gD['total'] > 0) { $gDiasComMovimento++; }
+                                                if ($gMelhor === null || $gD['total'] > $gMelhor['total']) { $gMelhor = $gD; }
+                                            }
+                                            $gMedia = $gDiasComMovimento > 0 ? ($gTotal / $gDiasComMovimento) : 0.0;
+                                            $gDiasCurtos = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+                                            $gMelhorRotulo = '—';
+                                            if ($gMelhor !== null && $gMelhor['total'] > 0) {
+                                                $gTs = strtotime($gMelhor['data']);
+                                                $gMelhorRotulo = $gTs ? ($gDiasCurtos[(int)date('w', $gTs)] . ' ' . date('d/m', $gTs)) : $gMelhor['data'];
+                                            }
+                                            $gHojePedidos = isset($garcom_dashboard['total_pedidos']) ? (int)$garcom_dashboard['total_pedidos'] : null;
+                                            $gHojeValor = isset($garcom_dashboard['valor_pedidos']) ? (float)$garcom_dashboard['valor_pedidos'] : null;
+                                        ?>
+                                            <div class="dash-emp-metrics dash-metrics-equipa mb-3">
+                                                <div class="border rounded-3 px-3 summary-metric is-accent">
+                                                    <div class="small text-muted">Nos seus 7 dias</div>
+                                                    <div class="fw-bold" style="color:#c2410c;">MZN <?php echo number_format($gTotal, 2, ',', '.'); ?></div>
+                                                </div>
+                                                <div class="border rounded-3 px-3 summary-metric">
+                                                    <div class="small text-muted">O seu melhor dia</div>
+                                                    <div class="fw-bold"><?php echo htmlspecialchars($gMelhorRotulo, ENT_QUOTES, 'UTF-8'); ?></div>
+                                                    <?php if ($gMelhor !== null && $gMelhor['total'] > 0): ?>
+                                                        <div class="small text-muted">MZN <?php echo number_format((float)$gMelhor['total'], 2, ',', '.'); ?></div>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="border rounded-3 px-3 summary-metric">
+                                                    <div class="small text-muted">Média por dia com serviço</div>
+                                                    <div class="fw-bold">MZN <?php echo number_format($gMedia, 2, ',', '.'); ?></div>
+                                                </div>
+                                                <?php if ($gHojePedidos !== null): ?>
+                                                    <div class="border rounded-3 px-3 summary-metric">
+                                                        <div class="small text-muted">Hoje</div>
+                                                        <div class="fw-bold"><?php echo $gHojePedidos; ?> <?php echo $gHojePedidos === 1 ? 'pedido' : 'pedidos'; ?></div>
+                                                        <?php if ($gHojeValor !== null): ?>
+                                                            <div class="small text-muted">MZN <?php echo number_format($gHojeValor, 2, ',', '.'); ?></div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                <?php endif; ?>
                                             </div>
                                         <?php endif; ?>
                                         <?php

@@ -5770,3 +5770,14 @@ body.plano-empresarial .rel-emp-acao-chip { justify-self: start; }
         -webkit-overflow-scrolling: touch;
     }
 }
+
+/* Resumo da semana de quem atende (gráfico do Dashboard).
+   O .dash-emp-metrics base usa 3 colunas, pensado para os 6 cartões do painel
+   do dono. Aqui são 4, e 3+1 ficava desequilibrado. O auto-fit distribui-os
+   de forma pareja em qualquer largura e cai sozinho para 2 ou 1 no telemóvel. */
+.dash-emp-metrics.dash-metrics-equipa {
+  /* 130px e o minimo para caberem dois lado a lado num telemovel de 390px
+     (o cartao tem ~284px uteis). Com 150px caia para uma coluna so e os
+     quatro blocos empilhavam, ocupando ecra a mais. */
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}
