@@ -477,9 +477,22 @@ $usuario_nome   = $_SESSION['nome'] ?? 'Garçom';
         }
 
         /* ── STATUS FOOTER ── */
+        /* nv-espaco-barra-fundo
+           A barra #footer-status e fixa ao fundo do ecra e nao ocupa espaco no
+           fluxo da pagina. Sem esta reserva, as ultimas linhas da lista ficavam
+           permanentemente por baixo dela -- em qualquer largura, e sobretudo no
+           telemovel, onde a lista e longa e a barra ocupa mais altura.
+        
+           O env(safe-area-inset-bottom) acrescenta a faixa dos telemoveis sem
+           botao fisico, onde o sistema ja reserva um pedaco do ecra em baixo. */
+        body {
+            padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+        }
+        
         #footer-status {
             position: fixed;
             bottom: 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
             left: 0;
             right: 0;
             background: #111318;

@@ -704,9 +704,38 @@ body.kds-command-v2.plan-theme-profissional:not(.kds-mode-simple) .tone-prep .kd
         padding: 16px;
     }
 
+    /* O "width: 100%" abaixo so passa as accoes para uma linha propria se o
+       contentor puder quebrar linha. Sem este flex-wrap, num flex de linha
+       unica elas apenas encolhiam: ficavam com 119px de um ecra de 390, cada
+       botao partia em duas linhas e o cabecalho crescia para 300px de altura
+       -- 70% do ecra do telemovel antes de se ver um unico pedido. */
+    body.kds-command-v2:not(.kds-mode-simple) .kds-topbar {
+        flex-wrap: wrap;
+        row-gap: 12px;
+    }
+
     body.kds-command-v2:not(.kds-mode-simple) .kds-actions {
         width: 100%;
         flex-wrap: wrap;
+    }
+
+    /* A faixa de intervencao punha o texto, o botao e o contador lado a lado.
+       Num ecra estreito o texto ficava com ~145px e saia uma ou duas palavras
+       por linha. (A regra que ja existia apontava para .kds-priority, classe
+       que nao existe nesta pagina.) */
+    body.kds-command-v2:not(.kds-mode-simple) .kds-strip {
+        flex-wrap: wrap;
+        row-gap: 10px;
+    }
+
+    /* O selector tem de incluir .kds-emp-intel-slim: mais abaixo neste mesmo
+       ficheiro ha um "body.kds-command-v2 .kds-emp-intel-slim .kds-strip-copy
+       { flex: 1 }" sem media query, que por vir depois e ser mais especifico
+       ganhava a esta regra em todas as larguras. */
+    body.kds-command-v2:not(.kds-mode-simple) .kds-strip-copy,
+    body.kds-command-v2:not(.kds-mode-simple) .kds-emp-intel-slim .kds-strip-copy {
+        flex: 1 1 100%;
+        min-width: 0;
     }
 
     body.kds-command-v2:not(.kds-mode-simple) .kds-action-separator { display: none; }

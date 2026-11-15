@@ -498,9 +498,22 @@ $cxFormaLabel = static function (string $f): string {
         }
 
         /* STATUS FOOTER */
+        /* nv-espaco-barra-fundo
+           A barra #footer-status e fixa ao fundo do ecra e nao ocupa espaco no
+           fluxo da pagina. Sem esta reserva, as ultimas linhas da lista ficavam
+           permanentemente por baixo dela -- em qualquer largura, e sobretudo no
+           telemovel, onde a lista e longa e a barra ocupa mais altura.
+        
+           O env(safe-area-inset-bottom) acrescenta a faixa dos telemoveis sem
+           botao fisico, onde o sistema ja reserva um pedaco do ecra em baixo. */
+        body {
+            padding-bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+        }
+        
         #footer-status {
             position: fixed;
             bottom: 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
             left: 0;
             right: 0;
             background: white;
@@ -779,6 +792,24 @@ $cxFormaLabel = static function (string $f): string {
         body.cx-emp-shell .emp-table td:nth-child(6) * { white-space: nowrap; }
         body.cx-emp-shell .emp-table th, body.cx-emp-shell .emp-table td { padding-left: 9px; padding-right: 9px; }
         body.cx-emp-shell .emp-layout { grid-template-columns: minmax(0, 1fr) 260px; gap: 16px; padding: 18px 20px 28px; }
+
+        /* A regra acima nao tinha media query e tem mais peso que o
+           ".emp-layout { grid-template-columns: 1fr }" definido para ecras
+           estreitos, por isso anulava-o: no telemovel a coluna lateral ficava
+           com 260px de um ecra de 390 e sobravam ~115px para a lista das
+           contas. O resultado era a coluna da esquerda espremida e tapada
+           pelo cartao das contas -- "0 pagamento(s" cortado a meio, uma
+           palavra por linha, valores fora do cartao.
+
+           Abaixo de 1100px as duas colunas passam a empilhar, como ja estava
+           previsto para a interface normal. */
+        @media (max-width: 1100px) {
+            body.cx-emp-shell .emp-layout {
+                grid-template-columns: 1fr;
+                padding: 14px 12px 24px;
+            }
+            body.cx-emp-shell .emp-side { order: -1; }
+        }
         @media (min-width: 992px) {
             body.cx-emp-shell .cx-main { margin-left: 280px !important; width: calc(100% - 280px) !important; max-width: none !important; flex: none !important; }
         }
