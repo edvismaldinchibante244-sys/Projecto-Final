@@ -216,6 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValido) {
                         <div class="form-group">
                             <label for="senha">Nova Senha</label>
                             <div class="password-field">
+                                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="10" width="16" height="11" rx="2.5"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
                                 <input type="password" class="form-control" name="senha" id="senha" required placeholder="Crie uma senha forte" minlength="<?= (int)$passwordMinLength ?>" maxlength="128" autocomplete="new-password" aria-describedby="passwordRequirements passwordStrengthLabel">
                                 <button class="password-toggle" type="button" data-password-toggle="senha" aria-label="Mostrar nova senha"><i class="fas fa-eye"></i></button>
                             </div>
@@ -232,6 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValido) {
                         <div class="form-group">
                             <label for="confirmar_senha">Confirmar Nova Senha</label>
                             <div class="password-field">
+                                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="10" width="16" height="11" rx="2.5"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
                                 <input type="password" class="form-control" name="confirmar_senha" id="confirmar_senha" required placeholder="Repita exatamente a nova senha" minlength="<?= (int)$passwordMinLength ?>" maxlength="128" autocomplete="new-password" aria-describedby="passwordMatchState">
                                 <button class="password-toggle" type="button" data-password-toggle="confirmar_senha" aria-label="Mostrar confirmação da senha"><i class="fas fa-eye"></i></button>
                             </div>

@@ -188,28 +188,57 @@
 .nivora-reset-page .form-group input[type="password"],
 .nivora-reset-page .form-group input[type="text"] {
     width: 100%;
-    min-height: 52px;
-    padding: 13px 49px 13px 15px !important;
-    color: #172033 !important;
+    min-height: 54px;
+    /* 16px: por baixo disto o Safari do iPhone amplia a pagina sozinho ao tocar
+       no campo, e o ecra salta. Nao descer daqui. */
+    padding: 14px 52px 14px 46px !important;
+    color: #141c2b !important;
     caret-color: var(--nivora-orange-dark);
-    background: #f8fafc !important;
-    border: 1px solid #cdd6e1 !important;
-    border-radius: 11px !important;
-    box-shadow: none !important;
+    background: #ffffff !important;
+    border: 1px solid #c3cedc !important;
+    border-radius: 12px !important;
+    /* sombra para dentro: da a sensacao de caixa onde se escreve, em vez de
+       uma area clara que se confunde com o cartao */
+    box-shadow: inset 0 1px 2px rgba(20, 28, 43, .06) !important;
     font-family: "Manrope", sans-serif;
-    font-size: 14px !important;
-    line-height: 1.4;
+    font-size: 16px !important;
+    font-weight: 500;
+    line-height: 1.35;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.nivora-reset-page .password-field .field-icon {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 16px;
+    width: 18px;
+    height: 18px;
+    color: #94a2b6;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: color .15s ease;
+}
+
+.nivora-reset-page .password-field:focus-within .field-icon {
+    color: var(--nivora-orange-dark);
 }
 
 .nivora-reset-page .password-field .form-control::placeholder {
-    color: #6b7385; /* placeholder 4.8:1 (antes 3.1:1) */
+    color: #6b7385; /* placeholder 4.8:1 */
+    font-weight: 400;
     opacity: 1;
+}
+
+.nivora-reset-page .password-field .form-control:hover:not(:focus) {
+    border-color: #a9b7c9 !important;
 }
 
 .nivora-reset-page .password-field .form-control:focus {
     background: #fff !important;
     border-color: var(--nivora-orange) !important;
-    box-shadow: 0 0 0 4px rgba(249, 115, 22, .13) !important;
+    box-shadow: inset 0 1px 2px rgba(20, 28, 43, .04),
+                0 0 0 4px rgba(249, 115, 22, .16) !important;
     outline: none;
 }
 
@@ -225,7 +254,7 @@
     position: absolute;
     z-index: 2;
     top: 50%;
-    right: 8px;
+    right: 6px;
     width: 44px;
     height: 44px;
     padding: 0;
@@ -247,6 +276,7 @@
 }
 
 .nivora-reset-page .password-strength {
+    margin-top: 12px;
     height: 6px;
     margin-top: 11px;
     overflow: hidden;
