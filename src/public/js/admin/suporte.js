@@ -269,7 +269,11 @@
                     if (!data.success) {
                         throw new Error(data.message || 'Falha ao enviar a mensagem');
                     }
-                    if (adminSupportChatFeedbackEl) adminSupportChatFeedbackEl.textContent = 'Mensagem enviada.';
+                    // O servidor diz se o cliente chegou a ser avisado por email;
+                    // antes escrevia-se sempre "Mensagem enviada." e ficava a
+                    // parecer que o cliente tinha sido notificado quando nao era
+                    // o caso.
+                    if (adminSupportChatFeedbackEl) adminSupportChatFeedbackEl.textContent = data.message || 'Mensagem enviada.';
                     document.getElementById('adminSupportChatMensagem').value = '';
                     document.getElementById('adminSupportChatAnexo').value = '';
                     return Promise.all([carregarAdminSupportChat(ticketId), Promise.resolve().then(() => carregarSupportTickets())]);

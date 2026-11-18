@@ -6,6 +6,7 @@ require_once APP_BASE . '/src/config/database.php';
 require_once APP_BASE . '/src/config/super_admin_permissions.php';
 require_once APP_BASE . '/src/config/support_tickets.php';
 require_once APP_BASE . '/src/config/audit.php';
+require_once APP_BASE . '/src/config/email_helper.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -34,7 +35,14 @@ if ($ticketId <= 0) {
 $db = (new Database())->getConnection();
 support_tickets_ensure_tables($db);
 
-$ticketStmt = $db->prepare("SELECT id, restaurante_id, status FROM support_tickets WHERE id = :id LIMIT 1");
+$ticketStmt = $db->prepare("
+    SELECT t.id, t.restaurante_id, t.status, t.assunto,
+           r.nome AS restaurante_nome, r.email AS restaurante_email
+    FROM support_tickets t
+    LEFT JOIN restaurantes r ON r.id = t.restaurante_id
+    WHERE t.id = :id
+    LIMIT 1
+");
 $ticketStmt->execute([':id' => $ticketId]);
 $ticket = $ticketStmt->fetch(PDO::FETCH_ASSOC);
 if (!$ticket) {
@@ -92,15 +100,59 @@ security_audit_event('support_ticket_message_support', [
     'restaurante_id' => (int)$ticket['restaurante_id'],
     'has_anexo' => $anexo !== null ? 1 : 0,
 ]);
+// Avisar o cliente por email.
+//
+// Sem isto, uma resposta escrita aqui ficava so guardada: o cliente nao
+// recebia nada e o painel dele nao tem marca de "resposta nova", por isso so
+// descobria se fosse la espreitar por iniciativa propria. A mudanca de estado
+// (o botao "Guardar estado") ja enviava email; a conversa nao.
+$emailCliente = trim((string)($ticket['restaurante_email'] ?? ''));
+$clienteAvisado = false;
+
+if ($emailCliente !== '') {
+    $assuntoTicket = (string)($ticket['assunto'] ?? '');
+    $assuntoEmail = 'Resposta ao seu pedido de ajuda #' . $ticketId
+        . ($assuntoTicket !== '' ? ' - ' . $assuntoTicket : '');
+
+    $corpo = '<p>Recebeu uma resposta da equipa de suporte.</p>'
+        . '<p><strong>Pedido:</strong> #' . $ticketId . '</p>'
+        . ($assuntoTicket !== ''
+            ? '<p><strong>Assunto:</strong> ' . htmlspecialchars($assuntoTicket, ENT_QUOTES, 'UTF-8') . '</p>'
+            : '')
+        . ($mensagem !== ''
+            ? '<p><strong>Resposta:</strong><br>' . nl2br(htmlspecialchars($mensagem, ENT_QUOTES, 'UTF-8')) . '</p>'
+            : '')
+        . ($anexo !== null
+            ? '<p>A equipa anexou um ficheiro: <strong>'
+                . htmlspecialchars((string)($anexo['nome'] ?? 'anexo'), ENT_QUOTES, 'UTF-8')
+                . '</strong>. Abra o pedido no painel para o descarregar.</p>'
+            : '')
+        . '<p>Pode responder abrindo o pedido no seu painel, em Ajuda e suporte.</p>';
+
+    $clienteAvisado = (bool)@saas_enviar_email($emailCliente, $assuntoEmail, $corpo);
+}
+
 audit_log($db, 'super_admin_support_mensagem_enviada', [
     'ticket_id' => $ticketId,
     'message_id' => $messageId,
     'restaurante_id' => (int)$ticket['restaurante_id'],
     'tem_anexo' => $anexo !== null,
+    'cliente_avisado' => $clienteAvisado,
 ]);
+
+// O painel mostra esta frase tal e qual, para o suporte saber sempre se o
+// cliente chegou a ser avisado -- e nao ficar a supor que sim.
+if ($emailCliente === '') {
+    $aviso = 'Resposta guardada. O cliente NAO foi avisado: este restaurante nao tem email registado.';
+} elseif ($clienteAvisado) {
+    $aviso = 'Resposta enviada e cliente avisado por email.';
+} else {
+    $aviso = 'Resposta guardada, mas o email ao cliente FALHOU. Verifique as definicoes de email.';
+}
 
 security_json([
     'success' => true,
-    'message' => 'Resposta enviada',
+    'message' => $aviso,
+    'cliente_avisado' => $clienteAvisado,
     'message_id' => $messageId,
 ]);
