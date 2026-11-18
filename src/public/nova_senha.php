@@ -158,7 +158,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $tokenValido) {
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../public/css/style.css">
+    <!-- caminho relativo simples: em producao a raiz do site E a pasta
+         src/public, por isso ../public/ saia para fora e dava 404. A folha
+         nunca carregava no site publico, so na maquina de quem programa. -->
+    <link rel="stylesheet" href="css/style.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/style.css'); ?>">
     <link rel="stylesheet" href="css/tokens.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/tokens.css'); ?>">
     <link rel="stylesheet" href="css/nivora-auth.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/nivora-auth.css'); ?>">
 </head>

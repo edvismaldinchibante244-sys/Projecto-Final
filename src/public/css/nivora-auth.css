@@ -180,6 +180,15 @@
     font-weight: 750;
 }
 
+/* Defesa: o box-sizing vem do style.css e esta pagina ja esteve a carrega-lo
+   de um caminho errado, sem ninguem reparar. Sem ele, a largura de 100% soma-se
+   ao preenchimento e os campos saem para fora do cartao. Isto garante que a
+   pagina se aguenta mesmo que a folha base falhe. */
+.nivora-reset-page .login-box,
+.nivora-reset-page .login-box * {
+    box-sizing: border-box;
+}
+
 .nivora-reset-page .password-field {
     position: relative;
 }
