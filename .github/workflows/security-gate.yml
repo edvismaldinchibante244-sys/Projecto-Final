@@ -50,9 +50,13 @@ jobs:
         working-directory: services/realtime
         run: npm ci
 
-      - name: Node audit (high+)
+      # --omit=dev: audita so o que corre em producao. As falhas graves do
+      # picomatch/chokidar/minimatch vinham todas do nodemon, que e so para
+      # desenvolver e nunca arranca no servidor -- barravam deploys sem motivo.
+      # O registo continua a mostrar tudo; so o exit code ignora as de dev.
+      - name: Node audit (high+, so producao)
         working-directory: services/realtime
-        run: npm audit --audit-level=high
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Secret scan (gitleaks)
         uses: gitleaks/gitleaks-action@v2
