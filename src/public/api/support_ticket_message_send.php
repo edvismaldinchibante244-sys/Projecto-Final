@@ -79,6 +79,65 @@ try {
 ");
     $update->execute([':id' => $ticketId, ':rid' => $rid]);
 
+    // Aviso a quem opera a plataforma. Sem isto, uma resposta do cliente ficava
+    // so guardada: o prazo continuava a correr sem ninguem saber que ele escreveu.
+    // Falhar o envio nao pode estragar a mensagem, que ja esta gravada -- dai o
+    // try/catch com registo em ficheiro, igual ao da abertura do ticket.
+    try {
+        $infoStmt = $db->prepare("
+            SELECT t.assunto, t.prioridade, r.nome AS restaurante_nome
+            FROM support_tickets t
+            LEFT JOIN restaurantes r ON r.id = t.restaurante_id
+            WHERE t.id = :id AND t.restaurante_id = :rid
+            LIMIT 1
+        ");
+        $infoStmt->execute([':id' => $ticketId, ':rid' => $rid]);
+        $info = $infoStmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+        $nomeRest = trim((string)($info['restaurante_nome'] ?? ''));
+        if ($nomeRest === '') {
+            $nomeRest = 'Restaurante ' . $rid;
+        }
+        $assuntoTicket = trim((string)($info['assunto'] ?? ''));
+
+        $estadoAntes = strtoupper(trim((string)($ticket['status'] ?? '')));
+        $reaberto = in_array($estadoAntes, ['RESOLVIDO', 'FECHADO'], true);
+
+        $subject = ($reaberto ? 'Pedido reaberto pelo cliente' : 'Resposta do cliente')
+            . ' - #' . $ticketId . ' - ' . $nomeRest;
+
+        $paragrafos = [$nomeRest . ' respondeu no pedido de ajuda #' . $ticketId . '.'];
+        if ($reaberto) {
+            $paragrafos[] = 'O pedido estava ' . support_tickets_status_label($estadoAntes)
+                . ' e voltou a Em andamento por causa desta resposta.';
+        }
+
+        $texto = $mensagem !== '' ? $mensagem : '(sem texto)';
+        if ($anexo !== null) {
+            $texto .= "\n\n[Anexo: " . (string)($anexo['nome'] ?? 'ficheiro')
+                . '. Fica no armazenamento privado; abra-o pelo painel.]';
+        }
+
+        support_tickets_notify_support_copy($subject, support_tickets_email_interno_html(
+            $reaberto ? 'Pedido reaberto pelo cliente' : 'O cliente respondeu',
+            $paragrafos,
+            [
+                'Pedido' => '#' . $ticketId,
+                'Restaurante' => $nomeRest,
+                'Assunto' => $assuntoTicket,
+                'Prioridade' => support_tickets_priority_label((string)($info['prioridade'] ?? '')),
+            ],
+            $texto,
+            'MENSAGEM DO CLIENTE'
+        ));
+    } catch (Throwable $notifyError) {
+        @file_put_contents(
+            nv_storage('logs/support_ticket_notify_error.log'),
+            '[' . date('Y-m-d H:i:s') . '] resposta no ticket #' . $ticketId . ' - ' . $notifyError->getMessage() . PHP_EOL,
+            FILE_APPEND
+        );
+    }
+
     security_audit_event('support_ticket_message_created', [
         'ticket_id' => $ticketId,
         'message_id' => $messageId,

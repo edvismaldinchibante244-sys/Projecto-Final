@@ -352,6 +352,87 @@ if (!function_exists('support_tickets_email_html')) {
     }
 }
 
+if (!function_exists('support_tickets_email_interno_html')) {
+    /**
+     * Mesmo cartao do email_html, mas para quem opera a plataforma, nao para o
+     * cliente: sem a saudacao "equipa", e com o botao a abrir o painel de
+     * suporte do super-admin em vez do painel do restaurante.
+     */
+    function support_tickets_email_interno_html(
+        string $titulo,
+        array $paragrafos,
+        array $dados = [],
+        string $blocoDestaque = '',
+        string $blocoDestaqueTitulo = ''
+    ): string {
+        $esc = static function (string $v): string {
+            return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+        };
+
+        $nomeSistema = function_exists('plano_notif_system_name')
+            ? plano_notif_system_name()
+            : 'Suporte';
+
+        $url = '';
+        if (function_exists('saas_email_env_value')) {
+            $url = trim((string)(saas_email_env_value('APP_URL') ?? ''));
+        }
+        if ($url === '') {
+            $url = trim((string)(getenv('APP_URL') ?: ''));
+        }
+        $url = rtrim($url, '/');
+
+        $linhas = '';
+        foreach ($dados as $rotulo => $valor) {
+            if (trim((string)$valor) === '') {
+                continue;
+            }
+            $linhas .= "<tr>"
+                . "<td style='padding:8px;background:#f8f9fa;font-weight:bold;width:36%;'>" . $esc((string)$rotulo) . "</td>"
+                . "<td style='padding:8px;'>" . $esc((string)$valor) . "</td>"
+                . "</tr>";
+        }
+        $tabela = $linhas !== ''
+            ? "<table style='border-collapse:collapse;width:100%;margin:16px 0;'>{$linhas}</table>"
+            : '';
+
+        $textos = '';
+        foreach ($paragrafos as $par) {
+            $par = trim((string)$par);
+            if ($par === '') {
+                continue;
+            }
+            $textos .= "<p>" . $esc($par) . "</p>";
+        }
+
+        $destaque = '';
+        if (trim($blocoDestaque) !== '') {
+            $tituloDestaque = $blocoDestaqueTitulo !== ''
+                ? "<div style='font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;'>" . $esc($blocoDestaqueTitulo) . "</div>"
+                : '';
+            $destaque = "<div style='margin:16px 0;padding:14px 16px;background:#f8fafc;border-left:4px solid #0d6efd;border-radius:4px;'>"
+                . $tituloDestaque
+                . nl2br($esc($blocoDestaque))
+                . "</div>";
+        }
+
+        $botao = $url !== ''
+            ? "<p style='margin:22px 0 6px;'><a href='" . $esc($url) . "/admin.php?secao=suporte' style='display:inline-block;padding:10px 18px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>Abrir o painel de suporte</a></p>"
+            : "<p>Abra o painel de administração, na secção Suporte, para ver a conversa.</p>";
+
+        return "<html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>"
+            . "<div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>"
+            . "<div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>" . $esc($nomeSistema) . "</div>"
+            . "<h2 style='color:#0d6efd;margin:0 0 12px;'>" . $esc($titulo) . "</h2>"
+            . $textos
+            . $tabela
+            . $destaque
+            . $botao
+            . "<hr style='border:none;border-top:1px solid #e5e7eb;margin:22px 0 12px;'>"
+            . "<p style='font-size:12px;color:#888;'>Aviso interno da plataforma. O cliente não recebe cópia deste email.</p>"
+            . "</div></body></html>";
+    }
+}
 if (!function_exists('support_tickets_notify_support_copy')) {
     function support_tickets_notify_support_copy(string $subject, string $body): void
     {
