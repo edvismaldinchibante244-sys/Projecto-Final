@@ -8,7 +8,7 @@
     <script src="js/nv_acoes.js?v=<?php echo (int)@filemtime(dirname(APP_BASE) . '/src/public/js/nv_acoes.js'); ?>"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - RestauranteSaaS</title>
+    <title>Dashboard - <?php echo nv_nome_sistema_html(); ?></title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link href="lib/bootstrap-5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">

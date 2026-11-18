@@ -461,7 +461,7 @@ if (!function_exists('pdv_img_iniciais')) {
     <script src="js/nv_acoes.js?v=<?php echo (int)@filemtime(__DIR__ . '/js/nv_acoes.js'); ?>"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDV - RestauranteSaaS</title>
+    <title>PDV - <?php echo nv_nome_sistema_html(); ?></title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link href="lib/bootstrap-5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">

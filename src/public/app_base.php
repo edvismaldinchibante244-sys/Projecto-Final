@@ -23,6 +23,7 @@ if (!defined('APP_BASE')) {
 
 
 require_once APP_BASE . '/src/config/storage_path.php';
+require_once APP_BASE . '/src/config/marca.php';
 
 // Fuso horario da aplicacao (o mesmo que a base de dados usa: ver Database::fusoHorario()).
 if (!defined('NV_FUSO_DEFINIDO')) {

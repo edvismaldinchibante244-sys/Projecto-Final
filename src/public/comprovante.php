@@ -32,7 +32,9 @@ if (!$dados_venda) {
 $itens = $venda->buscarItens($id);
 
 $restaurante = [
-    'nome' => 'RestauranteSaaS',
+    // Nome de recurso quando a consulta falha. Nao pode ser o nome da
+    // plataforma: o talao passaria a dizer que o restaurante se chama assim.
+    'nome' => 'Restaurante',
     'logo' => '',
 ];
 
@@ -488,7 +490,7 @@ $logoUrl = restaurante_logo_url($restaurante['logo'] ?? '');
             <p>Obrigado pela sua preferência!</p>
             <p>Volte sempre 😊</p>
             <p style="margin-top: 8px; font-size: 10px;">
-                Sistema RestauranteSaaS<br>
+                Sistema <?php echo nv_nome_sistema_html(); ?><br>
                 Desenvolvido para Moçambique 🇲🇿
             </p>
         </div>

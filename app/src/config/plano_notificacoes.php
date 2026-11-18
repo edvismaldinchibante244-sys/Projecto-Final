@@ -44,13 +44,12 @@ if (!function_exists('plano_notif_tentar_whatsapp')) {
 if (!function_exists('plano_notif_system_name')) {
     function plano_notif_system_name(): string
     {
-        if (function_exists('saas_email_env_value')) {
-            $envName = saas_email_env_value('APP_NAME');
-            if (is_string($envName) && trim($envName) !== '') {
-                return trim($envName);
-            }
-        }
-        return 'RestaurantESA';
+        // Uma fonte so para o nome do sistema. Antes tinha aqui o seu proprio
+        // valor de recurso ('RestaurantESA') e as paginas tinham outro
+        // ('RestauranteSaaS'): dois nomes errados, nenhum deles a marca.
+        require_once __DIR__ . '/marca.php';
+
+        return nv_nome_sistema();
     }
 }
 
