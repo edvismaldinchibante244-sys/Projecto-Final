@@ -1,6 +1,18 @@
 <?php
 
 /*
+ * Nota sobre o campo 'cor' de cada plano: tem de ser igual ao
+ * body.plan-theme-<plano> do src/public/css/tokens.css, que e o tema que o
+ * restaurante ve no painel. Esteve desalinhado durante muito tempo (aqui o
+ * Empresarial era roxo, no painel e laranja) e isso levou a emails assinados
+ * com a cor errada.
+ *
+ * Para cores nos emails use o app/src/config/plano_cores.php, nao este campo.
+ * O tests/Unit/PlanoCoresTest.php compara os tres sitios e falha se divergirem.
+ */
+
+
+/*
    Configuração dos Planos do Sistema
    Define limites e funcionalidades de cada plano
    Versão 2.0 - Com mais granularidade
@@ -10,7 +22,7 @@ $planos = [
     'BASICO' => [
         'nome' => 'Básico',
         'descricao' => 'Operação completa para lanchonetes e restaurantes pequenos a médios.',
-        'cor' => '#6c757d',
+        'cor' => '#475569',
         'icone' => 'fa-user',
         'precos' => [
             'mensal' => 799,
@@ -116,7 +128,7 @@ $planos = [
     'PROFISSIONAL' => [
         'nome' => 'Profissional',
         'descricao' => 'Ideal para restaurantes médios.',
-        'cor' => '#17a2b8',
+        'cor' => '#0e7490',
         'icone' => 'fa-star',
         'precos' => [
             'mensal' => 1999,
@@ -217,7 +229,7 @@ $planos = [
     'EMPRESARIAL' => [
         'nome' => 'Empresarial',
         'descricao' => 'Para grandes restaurantes e redes.',
-        'cor' => '#6f42c1',
+        'cor' => '#c2410c',
         'icone' => 'fa-crown',
         'precos' => [
             'mensal' => 3999,

@@ -60,7 +60,7 @@ if (isset($_SESSION['logado']) && $_SESSION['logado'] === true) {
                     <div id="recuperarAlert" class="alert" style="display:none;"></div>
                     <div class="mb-3">
                         <label class="form-label" for="email">Email</label>
-                        <input type="email" class="form-control" name="email" id="email" required placeholder="Email da conta" autocomplete="email">
+                        <div class="campo-com-icone"><svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><path d="m3.5 7 8.5 6 8.5-6"></path></svg><input type="email" class="form-control" name="email" id="email" required placeholder="Email da conta" autocomplete="email"></div>
                     </div>
 
                     <button type="submit" class="ed-btn ed-btn--solid ed-btn--block" id="btnEnviar">

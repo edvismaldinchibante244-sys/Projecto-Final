@@ -76,11 +76,12 @@ security_regenerate_session(15);
                     <form id="formLogin">
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control" placeholder="Email da conta" required autocomplete="username">
+                            <div class="campo-com-icone"><svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><path d="m3.5 7 8.5 6 8.5-6"></path></svg><input type="email" name="email" class="form-control" placeholder="Email da conta" required autocomplete="username"></div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Senha</label>
-                            <div class="password-field">
+                            <div class="password-field campo-com-icone">
+                                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="10" width="16" height="11" rx="2.5"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
                                 <input type="password" name="senha" id="loginPassword" class="form-control" placeholder="A sua palavra-passe" required autocomplete="current-password">
                                 <button type="button" class="password-toggle" data-password-toggle="loginPassword" aria-label="Mostrar senha" aria-pressed="false">
                                     <i class="fas fa-eye"></i>
@@ -122,7 +123,7 @@ security_regenerate_session(15);
                         <form id="formEsqueciSenha">
                             <div class="mb-3">
                                 <label class="form-label">Email</label>
-                                <input type="email" name="email" id="emailRecuperacao" class="form-control" placeholder="Email da conta" required>
+                                <div class="campo-com-icone"><svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><path d="m3.5 7 8.5 6 8.5-6"></path></svg><input type="email" name="email" id="emailRecuperacao" class="form-control" placeholder="Email da conta" required></div>
                             </div>
                             <div id="esqueciAlert" class="alert" style="display: none;"></div>
                             <button type="submit" class="btn btn-recovery" id="btnEnviarLink">

@@ -58,6 +58,27 @@ final class PlanoCoresTest extends TestCase
         );
     }
 
+    /**
+     * O planos.php tem um campo 'cor' por plano que hoje ninguem le, mas que
+     * esteve anos desalinhado e enganou quem foi la busca-lo. Enquanto existir,
+     * tem de dizer a verdade.
+     *
+     * @dataProvider planos
+     */
+    public function testCorDoPlanosPhpIgualAoTema(string $plano): void
+    {
+        $def = include APP_BASE . '/src/config/planos.php';
+        $chave = strtoupper($plano);
+        $this->assertArrayHasKey($chave, $def);
+
+        $this->assertSame(
+            $this->doCss($plano)['cor'],
+            strtolower((string)($def[$chave]['cor'] ?? '')),
+            "A cor do plano {$chave} no planos.php nao e a do painel. "
+            . 'Alinhe-a com o tokens.css, ou apague o campo se ja nao servir para nada.'
+        );
+    }
+
     public function testPlanoDesconhecidoNaoRebenta(): void
     {
         require_once APP_BASE . '/src/config/plano_cores.php';

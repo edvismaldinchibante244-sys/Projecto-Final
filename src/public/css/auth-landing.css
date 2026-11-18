@@ -584,16 +584,22 @@ body.edvistro-auth a {
 
 .login-modal .form-control {
     background: rgba(255, 246, 234, 0.06);
-    border: 1px solid rgba(255, 246, 234, 0.14);
+    /* 0.38: o contorno passa de 1.48:1 para 3.42:1 sobre o painel. Abaixo de
+       3:1 o limite do campo nao se distingue do fundo (WCAG 1.4.11). */
+    border: 1px solid rgba(255, 246, 234, 0.38);
     color: var(--ed-paper);
     border-radius: 14px;
     min-height: 50px;
-    padding: 12px 14px;
+    padding: 12px 46px 12px 44px;
     box-shadow: none;
 }
 
 .login-modal .form-control::placeholder {
-    color: rgba(255, 246, 234, 0.35);
+    /* 0.55: 5.46:1 sobre o fundo do campo. Estava em 0.35, que dava 3.05:1 --
+       abaixo dos 4.5:1 exigidos. A pagina de nova senha ja tinha sido
+       corrigida; esta tinha ficado para tras. */
+    color: rgba(255, 246, 234, 0.55);
+    opacity: 1;
 }
 
 .login-modal .form-control:focus {
@@ -623,7 +629,7 @@ body.edvistro-auth a {
     justify-content: center;
     border: 0;
     border-radius: 12px;
-    background: rgba(255, 246, 234, 0.08);
+    background: transparent;
     color: rgba(255, 246, 234, 0.78);
     cursor: pointer;
     z-index: 3;
@@ -831,10 +837,19 @@ body.edvistro-auth a {
 
 .ed-auth-card .form-control {
     background: rgba(255, 246, 234, 0.06);
-    border: 1px solid rgba(255, 246, 234, 0.14);
+    border: 1px solid rgba(255, 246, 234, 0.38);
     color: var(--ed-paper);
     border-radius: 14px;
-    min-height: 48px;
+    min-height: 50px;
+    padding: 12px 14px 12px 44px;
+    /* 16px: por baixo disto o Safari do iPhone amplia a pagina ao tocar no
+       campo. Nao descer daqui. */
+    font-size: 16px;
+}
+
+.ed-auth-card .form-control::placeholder {
+    color: rgba(255, 246, 234, 0.55);
+    opacity: 1;
 }
 
 .ed-auth-card .form-control:focus {
@@ -857,4 +872,32 @@ body.edvistro-auth a {
 
 .ed-auth-card .back-link a:hover {
     text-decoration: underline;
+}
+
+
+/* Icone dentro do campo. SVG escrito na propria pagina e nao Font Awesome:
+   esse vem de CDN, e um campo de senha sem sinal nenhum fica pior do que
+   estava se o CDN falhar. Igual ao que a pagina de nova senha ja faz. */
+.login-modal .campo-com-icone,
+.ed-auth-card .campo-com-icone {
+    position: relative;
+}
+
+.login-modal .field-icon,
+.ed-auth-card .field-icon {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 15px;
+    width: 18px;
+    height: 18px;
+    color: rgba(255, 246, 234, 0.55);
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: color .15s ease;
+}
+
+.login-modal .campo-com-icone:focus-within .field-icon,
+.ed-auth-card .campo-com-icone:focus-within .field-icon {
+    color: var(--ed-ember, #e8893a);
 }
