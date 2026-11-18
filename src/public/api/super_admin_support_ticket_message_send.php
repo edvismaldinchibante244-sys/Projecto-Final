@@ -114,20 +114,25 @@ if ($emailCliente !== '') {
     $assuntoEmail = 'Resposta ao seu pedido de ajuda #' . $ticketId
         . ($assuntoTicket !== '' ? ' - ' . $assuntoTicket : '');
 
-    $corpo = '<p>Recebeu uma resposta da equipa de suporte.</p>'
-        . '<p><strong>Pedido:</strong> #' . $ticketId . '</p>'
-        . ($assuntoTicket !== ''
-            ? '<p><strong>Assunto:</strong> ' . htmlspecialchars($assuntoTicket, ENT_QUOTES, 'UTF-8') . '</p>'
-            : '')
-        . ($mensagem !== ''
-            ? '<p><strong>Resposta:</strong><br>' . nl2br(htmlspecialchars($mensagem, ENT_QUOTES, 'UTF-8')) . '</p>'
-            : '')
-        . ($anexo !== null
-            ? '<p>A equipa anexou um ficheiro: <strong>'
-                . htmlspecialchars((string)($anexo['nome'] ?? 'anexo'), ENT_QUOTES, 'UTF-8')
-                . '</strong>. Abra o pedido no painel para o descarregar.</p>'
-            : '')
-        . '<p>Pode responder abrindo o pedido no seu painel, em Ajuda e suporte.</p>';
+    $paragrafos = ['A nossa equipa respondeu ao seu pedido de ajuda.'];
+    if ($anexo !== null) {
+        $paragrafos[] = 'A equipa juntou o ficheiro "'
+            . (string)($anexo['nome'] ?? 'anexo')
+            . '". Por segurança ele não segue neste email: abra o pedido no painel para o descarregar.';
+    }
+    $paragrafos[] = 'Para continuar a conversa, responda no painel — a equipa recebe a sua mensagem ali.';
+
+    $corpo = support_tickets_email_html(
+        'Tem uma resposta da equipa',
+        (string)($ticket['restaurante_nome'] ?? ''),
+        $paragrafos,
+        [
+            'Pedido' => '#' . $ticketId,
+            'Assunto' => $assuntoTicket,
+        ],
+        $mensagem,
+        $mensagem !== '' ? 'Resposta da equipa' : ''
+    );
 
     $clienteAvisado = (bool)@saas_enviar_email($emailCliente, $assuntoEmail, $corpo);
 }

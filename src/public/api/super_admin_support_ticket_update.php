@@ -120,11 +120,27 @@ try {
 
     $email = trim((string)($ticket['restaurante_email'] ?? ''));
     if ($email !== '') {
-        $subject = 'Atualizacao do ticket #' . $ticketId . ' - ' . support_tickets_status_label($status);
-        $body = '<p><strong>Ticket:</strong> #' . $ticketId . '</p>'
-            . '<p><strong>Status:</strong> ' . htmlspecialchars(support_tickets_status_label($status), ENT_QUOTES, 'UTF-8') . '</p>'
-            . '<p><strong>Assunto:</strong> ' . htmlspecialchars((string)$ticket['assunto'], ENT_QUOTES, 'UTF-8') . '</p>'
-            . ($resposta !== '' ? '<p><strong>Resposta:</strong><br>' . nl2br(htmlspecialchars($resposta, ENT_QUOTES, 'UTF-8')) . '</p>' : '');
+        $rotuloEstado = support_tickets_status_label($status);
+        $subject = 'Pedido de ajuda #' . $ticketId . ' - ' . $rotuloEstado;
+
+        $paragrafos = ['O estado do seu pedido de ajuda mudou.'];
+        $explicacao = support_tickets_status_explicacao($status);
+        if ($explicacao !== '') {
+            $paragrafos[] = $explicacao;
+        }
+
+        $body = support_tickets_email_html(
+            'O seu pedido está ' . mb_strtolower($rotuloEstado, 'UTF-8'),
+            (string)($ticket['restaurante_nome'] ?? ''),
+            $paragrafos,
+            [
+                'Pedido' => '#' . $ticketId,
+                'Assunto' => (string)($ticket['assunto'] ?? ''),
+                'Estado' => $rotuloEstado,
+            ],
+            $resposta,
+            $resposta !== '' ? 'Resposta da equipa' : ''
+        );
         @saas_enviar_email($email, $subject, $body);
     }
 

@@ -244,6 +244,114 @@ if (!function_exists('support_tickets_open_count')) {
     }
 }
 
+if (!function_exists('support_tickets_status_explicacao')) {
+    /** O rotulo diz "Resolvido"; isto diz ao cliente o que isso significa para ele. */
+    function support_tickets_status_explicacao(string $status): string
+    {
+        return [
+            'ABERTO' => 'O seu pedido foi registado e está na fila de atendimento.',
+            'EM_ANDAMENTO' => 'A nossa equipa está a tratar do seu pedido neste momento.',
+            'RESOLVIDO' => 'Demos o seu pedido por resolvido. Se o problema voltar, responda nesta mesma conversa.',
+            'FECHADO' => 'Este pedido foi encerrado. Para um assunto novo, abra outro pedido no painel.',
+        ][support_tickets_normalize_status($status)] ?? '';
+    }
+}
+
+if (!function_exists('support_tickets_email_html')) {
+    /**
+     * Monta um email de suporte no mesmo estilo dos restantes emails do
+     * sistema (ver plano_notificacoes.php): cartao com moldura, nome do
+     * sistema, titulo, saudacao, tabela de dados e rodape.
+     *
+     * Antes os emails do suporte saiam em <p> soltos -- "Ticket: #1 / Status:
+     * Em andamento / Assunto: PDV NAO FUNCIONA" -- que parecia um despejo de
+     * dados e nao uma mensagem da empresa.
+     *
+     * @param array<string,string> $dados  rotulo => valor, ja em texto simples
+     * @param array<int,string>    $paragrafos  texto corrido, ja em texto simples
+     */
+    function support_tickets_email_html(
+        string $titulo,
+        string $saudacaoNome,
+        array $paragrafos,
+        array $dados = [],
+        string $blocoDestaque = '',
+        string $blocoDestaqueTitulo = ''
+    ): string {
+        $esc = static function (string $v): string {
+            return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+        };
+
+        $nomeSistema = function_exists('plano_notif_system_name')
+            ? plano_notif_system_name()
+            : 'Suporte';
+
+        $url = '';
+        if (function_exists('saas_email_env_value')) {
+            $url = trim((string)(saas_email_env_value('APP_URL') ?? ''));
+        }
+        if ($url === '') {
+            $url = trim((string)(getenv('APP_URL') ?: ''));
+        }
+        $url = rtrim($url, '/');
+
+        $linhas = '';
+        foreach ($dados as $rotulo => $valor) {
+            if (trim((string)$valor) === '') {
+                continue;
+            }
+            $linhas .= "<tr>"
+                . "<td style='padding:8px;background:#f8f9fa;font-weight:bold;width:36%;'>" . $esc((string)$rotulo) . "</td>"
+                . "<td style='padding:8px;'>" . $esc((string)$valor) . "</td>"
+                . "</tr>";
+        }
+        $tabela = $linhas !== ''
+            ? "<table style='border-collapse:collapse;width:100%;margin:16px 0;'>{$linhas}</table>"
+            : '';
+
+        $textos = '';
+        foreach ($paragrafos as $par) {
+            $par = trim((string)$par);
+            if ($par === '') {
+                continue;
+            }
+            $textos .= "<p>" . $esc($par) . "</p>";
+        }
+
+        $destaque = '';
+        if (trim($blocoDestaque) !== '') {
+            $tituloDestaque = $blocoDestaqueTitulo !== ''
+                ? "<div style='font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;'>" . $esc($blocoDestaqueTitulo) . "</div>"
+                : '';
+            $destaque = "<div style='margin:16px 0;padding:14px 16px;background:#f8fafc;border-left:4px solid #0d6efd;border-radius:4px;'>"
+                . $tituloDestaque
+                . nl2br($esc($blocoDestaque))
+                . "</div>";
+        }
+
+        $botao = $url !== ''
+            ? "<p style='margin:22px 0 6px;'><a href='" . $esc($url) . "/dashboard' style='display:inline-block;padding:10px 18px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>Abrir o meu painel</a></p>"
+            : "<p>Abra o seu painel, em Ajuda e suporte, para ver a conversa.</p>";
+
+        $saudacao = trim($saudacaoNome) !== ''
+            ? "<p>Olá, equipa <strong>" . $esc($saudacaoNome) . "</strong>!</p>"
+            : "<p>Olá!</p>";
+
+        return "<html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>"
+            . "<div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>"
+            . "<div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>" . $esc($nomeSistema) . "</div>"
+            . "<h2 style='color:#0d6efd;margin:0 0 12px;'>" . $esc($titulo) . "</h2>"
+            . $saudacao
+            . $textos
+            . $tabela
+            . $destaque
+            . $botao
+            . "<hr style='border:none;border-top:1px solid #e5e7eb;margin:22px 0 12px;'>"
+            . "<p style='font-size:12px;color:#888;'>Este é um email automático do suporte. Para responder, use a conversa no seu painel.</p>"
+            . "</div></body></html>";
+    }
+}
+
 if (!function_exists('support_tickets_notify_support_copy')) {
     function support_tickets_notify_support_copy(string $subject, string $body): void
     {
