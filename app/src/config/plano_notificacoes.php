@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/plano_cores.php';
+require_once __DIR__ . '/email_layout.php';
 
 /*
    Notificacoes de plano (email + ponto de extensao para WhatsApp).
@@ -84,33 +85,26 @@ if (!function_exists('plano_notificar_solicitacao_recebida')) {
             return false;
         }
 
-        $nome = plano_notif_escape($restauranteNome);
-        $plano = plano_notif_escape($planoNovo);
-        $cicloLabel = plano_notif_escape(plano_notif_ciclo_label($ciclo));
-        $met = plano_notif_escape($metodo);
         $valorFmt = number_format((float)$valor, 2, ',', '.');
 
-        $systemName = plano_notif_escape(plano_notif_system_name());
-        $corPlano = plano_cor($planoNovo);
-        $etiquetaPlano = plano_email_etiqueta($planoNovo);
-        $assunto = 'Solicitacao de plano recebida - ' . $nome;
-        $corpo = "
-        <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
-            <h2 style='color:#0d6efd;'>Solicitacao recebida</h2>
-            <p>Ola, equipa <strong>{$nome}</strong>!</p>
-            <p>Recebemos a sua solicitacao de plano e ela esta em analise.</p>
-            <table style='border-collapse:collapse;width:100%;margin:16px 0;'>
-                <tr><td style='padding:8px;background:#f8f9fa;font-weight:bold;width:40%;'>Plano:</td><td style='padding:8px;'>{$plano}</td></tr>
-                <tr><td style='padding:8px;background:#f8f9fa;font-weight:bold;'>Ciclo:</td><td style='padding:8px;'>{$cicloLabel}</td></tr>
-                <tr><td style='padding:8px;background:#f8f9fa;font-weight:bold;'>Valor:</td><td style='padding:8px;'>{$valorFmt} MZN</td></tr>
-                <tr><td style='padding:8px;background:#f8f9fa;font-weight:bold;'>Metodo:</td><td style='padding:8px;'>{$met}</td></tr>
-            </table>
-            <p>Voce recebera nova notificacao quando for aprovada ou rejeitada.</p>
-            <hr>
-            <p style='font-size:12px;color:#888;'>Este e um email automatico.</p>
-        </div></body></html>";
+        // Assunto com o nome em bruto: aqui nao se escapa HTML, senao um
+        // restaurante chamado "Ze & Cia" aparecia como "Ze &amp; Cia".
+        $nomePlano = plano_cor_info($planoNovo)['nome'];
+        $assunto = 'Pedido de plano recebido - ' . $restauranteNome;
+        $corpo = nivora_email_layout([
+            'sobretitulo' => 'Pedido recebido',
+            'sobretitulo_cor' => '#0369a1',
+            'titulo' => 'Recebemos o seu pedido de plano',
+            'saudacao' => $restauranteNome,
+            'paragrafos' => ['O seu pedido está em análise. Avisamos assim que houver decisão.'],
+            'dados' => [
+                'Plano' => $nomePlano,
+                'Ciclo' => plano_notif_ciclo_label($ciclo),
+                'Valor' => $valorFmt . ' MZN',
+                'Método' => $metodo,
+            ],
+            'plano' => $planoNovo,
+        ]);
 
         $enviado = saas_enviar_email($email, $assunto, $corpo);
         plano_notif_send_support_copy($assunto, $corpo);
@@ -126,30 +120,22 @@ if (!function_exists('plano_notificar_aprovado')) {
             return false;
         }
 
-        $nome = plano_notif_escape($restauranteNome);
-        $plano = plano_notif_escape($planoNovo);
-        $cicloLabel = plano_notif_escape(plano_notif_ciclo_label($ciclo));
-        $dataFimFmt = plano_notif_escape(date('d/m/Y', strtotime((string)$dataFim)));
 
-        $systemName = plano_notif_escape(plano_notif_system_name());
-        $corPlano = plano_cor($planoNovo);
-        $etiquetaPlano = plano_email_etiqueta($planoNovo);
-        $assunto = 'Plano ativado com sucesso - ' . $nome;
-        $corpo = "
-        <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
-            <h2 style='color:#28a745;'>Plano aprovado</h2>
-            <p>Ola, equipa <strong>{$nome}</strong>!</p>
-            <p>Seu plano foi ativado com sucesso.</p>
-            <table style='border-collapse:collapse;width:100%;margin:16px 0;'>
-                <tr><td style='padding:8px;background:#f8f9fa;font-weight:bold;width:40%;'>Plano:</td><td style='padding:8px;'>{$plano}</td></tr>
-                <tr><td style='padding:8px;background:#f8f9fa;font-weight:bold;'>Ciclo:</td><td style='padding:8px;'>{$cicloLabel}</td></tr>
-                <tr><td style='padding:8px;background:#f8f9fa;font-weight:bold;'>Valido ate:</td><td style='padding:8px;'>{$dataFimFmt}</td></tr>
-            </table>
-            <hr>
-            <p style='font-size:12px;color:#888;'>Este e um email automatico.</p>
-        </div></body></html>";
+        $nomePlano = plano_cor_info($planoNovo)['nome'];
+        $assunto = 'Plano activo - ' . $restauranteNome;
+        $corpo = nivora_email_layout([
+            'sobretitulo' => 'Plano aprovado',
+            'sobretitulo_cor' => '#15803d',
+            'titulo' => 'O seu plano está activo',
+            'saudacao' => $restauranteNome,
+            'paragrafos' => ['O pagamento foi confirmado e o plano já está a funcionar.'],
+            'dados' => [
+                'Plano' => $nomePlano,
+                'Ciclo' => plano_notif_ciclo_label($ciclo),
+                'Válido até' => date('d/m/Y', strtotime((string)$dataFim)),
+            ],
+            'plano' => $planoNovo,
+        ]);
 
         $enviado = saas_enviar_email($email, $assunto, $corpo);
         plano_notif_send_support_copy($assunto, $corpo);
@@ -165,26 +151,20 @@ if (!function_exists('plano_notificar_rejeitado')) {
             return false;
         }
 
-        $nome = plano_notif_escape($restauranteNome);
-        $plano = plano_notif_escape($planoNovo);
-        $mot = plano_notif_escape($motivo ?: 'Nao informado');
 
-        $systemName = plano_notif_escape(plano_notif_system_name());
-        $corPlano = plano_cor($planoNovo);
-        $etiquetaPlano = plano_email_etiqueta($planoNovo);
-        $assunto = 'Pedido de plano rejeitado - ' . $nome;
-        $corpo = "
-        <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
-            <h2 style='color:#dc3545;'>Pedido rejeitado</h2>
-            <p>Ola, equipa <strong>{$nome}</strong>!</p>
-            <p>Seu pedido para o plano <strong>{$plano}</strong> foi rejeitado.</p>
-            <p><strong>Motivo:</strong> {$mot}</p>
-            <p>Voce pode corrigir os dados e enviar nova solicitacao.</p>
-            <hr>
-            <p style='font-size:12px;color:#888;'>Este e um email automatico.</p>
-        </div></body></html>";
+        $nomePlano = plano_cor_info($planoNovo)['nome'];
+        $assunto = 'Pedido de plano nao aprovado - ' . $restauranteNome;
+        $corpo = nivora_email_layout([
+            'sobretitulo' => 'Pedido rejeitado',
+            'sobretitulo_cor' => '#b91c1c',
+            'titulo' => 'O seu pedido não foi aprovado',
+            'saudacao' => $restauranteNome,
+            'paragrafos' => ['O pedido para o plano ' . $nomePlano . ' não foi aprovado.'],
+            'destaque' => $motivo ?: 'Não indicado',
+            'destaque_titulo' => 'Motivo',
+            'nota' => 'Pode corrigir os dados e enviar um pedido novo pelo painel.',
+            'plano' => $planoNovo,
+        ]);
 
         $enviado = saas_enviar_email($email, $assunto, $corpo);
         plano_notif_send_support_copy($assunto, $corpo);
@@ -200,45 +180,40 @@ if (!function_exists('plano_notificar_vencimento_proximo')) {
             return false;
         }
 
-        $nome = plano_notif_escape($restauranteNome);
-        $plano = plano_notif_escape($planoAtual);
-        $dataFimFmt = plano_notif_escape(date('d/m/Y', strtotime((string)$dataFim)));
         $dias = (int)$diasRestantes;
 
-        $systemName = plano_notif_escape(plano_notif_system_name());
-        $corPlano = plano_cor($planoAtual);
-        $etiquetaPlano = plano_email_etiqueta($planoAtual);
         $tag = $dias === 1 ? 'URGENTE' : ($dias === 3 ? 'IMPORTANTE' : 'AVISO');
-        $assunto = '[' . $tag . '] Vencimento do plano em ' . $dias . ' dia(s) - ' . $nome;
-        $alertaExtra = '';
+        $nomePlano = plano_cor_info($planoAtual)['nome'];
+        $assunto = '[' . $tag . '] O plano vence em ' . $dias . ' dia(s) - ' . $restauranteNome;
+        $textoAlerta = '';
         if ($dias === 7) {
-            $alertaExtra = "<p><strong>Aviso:</strong> faltam 7 dias. Planeie a renovacao com antecedencia.</p>";
+            $textoAlerta = 'Faltam 7 dias. Planeie a renovação com antecedência.';
         } elseif ($dias === 3) {
-            $alertaExtra = "<p><strong>Aviso:</strong> faltam apenas 3 dias. Garanta a renovacao hoje.</p>";
+            $textoAlerta = 'Faltam apenas 3 dias. Garanta a renovação hoje.';
         } elseif ($dias === 1) {
-            $alertaExtra = "<p><strong>Urgente:</strong> seu plano expira amanha.</p>";
+            $textoAlerta = 'O plano expira amanhã.';
         }
-        $ctaRenovacao = '';
-        if (is_string($renovacaoUrl) && trim($renovacaoUrl) !== '') {
-            $urlSafe = plano_notif_escape(trim($renovacaoUrl));
-            $ctaRenovacao = "<p><a href='{$urlSafe}' style='display:inline-block;background:#0d6efd;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;'>Renovar Plano e Enviar Comprovativo</a></p>"
-                . "<p>Se o botao nao abrir, copie e cole no navegador:<br><span style='word-break:break-all;'>{$urlSafe}</span></p>";
-        }
+        $urlRenovacao = is_string($renovacaoUrl) ? trim($renovacaoUrl) : '';
 
-        $corpo = "
-        <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
-            <h2 style='color:#fd7e14;'>Vencimento proximo</h2>
-            <p>Ola, equipa <strong>{$nome}</strong>!</p>
-            <p>Seu plano <strong>{$plano}</strong> vence em <strong>{$dias} dia(s)</strong>.</p>
-            <p><strong>Data de vencimento:</strong> {$dataFimFmt}</p>
-            {$alertaExtra}
-            <p>Recomendamos iniciar a renovacao para evitar interrupcao.</p>
-            {$ctaRenovacao}
-            <hr>
-            <p style='font-size:12px;color:#888;'>Este e um email automatico.</p>
-        </div></body></html>";
+        $corpo = nivora_email_layout([
+            'sobretitulo' => $tag,
+            'sobretitulo_cor' => $dias === 1 ? '#b91c1c' : '#c2410c',
+            'titulo' => $dias === 1
+                ? 'O seu plano expira amanhã'
+                : 'O seu plano vence em ' . $dias . ' dias',
+            'saudacao' => $restauranteNome,
+            'paragrafos' => ['Renove antes da data para o serviço não parar.'],
+            'dados' => [
+                'Plano' => $nomePlano,
+                'Vence a' => date('d/m/Y', strtotime((string)$dataFim)),
+                'Faltam' => $dias . ($dias === 1 ? ' dia' : ' dias'),
+            ],
+            'destaque' => $textoAlerta,
+            'destaque_titulo' => $textoAlerta !== '' ? 'Atenção' : '',
+            'botao_texto' => $urlRenovacao !== '' ? 'Renovar e enviar comprovativo' : '',
+            'botao_url' => $urlRenovacao,
+            'plano' => $planoAtual,
+        ]);
 
         $enviado = saas_enviar_email($email, $assunto, $corpo);
         plano_notif_send_support_copy($assunto, $corpo);
@@ -262,50 +237,41 @@ if (!function_exists('plano_notificar_bonus_lembrete')) {
             return false;
         }
 
-        $nome = plano_notif_escape($restauranteNome);
-        $bonus = plano_notif_escape($planoBonus);
-        $pago = plano_notif_escape($planoPago);
+        $nomeBonus = plano_cor_info($planoBonus)['nome'];
+        $nomePago = plano_cor_info($planoPago)['nome'];
         $dias = max(0, (int)$diasRestantes);
-        $systemName = plano_notif_escape(plano_notif_system_name());
-        $corPlano = plano_cor($planoBonus);
-        $etiquetaPlano = plano_email_etiqueta($planoBonus);
         $link = plano_notif_escape($url ?: '');
 
         $quando = $dias <= 0 ? 'Termina hoje' : ($dias === 1 ? 'Falta 1 dia' : 'Faltam ' . $dias . ' dias');
-        $assunto = $quando . ' no plano ' . $bonus . ' - ' . $nome;
+        $assunto = $quando . ' no plano ' . $nomeBonus . ' - ' . $restauranteNome;
 
         // O que construiu com o plano de cima. No fim da oferta isto ja era
         // dito; dize-lo agora e que muda alguma coisa, porque ainda da tempo
         // de decidir.
-        $blocoUso = '';
-        $linhasUsoLembrete = '';
+        // O que construiu com o plano de cima, dito enquanto ainda da para decidir.
+        $dadosUso = [];
         foreach ($uso as $item) {
             $valorUso = (int)($item['valor'] ?? 0);
-            if ($valorUso <= 0) {
-                continue;
+            $rotuloUso = trim((string)($item['rotulo'] ?? ''));
+            if ($valorUso > 0 && $rotuloUso !== '') {
+                $dadosUso[$rotuloUso] = (string)$valorUso;
             }
-            $linhasUsoLembrete .= "<tr><td style='padding:8px;background:#f8f9fa;font-weight:bold;width:40%;'>"
-                . $valorUso . "</td><td style='padding:8px;'>"
-                . plano_notif_escape((string)($item['rotulo'] ?? '')) . "</td></tr>";
         }
-        if ($linhasUsoLembrete !== '') {
-            $blocoUso = "<p style='margin-top:18px;'><strong>O que construiu com o {$bonus}:</strong></p>"
-                . "<table style='width:100%;border-collapse:collapse;margin:8px 0;'>{$linhasUsoLembrete}</table>"
-                . "<p style='font-size:13px;color:#555;'>Continua tudo guardado depois da oferta, mas deixa de poder geri-lo pelo {$pago}. Volta a ter acesso assim que subir de plano.</p>";
-        }
-        $corpo = "
-        <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
-            <h2 style='color:#0284c7;'>{$quando} de oferta</h2>
-            <p>Ola, equipa <strong>{$nome}</strong>!</p>
-            <p>Esta a usar o plano <strong>{$bonus}</strong> por oferta de boas-vindas. {$quando} — depois o restaurante volta ao plano <strong>{$pago}</strong>, que e o que paga.</p>
-            <p>Nada se perde: tudo o que criou continua la. Se quiser ficar com o {$bonus}, pode mudar de plano no sistema.</p>"
-            . $blocoUso
-            . ($link !== '' ? "<p><a href='{$link}' style='display:inline-block;padding:10px 18px;background:#0284c7;color:#fff;border-radius:6px;text-decoration:none;'>Ficar com o {$bonus}</a></p>" : '') . "
-            <hr>
-            <p style='font-size:12px;color:#888;'>Este e um email automatico.</p>
-        </div></body></html>";
+
+        $corpo = nivora_email_layout([
+            'sobretitulo' => $quando . ' de oferta',
+            'sobretitulo_cor' => '#0369a1',
+            'titulo' => $quando . ' no plano ' . $nomeBonus,
+            'saudacao' => $restauranteNome,
+            'paragrafos' => [
+                'Está a usar o ' . $nomeBonus . ' por oferta de boas-vindas. Quando acabar, o restaurante volta ao ' . $nomePago . ', que é o plano que paga.',
+                'Nada se perde: tudo o que criou continua lá. Deixa é de o poder gerir pelo ' . $nomePago . ' até voltar a subir de plano.',
+            ],
+            'dados' => $dadosUso,
+            'botao_texto' => $link !== '' ? 'Ficar com o ' . $nomeBonus : '',
+            'botao_url' => $link,
+            'plano' => $planoBonus,
+        ]);
 
         $enviado = saas_enviar_email($email, $assunto, $corpo);
         plano_notif_tentar_whatsapp($telefone, $quando . ' no plano ' . $planoBonus . ' por oferta de boas-vindas.');
@@ -325,34 +291,34 @@ if (!function_exists('plano_notificar_bonus_terminado')) {
             return false;
         }
 
-        $nome = plano_notif_escape($restauranteNome);
-        $bonus = plano_notif_escape($planoBonus);
-        $pago = plano_notif_escape($planoPago);
-        $systemName = plano_notif_escape(plano_notif_system_name());
-        $corPlano = plano_cor($planoPago);
-        $etiquetaPlano = plano_email_etiqueta($planoPago);
+        $nomeBonus = plano_cor_info($planoBonus)['nome'];
+        $nomePago = plano_cor_info($planoPago)['nome'];
         $link = plano_notif_escape($url ?: '');
 
-        $linhasUso = '';
+        $dadosUso = [];
         foreach ($uso as $item) {
-            $linhasUso .= "<tr><td style='padding:8px;background:#f8f9fa;font-weight:bold;width:40%;'>"
-                . (int)($item['valor'] ?? 0) . "</td><td style='padding:8px;'>"
-                . plano_notif_escape((string)($item['rotulo'] ?? '')) . "</td></tr>";
+            $valorUso = (int)($item['valor'] ?? 0);
+            $rotuloUso = trim((string)($item['rotulo'] ?? ''));
+            if ($valorUso > 0 && $rotuloUso !== '') {
+                $dadosUso[$rotuloUso] = (string)$valorUso;
+            }
         }
 
-        $assunto = 'A oferta no plano ' . $bonus . ' terminou - ' . $nome;
-        $corpo = "
-        <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
-            <h2 style='color:#475569;'>A oferta terminou</h2>
-            <p>Ola, equipa <strong>{$nome}</strong>!</p>
-            <p>Os dias no plano <strong>{$bonus}</strong> terminaram e o restaurante voltou ao plano <strong>{$pago}</strong>, que e o que paga. <strong>Nada foi apagado</strong>: tudo o que criou continua acessivel.</p>"
-            . ($linhasUso !== '' ? "<p>Durante a oferta:</p><table style='border-collapse:collapse;width:100%;margin:16px 0;'>{$linhasUso}</table>" : '')
-            . ($link !== '' ? "<p><a href='{$link}' style='display:inline-block;padding:10px 18px;background:#0284c7;color:#fff;border-radius:6px;text-decoration:none;'>Voltar ao {$bonus}</a></p>" : '') . "
-            <hr>
-            <p style='font-size:12px;color:#888;'>Este e um email automatico.</p>
-        </div></body></html>";
+        $assunto = 'A oferta no plano ' . $nomeBonus . ' terminou - ' . $restauranteNome;
+        $corpo = nivora_email_layout([
+            'sobretitulo' => 'A oferta terminou',
+            'sobretitulo_cor' => '#475569',
+            'titulo' => 'Voltou ao plano ' . $nomePago,
+            'saudacao' => $restauranteNome,
+            'paragrafos' => [
+                'Os dias no ' . $nomeBonus . ' terminaram e o restaurante voltou ao ' . $nomePago . '.',
+                'Nada foi apagado: tudo o que criou continua acessível.',
+            ],
+            'dados' => $dadosUso,
+            'botao_texto' => $link !== '' ? 'Voltar ao ' . $nomeBonus : '',
+            'botao_url' => $link,
+            'plano' => $planoPago,
+        ]);
 
         $enviado = saas_enviar_email($email, $assunto, $corpo);
         plano_notif_tentar_whatsapp($telefone, 'A oferta no plano ' . $planoBonus . ' terminou. Nada foi apagado.');

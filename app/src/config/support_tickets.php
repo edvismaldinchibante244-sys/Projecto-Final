@@ -279,22 +279,7 @@ if (!function_exists('support_tickets_email_html')) {
         string $blocoDestaqueTitulo = '',
         string $plano = ''
     ): string {
-        $esc = static function (string $v): string {
-            return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
-        };
-
-        $nomeSistema = function_exists('plano_notif_system_name')
-            ? plano_notif_system_name()
-            : 'Suporte';
-
-        // Cor do plano do restaurante: so na faixa e na etiqueta. O titulo
-        // mantem o azul do suporte -- ver o aviso em plano_cores.php.
-        require_once __DIR__ . '/plano_cores.php';
-        $corPlano = trim($plano) !== '' ? plano_cor($plano) : '';
-        $etiqueta = trim($plano) !== '' ? ' ' . plano_email_etiqueta($plano) : '';
-        $faixa = $corPlano !== ''
-            ? "border-top:5px solid " . $esc($corPlano) . ";"
-            : '';
+        require_once __DIR__ . '/email_layout.php';
 
         $url = '';
         if (function_exists('saas_email_env_value')) {
@@ -305,60 +290,20 @@ if (!function_exists('support_tickets_email_html')) {
         }
         $url = rtrim($url, '/');
 
-        $linhas = '';
-        foreach ($dados as $rotulo => $valor) {
-            if (trim((string)$valor) === '') {
-                continue;
-            }
-            $linhas .= "<tr>"
-                . "<td style='padding:8px;background:#f8f9fa;font-weight:bold;width:36%;'>" . $esc((string)$rotulo) . "</td>"
-                . "<td style='padding:8px;'>" . $esc((string)$valor) . "</td>"
-                . "</tr>";
-        }
-        $tabela = $linhas !== ''
-            ? "<table style='border-collapse:collapse;width:100%;margin:16px 0;'>{$linhas}</table>"
-            : '';
-
-        $textos = '';
-        foreach ($paragrafos as $par) {
-            $par = trim((string)$par);
-            if ($par === '') {
-                continue;
-            }
-            $textos .= "<p>" . $esc($par) . "</p>";
-        }
-
-        $destaque = '';
-        if (trim($blocoDestaque) !== '') {
-            $tituloDestaque = $blocoDestaqueTitulo !== ''
-                ? "<div style='font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;'>" . $esc($blocoDestaqueTitulo) . "</div>"
-                : '';
-            $destaque = "<div style='margin:16px 0;padding:14px 16px;background:#f8fafc;border-left:4px solid #0d6efd;border-radius:4px;'>"
-                . $tituloDestaque
-                . nl2br($esc($blocoDestaque))
-                . "</div>";
-        }
-
-        $botao = $url !== ''
-            ? "<p style='margin:22px 0 6px;'><a href='" . $esc($url) . "/dashboard' style='display:inline-block;padding:10px 18px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>Abrir o meu painel</a></p>"
-            : "<p>Abra o seu painel, em Ajuda e suporte, para ver a conversa.</p>";
-
-        $saudacao = trim($saudacaoNome) !== ''
-            ? "<p>Olá, equipa <strong>" . $esc($saudacaoNome) . "</strong>!</p>"
-            : "<p>Olá!</p>";
-
-        return "<html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>"
-            . "<div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;{$faixa}'>"
-            . "<div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>" . $esc($nomeSistema) . $etiqueta . "</div>"
-            . "<h2 style='color:#0d6efd;margin:0 0 12px;'>" . $esc($titulo) . "</h2>"
-            . $saudacao
-            . $textos
-            . $tabela
-            . $destaque
-            . $botao
-            . "<hr style='border:none;border-top:1px solid #e5e7eb;margin:22px 0 12px;'>"
-            . "<p style='font-size:12px;color:#888;'>Este é um email automático do suporte. Para responder, use a conversa no seu painel.</p>"
-            . "</div></body></html>";
+        return nivora_email_layout([
+            'sobretitulo' => 'Ajuda e suporte',
+            'titulo' => $titulo,
+            'saudacao' => $saudacaoNome,
+            'paragrafos' => $paragrafos,
+            'dados' => $dados,
+            'destaque' => $blocoDestaque,
+            'destaque_titulo' => $blocoDestaqueTitulo,
+            'botao_texto' => $url !== '' ? 'Abrir o meu painel' : '',
+            'botao_url' => $url !== '' ? $url . '/dashboard' : '',
+            'nota' => $url === '' ? 'Abra o seu painel, em Ajuda e suporte, para ver a conversa.' : '',
+            'rodape' => 'Email automático do suporte. Para responder, use a conversa no seu painel.',
+            'plano' => $plano,
+        ]);
     }
 }
 
@@ -376,22 +321,7 @@ if (!function_exists('support_tickets_email_interno_html')) {
         string $blocoDestaqueTitulo = '',
         string $plano = ''
     ): string {
-        $esc = static function (string $v): string {
-            return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
-        };
-
-        $nomeSistema = function_exists('plano_notif_system_name')
-            ? plano_notif_system_name()
-            : 'Suporte';
-
-        // Cor do plano do restaurante: so na faixa e na etiqueta. O titulo
-        // mantem o azul do suporte -- ver o aviso em plano_cores.php.
-        require_once __DIR__ . '/plano_cores.php';
-        $corPlano = trim($plano) !== '' ? plano_cor($plano) : '';
-        $etiqueta = trim($plano) !== '' ? ' ' . plano_email_etiqueta($plano) : '';
-        $faixa = $corPlano !== ''
-            ? "border-top:5px solid " . $esc($corPlano) . ";"
-            : '';
+        require_once __DIR__ . '/email_layout.php';
 
         $url = '';
         if (function_exists('saas_email_env_value')) {
@@ -402,55 +332,20 @@ if (!function_exists('support_tickets_email_interno_html')) {
         }
         $url = rtrim($url, '/');
 
-        $linhas = '';
-        foreach ($dados as $rotulo => $valor) {
-            if (trim((string)$valor) === '') {
-                continue;
-            }
-            $linhas .= "<tr>"
-                . "<td style='padding:8px;background:#f8f9fa;font-weight:bold;width:36%;'>" . $esc((string)$rotulo) . "</td>"
-                . "<td style='padding:8px;'>" . $esc((string)$valor) . "</td>"
-                . "</tr>";
-        }
-        $tabela = $linhas !== ''
-            ? "<table style='border-collapse:collapse;width:100%;margin:16px 0;'>{$linhas}</table>"
-            : '';
-
-        $textos = '';
-        foreach ($paragrafos as $par) {
-            $par = trim((string)$par);
-            if ($par === '') {
-                continue;
-            }
-            $textos .= "<p>" . $esc($par) . "</p>";
-        }
-
-        $destaque = '';
-        if (trim($blocoDestaque) !== '') {
-            $tituloDestaque = $blocoDestaqueTitulo !== ''
-                ? "<div style='font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;'>" . $esc($blocoDestaqueTitulo) . "</div>"
-                : '';
-            $destaque = "<div style='margin:16px 0;padding:14px 16px;background:#f8fafc;border-left:4px solid #0d6efd;border-radius:4px;'>"
-                . $tituloDestaque
-                . nl2br($esc($blocoDestaque))
-                . "</div>";
-        }
-
-        $botao = $url !== ''
-            ? "<p style='margin:22px 0 6px;'><a href='" . $esc($url) . "/admin.php?secao=suporte' style='display:inline-block;padding:10px 18px;background:#0d6efd;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;'>Abrir o painel de suporte</a></p>"
-            : "<p>Abra o painel de administração, na secção Suporte, para ver a conversa.</p>";
-
-        return "<html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>"
-            . "<div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;{$faixa}'>"
-            . "<div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>" . $esc($nomeSistema) . $etiqueta . "</div>"
-            . "<h2 style='color:#0d6efd;margin:0 0 12px;'>" . $esc($titulo) . "</h2>"
-            . $textos
-            . $tabela
-            . $destaque
-            . $botao
-            . "<hr style='border:none;border-top:1px solid #e5e7eb;margin:22px 0 12px;'>"
-            . "<p style='font-size:12px;color:#888;'>Aviso interno da plataforma. O cliente não recebe cópia deste email.</p>"
-            . "</div></body></html>";
+        return nivora_email_layout([
+            'sobretitulo' => 'Aviso interno',
+            'sobretitulo_cor' => '#9a3412',
+            'titulo' => $titulo,
+            'paragrafos' => $paragrafos,
+            'dados' => $dados,
+            'destaque' => $blocoDestaque,
+            'destaque_titulo' => $blocoDestaqueTitulo,
+            'botao_texto' => $url !== '' ? 'Abrir o painel de suporte' : '',
+            'botao_url' => $url !== '' ? $url . '/admin.php?secao=suporte' : '',
+            'nota' => $url === '' ? 'Abra o painel de administração, na secção Suporte, para ver a conversa.' : '',
+            'rodape' => 'Aviso interno da plataforma. O cliente não recebe cópia deste email.',
+            'plano' => $plano,
+        ]);
     }
 }
 if (!function_exists('support_tickets_notify_support_copy')) {
