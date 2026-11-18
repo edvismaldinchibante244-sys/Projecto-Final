@@ -658,11 +658,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             $mensagem = $documentoError ?: 'Falha ao validar documento de titularidade.';
                                             $tipo_msg = 'danger';
                                         } elseif (!imagem_mover_e_otimizar($arquivo_logo['tmp_name'], $logo_caminho_absoluto, 512)) {
-                                            $mensagem = 'Falha ao salvar o logotipo.';
+                                            $mensagem = 'Nao foi possivel guardar o logotipo.';
                                             $tipo_msg = 'danger';
                                         } elseif (!move_uploaded_file($arquivo_documento['tmp_name'], $documento_caminho_absoluto)) {
                                             if (is_file($logo_caminho_absoluto)) @unlink($logo_caminho_absoluto);
-                                            $mensagem = 'Falha ao salvar documento de titularidade.';
+                                            $mensagem = 'Nao foi possivel guardar o documento de titularidade.';
                                             $tipo_msg = 'danger';
                                         } elseif ($metodo !== 'TRIAL' && !imagem_mover_e_otimizar($arquivo_comprovativo['tmp_name'], $caminho_absoluto, 1600)) {
                                             if (is_file($logo_caminho_absoluto)) {
@@ -670,7 +670,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             }
                                             $logo_caminho_absoluto = null;
                                             $logo_caminho_relativo = null;
-                                            $mensagem = 'Falha ao salvar comprovativo.';
+                                            $mensagem = 'Nao foi possivel guardar o comprovativo.';
                                             $tipo_msg = 'danger';
                                         } else {
                                             $senha_hash = password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT);
@@ -980,17 +980,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <label for="website_hp">Website</label>
                                     <input type="text" id="website_hp" name="website" value="" tabindex="-1" autocomplete="off">
                                 </div>
-                                <!-- Seção: Dados do Restaurante -->
+                                <!-- Seccao: dados do restaurante -->
                                 <div class="section-card">
-                                    <div class="section-title"><i class="fas fa-store me-2 text-primary"></i>Dados do Restaurante</div>
+                                    <div class="section-title"><i class="fas fa-store me-2 text-primary"></i>Dados do restaurante</div>
                                     <div class="row g-3">
                                         <div class="col-md-6">
-                                            <label class="form-label">Nome do Restaurante *</label>
-                                            <input type="text" name="nome" class="form-control" placeholder="Nome do restaurante" value="<?php echo solicitar_plano_escape($form['nome']); ?>" minlength="3" maxlength="120" autocomplete="organization" required>
+                                            <label class="form-label">Nome do restaurante *</label>
+                                            <input type="text" name="nome" class="form-control" placeholder="Como aparece na fachada" value="<?php echo solicitar_plano_escape($form['nome']); ?>" minlength="3" maxlength="120" autocomplete="organization" required>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Email *</label>
-                                            <input type="email" name="email" class="form-control" placeholder="Email de contacto" value="<?php echo solicitar_plano_escape($form['email']); ?>" autocomplete="email" maxlength="254" required>
+                                            <input type="email" name="email" class="form-control" placeholder="Para onde enviamos as novidades da conta" value="<?php echo solicitar_plano_escape($form['email']); ?>" autocomplete="email" maxlength="254" required>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Telefone *</label>
@@ -998,21 +998,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Cidade *</label>
-                                            <input type="text" name="cidade" class="form-control" placeholder="Cidade" value="<?php echo solicitar_plano_escape($form['cidade']); ?>" autocomplete="address-level2" minlength="2" maxlength="80" required>
+                                            <input type="text" name="cidade" class="form-control" placeholder="Onde fica o restaurante" value="<?php echo solicitar_plano_escape($form['cidade']); ?>" autocomplete="address-level2" minlength="2" maxlength="80" required>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Endereço *</label>
-                                            <input type="text" name="endereco" class="form-control" placeholder="Endereço do restaurante" value="<?php echo solicitar_plano_escape($form['endereco']); ?>" autocomplete="street-address" minlength="4" maxlength="180" required>
+                                            <input type="text" name="endereco" class="form-control" placeholder="Rua, número e bairro" value="<?php echo solicitar_plano_escape($form['endereco']); ?>" autocomplete="street-address" minlength="4" maxlength="180" required>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">NUIT *</label>
                                             <input type="text" name="nuit" class="form-control" placeholder="9 dígitos" value="<?php echo solicitar_plano_escape($form['nuit']); ?>" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" required>
                                         </div>
                                         <div class="col-12">
-                                            <label class="form-label">Logotipo do Restaurante *</label>
-                                            <div class="input-group">
-                                                <input type="file" name="logo" class="form-control" id="logo_restaurante" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" onchange="previewLogoRestaurante(this)">
-                                            </div>
+                                            <label class="form-label">Logótipo do restaurante *</label>
+                                            <label class="ficheiro-campo" for="logo_restaurante">
+                                                <input type="file" name="logo" id="logo_restaurante" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" onchange="previewLogoRestaurante(this)">
+                                                <span class="ficheiro-botao">Escolher ficheiro</span>
+                                                <span class="ficheiro-nome" data-ficheiro-vazio="Nenhum ficheiro escolhido">Nenhum ficheiro escolhido</span>
+                                            </label>
                                             <small class="text-muted">Formatos aceitos: JPG, PNG ou WEBP (máx. 4MB)</small>
                                             <div id="preview_logo_restaurante" class="mt-2" style="display: none;">
                                                 <img id="img_logo_restaurante" src="" alt="Preview do logotipo" style="max-width: 180px; max-height: 180px; border-radius: 14px; border: 2px solid #dee2e6; background: #fff; object-fit: contain; padding: 8px;">
@@ -1023,7 +1025,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
 
                                 <!-- Seção: Escolha do Plano -->
-                                <div class="section-title"><i class="fas fa-crown me-2 text-warning"></i>Escolha o Plano</div>
+                                <div class="section-title"><i class="fas fa-crown me-2 text-warning"></i>Escolha o plano</div>
                                 <?php if ($lancamento_a_decorrer): ?>
                                     <div class="ed-lancamento">
                                         <span class="ed-lancamento__selo">Lançamento</span>
@@ -1187,10 +1189,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
-                                                        <label class="form-label">Foto do Comprovativo *</label>
-                                                        <div class="input-group">
-                                                            <input type="file" name="comprovativo" class="form-control" id="comprovativo" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" onchange="previewComprovativo(this)">
-                                                        </div>
+                                                        <label class="form-label">Foto do comprovativo *</label>
+                                                        <label class="ficheiro-campo" for="comprovativo">
+                                                            <input type="file" name="comprovativo" id="comprovativo" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" onchange="previewComprovativo(this)">
+                                                            <span class="ficheiro-botao">Escolher ficheiro</span>
+                                                            <span class="ficheiro-nome" data-ficheiro-vazio="Nenhum ficheiro escolhido">Nenhum ficheiro escolhido</span>
+                                                        </label>
                                                         <small class="text-muted">Formatos aceitos: JPG, PNG, PDF (máx. 5MB)</small>
                                                         <div id="preview_comprovativo" class="mt-2" style="display: none;">
                                                             <img id="img_comprovativo" src="" alt="Preview" style="max-width: 200px; border-radius: 8px; border: 2px solid #dee2e6;">
@@ -1199,7 +1203,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     </div>
                                                     <div class="col-12">
                                                         <label class="form-label">Documento de titularidade/representação *</label>
-                                                        <input type="file" name="documento_titularidade" class="form-control" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" required>
+                                                        <label class="ficheiro-campo" for="documento_titularidade">
+                                                            <input type="file" name="documento_titularidade" id="documento_titularidade" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" required>
+                                                            <span class="ficheiro-botao">Escolher ficheiro</span>
+                                                            <span class="ficheiro-nome" data-ficheiro-vazio="Nenhum ficheiro escolhido">Nenhum ficheiro escolhido</span>
+                                                        </label>
                                                         <small class="text-muted">JPG, PNG ou PDF (máx. 5MB). Será analisado pelo super administrador.</small>
                                                     </div>
                                                 </div>
@@ -1210,7 +1218,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                 <div class="alert alert-warning alert-premium">
                                     <i class="fas fa-clock me-2"></i>
-                                    <strong>Atenção:</strong> A sua solicitação será analisada. Quando for aprovada, receberá um email com um link seguro para definir a senha e ativar o acesso.
+                                    <strong>Atenção:</strong> O seu pedido será analisado. Quando for aprovado, receberá um email com uma ligação segura para definir a senha e activar o acesso.
                                 </div>
 
                                 <div class="form-check legal-plan-acceptance">
@@ -1616,6 +1624,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
     </script>
+
+<script nonce="<?php echo function_exists('security_csp_nonce') ? security_csp_nonce() : ''; ?>">
+// Mostra o nome do ficheiro escolhido. O controlo nativo fazia isto em ingles
+// ("No file chosen") e nao ha forma de o traduzir; o input real continua la,
+// por baixo, transparente, a tratar da escolha e da validacao.
+(function () {
+    document.querySelectorAll('.ficheiro-campo input[type="file"]').forEach(function (input) {
+        var caixa = input.closest('.ficheiro-campo');
+        var alvo = caixa ? caixa.querySelector('.ficheiro-nome') : null;
+        if (!alvo) {
+            return;
+        }
+        input.addEventListener('change', function () {
+            var f = input.files && input.files[0];
+            if (f) {
+                var kb = f.size / 1024;
+                var tamanho = kb >= 1024 ? (kb / 1024).toFixed(1) + ' MB' : Math.round(kb) + ' KB';
+                alvo.textContent = f.name + ' (' + tamanho + ')';
+                caixa.classList.add('tem-ficheiro');
+            } else {
+                alvo.textContent = alvo.dataset.ficheiroVazio || 'Nenhum ficheiro escolhido';
+                caixa.classList.remove('tem-ficheiro');
+            }
+        });
+    });
+})();
+</script>
 </body>
 
 </html>

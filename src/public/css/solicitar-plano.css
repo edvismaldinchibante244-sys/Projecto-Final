@@ -205,15 +205,22 @@ body.edvistro-plan .form-label {
 body.edvistro-plan .form-control,
 body.edvistro-plan .form-select {
     background: rgba(255, 246, 234, 0.06);
-    border: 1px solid rgba(255, 246, 234, 0.14);
+    /* 0.38: contorno a 3.42:1 sobre o painel. Estava em 0.14, que dava 1.48:1
+       -- abaixo dos 3:1 que um limite de controlo precisa (WCAG 1.4.11). */
+    border: 1px solid rgba(255, 246, 234, 0.38);
     color: #fff6ea;
     border-radius: 14px;
-    min-height: 48px;
+    min-height: 50px;
+    /* 16px: por baixo disto o Safari do iPhone amplia a pagina ao tocar no
+       campo. Nao descer daqui. */
+    font-size: 16px;
     box-shadow: none;
 }
 
 body.edvistro-plan .form-control::placeholder {
-    color: rgba(255, 246, 234, 0.35);
+    /* 0.55: 5.46:1 sobre o fundo do campo. Estava em 0.35, que dava 3.05:1. */
+    color: rgba(255, 246, 234, 0.55);
+    opacity: 1;
 }
 
 body.edvistro-plan .form-control:focus,
@@ -429,10 +436,11 @@ body.edvistro-plan .input-group .form-control {
     margin: 0 0 16px;
     flex: 1 1 auto;
     min-height: 0;
-    max-height: 280px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(232, 137, 58, 0.45) transparent;
+    /* Sem limite de altura: havia um max-height de 280px com overflow auto, e
+       o Empresarial (21 itens, 546px) mostrava menos de metade. Dava para
+       rolar, mas sem sinal nenhum e com a ultima linha cortada a meio -- lia-se
+       como avaria. Nesta pagina e que o cliente decide quanto paga: tem de ver
+       tudo o que esta a comprar sem descobrir um rolamento escondido. */
 }
 
 .plan-option-features::-webkit-scrollbar {
@@ -765,4 +773,75 @@ body.edvistro-plan .btn-outline-primary:hover {
         width: min(100% - 20px, 1120px);
         margin-bottom: 32px;
     }
+}
+
+
+/* Campo de ficheiro em portugues.
+   O controlo nativo escreve "Choose File" e "No file chosen" em ingles, sem
+   traducao possivel, e e por ele que passam o logotipo, o comprovativo de
+   pagamento e o documento de titularidade.
+   O input fica por cima, transparente e do tamanho todo: continua a ser ele a
+   abrir o seletor e a receber a validacao do required (se fosse display:none o
+   browser recusava-se a focar um campo obrigatorio invalido). */
+body.edvistro-plan .ficheiro-campo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 50px;
+    padding: 8px 14px;
+    background: rgba(255, 246, 234, 0.06);
+    border: 1px dashed rgba(255, 246, 234, 0.38);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: border-color .15s ease, background-color .15s ease;
+}
+
+body.edvistro-plan .ficheiro-campo:hover {
+    background: rgba(255, 246, 234, 0.09);
+    border-color: rgba(232, 137, 58, 0.7);
+}
+
+body.edvistro-plan .ficheiro-campo input[type="file"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+body.edvistro-plan .ficheiro-campo input[type="file"]:focus-visible + .ficheiro-botao {
+    outline: 2px solid rgba(232, 137, 58, .9);
+    outline-offset: 2px;
+}
+
+body.edvistro-plan .ficheiro-botao {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    background: rgba(255, 246, 234, 0.12);
+    border-radius: 10px;
+    color: #fff6ea;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+body.edvistro-plan .ficheiro-nome {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: rgba(255, 246, 234, 0.55);
+    font-size: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.edvistro-plan .ficheiro-campo.tem-ficheiro {
+    border-style: solid;
+    border-color: rgba(232, 137, 58, 0.7);
+}
+
+body.edvistro-plan .ficheiro-campo.tem-ficheiro .ficheiro-nome {
+    color: #fff6ea;
 }

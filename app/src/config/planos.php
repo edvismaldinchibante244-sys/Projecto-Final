@@ -422,7 +422,7 @@ if (!function_exists('plano_get_recursos_catalogo')) {
 
         $recursos = [];
         $recursos[] = (($limites['produtos'] ?? 0) == -1) ? 'Produtos ilimitados' : 'Até ' . ($limites['produtos'] ?? 0) . ' produtos';
-        $recursos[] = (($limites['usuarios'] ?? 0) == -1) ? 'Usuários ilimitados' : 'Até ' . ($limites['usuarios'] ?? 0) . ' usuários';
+        $recursos[] = (($limites['usuarios'] ?? 0) == -1) ? 'Utilizadores ilimitados' : 'Até ' . ($limites['usuarios'] ?? 0) . ' utilizadores';
         $recursos[] = (($limites['mesas'] ?? 0) == -1) ? 'Mesas ilimitadas' : 'Até ' . ($limites['mesas'] ?? 0) . ' mesas';
         $recursos[] = 'Balcão / Take-away automático';
 
