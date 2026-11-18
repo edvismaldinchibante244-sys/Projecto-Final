@@ -276,7 +276,8 @@ if (!function_exists('support_tickets_email_html')) {
         array $paragrafos,
         array $dados = [],
         string $blocoDestaque = '',
-        string $blocoDestaqueTitulo = ''
+        string $blocoDestaqueTitulo = '',
+        string $plano = ''
     ): string {
         $esc = static function (string $v): string {
             return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
@@ -285,6 +286,15 @@ if (!function_exists('support_tickets_email_html')) {
         $nomeSistema = function_exists('plano_notif_system_name')
             ? plano_notif_system_name()
             : 'Suporte';
+
+        // Cor do plano do restaurante: so na faixa e na etiqueta. O titulo
+        // mantem o azul do suporte -- ver o aviso em plano_cores.php.
+        require_once __DIR__ . '/plano_cores.php';
+        $corPlano = trim($plano) !== '' ? plano_cor($plano) : '';
+        $etiqueta = trim($plano) !== '' ? ' ' . plano_email_etiqueta($plano) : '';
+        $faixa = $corPlano !== ''
+            ? "border-top:5px solid " . $esc($corPlano) . ";"
+            : '';
 
         $url = '';
         if (function_exists('saas_email_env_value')) {
@@ -338,8 +348,8 @@ if (!function_exists('support_tickets_email_html')) {
             : "<p>Olá!</p>";
 
         return "<html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>"
-            . "<div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>"
-            . "<div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>" . $esc($nomeSistema) . "</div>"
+            . "<div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;{$faixa}'>"
+            . "<div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>" . $esc($nomeSistema) . $etiqueta . "</div>"
             . "<h2 style='color:#0d6efd;margin:0 0 12px;'>" . $esc($titulo) . "</h2>"
             . $saudacao
             . $textos
@@ -363,7 +373,8 @@ if (!function_exists('support_tickets_email_interno_html')) {
         array $paragrafos,
         array $dados = [],
         string $blocoDestaque = '',
-        string $blocoDestaqueTitulo = ''
+        string $blocoDestaqueTitulo = '',
+        string $plano = ''
     ): string {
         $esc = static function (string $v): string {
             return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
@@ -372,6 +383,15 @@ if (!function_exists('support_tickets_email_interno_html')) {
         $nomeSistema = function_exists('plano_notif_system_name')
             ? plano_notif_system_name()
             : 'Suporte';
+
+        // Cor do plano do restaurante: so na faixa e na etiqueta. O titulo
+        // mantem o azul do suporte -- ver o aviso em plano_cores.php.
+        require_once __DIR__ . '/plano_cores.php';
+        $corPlano = trim($plano) !== '' ? plano_cor($plano) : '';
+        $etiqueta = trim($plano) !== '' ? ' ' . plano_email_etiqueta($plano) : '';
+        $faixa = $corPlano !== ''
+            ? "border-top:5px solid " . $esc($corPlano) . ";"
+            : '';
 
         $url = '';
         if (function_exists('saas_email_env_value')) {
@@ -421,8 +441,8 @@ if (!function_exists('support_tickets_email_interno_html')) {
             : "<p>Abra o painel de administração, na secção Suporte, para ver a conversa.</p>";
 
         return "<html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>"
-            . "<div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>"
-            . "<div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>" . $esc($nomeSistema) . "</div>"
+            . "<div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;{$faixa}'>"
+            . "<div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>" . $esc($nomeSistema) . $etiqueta . "</div>"
             . "<h2 style='color:#0d6efd;margin:0 0 12px;'>" . $esc($titulo) . "</h2>"
             . $textos
             . $tabela

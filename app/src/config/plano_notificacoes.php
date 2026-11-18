@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/plano_cores.php';
+
 /*
    Notificacoes de plano (email + ponto de extensao para WhatsApp).
 */
@@ -89,11 +91,13 @@ if (!function_exists('plano_notificar_solicitacao_recebida')) {
         $valorFmt = number_format((float)$valor, 2, ',', '.');
 
         $systemName = plano_notif_escape(plano_notif_system_name());
+        $corPlano = plano_cor($planoNovo);
+        $etiquetaPlano = plano_email_etiqueta($planoNovo);
         $assunto = 'Solicitacao de plano recebida - ' . $nome;
         $corpo = "
         <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName}</div>
+        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
+            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
             <h2 style='color:#0d6efd;'>Solicitacao recebida</h2>
             <p>Ola, equipa <strong>{$nome}</strong>!</p>
             <p>Recebemos a sua solicitacao de plano e ela esta em analise.</p>
@@ -128,11 +132,13 @@ if (!function_exists('plano_notificar_aprovado')) {
         $dataFimFmt = plano_notif_escape(date('d/m/Y', strtotime((string)$dataFim)));
 
         $systemName = plano_notif_escape(plano_notif_system_name());
+        $corPlano = plano_cor($planoNovo);
+        $etiquetaPlano = plano_email_etiqueta($planoNovo);
         $assunto = 'Plano ativado com sucesso - ' . $nome;
         $corpo = "
         <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName}</div>
+        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
+            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
             <h2 style='color:#28a745;'>Plano aprovado</h2>
             <p>Ola, equipa <strong>{$nome}</strong>!</p>
             <p>Seu plano foi ativado com sucesso.</p>
@@ -164,11 +170,13 @@ if (!function_exists('plano_notificar_rejeitado')) {
         $mot = plano_notif_escape($motivo ?: 'Nao informado');
 
         $systemName = plano_notif_escape(plano_notif_system_name());
+        $corPlano = plano_cor($planoNovo);
+        $etiquetaPlano = plano_email_etiqueta($planoNovo);
         $assunto = 'Pedido de plano rejeitado - ' . $nome;
         $corpo = "
         <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName}</div>
+        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
+            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
             <h2 style='color:#dc3545;'>Pedido rejeitado</h2>
             <p>Ola, equipa <strong>{$nome}</strong>!</p>
             <p>Seu pedido para o plano <strong>{$plano}</strong> foi rejeitado.</p>
@@ -198,6 +206,8 @@ if (!function_exists('plano_notificar_vencimento_proximo')) {
         $dias = (int)$diasRestantes;
 
         $systemName = plano_notif_escape(plano_notif_system_name());
+        $corPlano = plano_cor($planoAtual);
+        $etiquetaPlano = plano_email_etiqueta($planoAtual);
         $tag = $dias === 1 ? 'URGENTE' : ($dias === 3 ? 'IMPORTANTE' : 'AVISO');
         $assunto = '[' . $tag . '] Vencimento do plano em ' . $dias . ' dia(s) - ' . $nome;
         $alertaExtra = '';
@@ -217,8 +227,8 @@ if (!function_exists('plano_notificar_vencimento_proximo')) {
 
         $corpo = "
         <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName}</div>
+        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
+            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
             <h2 style='color:#fd7e14;'>Vencimento proximo</h2>
             <p>Ola, equipa <strong>{$nome}</strong>!</p>
             <p>Seu plano <strong>{$plano}</strong> vence em <strong>{$dias} dia(s)</strong>.</p>
@@ -257,6 +267,8 @@ if (!function_exists('plano_notificar_bonus_lembrete')) {
         $pago = plano_notif_escape($planoPago);
         $dias = max(0, (int)$diasRestantes);
         $systemName = plano_notif_escape(plano_notif_system_name());
+        $corPlano = plano_cor($planoBonus);
+        $etiquetaPlano = plano_email_etiqueta($planoBonus);
         $link = plano_notif_escape($url ?: '');
 
         $quando = $dias <= 0 ? 'Termina hoje' : ($dias === 1 ? 'Falta 1 dia' : 'Faltam ' . $dias . ' dias');
@@ -283,8 +295,8 @@ if (!function_exists('plano_notificar_bonus_lembrete')) {
         }
         $corpo = "
         <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName}</div>
+        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
+            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
             <h2 style='color:#0284c7;'>{$quando} de oferta</h2>
             <p>Ola, equipa <strong>{$nome}</strong>!</p>
             <p>Esta a usar o plano <strong>{$bonus}</strong> por oferta de boas-vindas. {$quando} — depois o restaurante volta ao plano <strong>{$pago}</strong>, que e o que paga.</p>
@@ -317,6 +329,8 @@ if (!function_exists('plano_notificar_bonus_terminado')) {
         $bonus = plano_notif_escape($planoBonus);
         $pago = plano_notif_escape($planoPago);
         $systemName = plano_notif_escape(plano_notif_system_name());
+        $corPlano = plano_cor($planoPago);
+        $etiquetaPlano = plano_email_etiqueta($planoPago);
         $link = plano_notif_escape($url ?: '');
 
         $linhasUso = '';
@@ -329,8 +343,8 @@ if (!function_exists('plano_notificar_bonus_terminado')) {
         $assunto = 'A oferta no plano ' . $bonus . ' terminou - ' . $nome;
         $corpo = "
         <html><body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
-        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;'>
-            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName}</div>
+        <div style='max-width:620px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;border-top:5px solid {$corPlano};'>
+            <div style='font-size:12px;color:#888;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase;'>{$systemName} {$etiquetaPlano}</div>
             <h2 style='color:#475569;'>A oferta terminou</h2>
             <p>Ola, equipa <strong>{$nome}</strong>!</p>
             <p>Os dias no plano <strong>{$bonus}</strong> terminaram e o restaurante voltou ao plano <strong>{$pago}</strong>, que e o que paga. <strong>Nada foi apagado</strong>: tudo o que criou continua acessivel.</p>"

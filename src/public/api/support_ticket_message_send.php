@@ -85,7 +85,7 @@ try {
     // try/catch com registo em ficheiro, igual ao da abertura do ticket.
     try {
         $infoStmt = $db->prepare("
-            SELECT t.assunto, t.prioridade, r.nome AS restaurante_nome
+            SELECT t.assunto, t.prioridade, t.plano_codigo, r.nome AS restaurante_nome
             FROM support_tickets t
             LEFT JOIN restaurantes r ON r.id = t.restaurante_id
             WHERE t.id = :id AND t.restaurante_id = :rid
@@ -128,7 +128,8 @@ try {
                 'Prioridade' => support_tickets_priority_label((string)($info['prioridade'] ?? '')),
             ],
             $texto,
-            'MENSAGEM DO CLIENTE'
+            'MENSAGEM DO CLIENTE',
+            (string)($info['plano_codigo'] ?? '')
         ));
     } catch (Throwable $notifyError) {
         @file_put_contents(

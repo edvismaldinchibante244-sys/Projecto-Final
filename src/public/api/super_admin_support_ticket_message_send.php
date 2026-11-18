@@ -131,7 +131,8 @@ if ($emailCliente !== '') {
             'Assunto' => $assuntoTicket,
         ],
         $mensagem,
-        $mensagem !== '' ? 'Resposta da equipa' : ''
+        $mensagem !== '' ? 'Resposta da equipa' : '',
+        (string)($ticket['plano_codigo'] ?? '')
     );
 
     $clienteAvisado = (bool)@saas_enviar_email($emailCliente, $assuntoEmail, $corpo);

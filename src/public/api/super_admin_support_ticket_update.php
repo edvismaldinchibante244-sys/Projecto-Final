@@ -139,7 +139,8 @@ try {
                 'Estado' => $rotuloEstado,
             ],
             $resposta,
-            $resposta !== '' ? 'Resposta da equipa' : ''
+            $resposta !== '' ? 'Resposta da equipa' : '',
+            (string)($ticket['plano_codigo'] ?? '')
         );
         @saas_enviar_email($email, $subject, $body);
     }
