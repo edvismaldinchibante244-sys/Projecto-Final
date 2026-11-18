@@ -37,6 +37,8 @@ function login_api_send_otp(array $user, string $code): array
         'nome' => $nome,
         'code' => $code,
         'expires_minutes' => 5,
+        // Cor do plano no email, a mesma que a pessoa ve no painel.
+        'plano' => (string)($user['plano'] ?? ''),
     ]);
 
     $enviado = false;

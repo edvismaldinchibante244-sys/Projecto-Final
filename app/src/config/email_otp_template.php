@@ -4,7 +4,7 @@ if (!function_exists('nivora_email_compose_login_otp')) {
     /**
      * Monta o email empresarial de verificacao em duas etapas.
      *
-     * @param array{nome?:string,code:string,expires_minutes?:int} $options
+     * @param array{nome?:string,code:string,expires_minutes?:int,plano?:string} $options
      * @return array{subject:string,html:string}
      */
     function nivora_email_compose_login_otp(array $options): array
@@ -12,6 +12,21 @@ if (!function_exists('nivora_email_compose_login_otp')) {
         $nome = trim((string)($options['nome'] ?? ''));
         $code = preg_replace('/\D+/', '', (string)($options['code'] ?? '')) ?? '';
         $expiresMinutes = max(1, (int)($options['expires_minutes'] ?? 5));
+
+        // Cor do plano do restaurante, a mesma do painel. Sem plano (super
+        // admin, por exemplo) fica o laranja da marca.
+        require_once __DIR__ . '/plano_cores.php';
+        $plano = trim((string)($options['plano'] ?? ''));
+        $corMarca = $plano !== '' ? plano_cor($plano) : '#d9773a';
+        $corSuave = $plano !== '' ? plano_cor_suave($plano) : '#fff7ed';
+        $etiquetaPlano = '';
+        if ($plano !== '') {
+            $infoPlano = plano_cor_info($plano);
+            $etiquetaPlano = '<p style="margin:7px 0 0;"><span style="display:inline-block;padding:3px 10px;'
+                . 'border-radius:999px;background:' . htmlspecialchars($infoPlano['cor'], ENT_QUOTES, 'UTF-8')
+                . ';color:#ffffff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;">'
+                . htmlspecialchars($infoPlano['nome'], ENT_QUOTES, 'UTF-8') . '</span></p>';
+        }
 
         $saudacao = $nome !== '' ? $nome : 'Utilizador';
         $saudacaoEsc = htmlspecialchars($saudacao, ENT_QUOTES, 'UTF-8');
@@ -45,15 +60,16 @@ if (!function_exists('nivora_email_compose_login_otp')) {
         <div class="nivora-wrap" style="width:100%;max-width:600px;margin:0 auto;">
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" class="nivora-shell" style="width:100%;table-layout:fixed;background:#ffffff;border:1px solid #e7e5e4;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(28,25,23,0.08);">
           <tr>
-            <td class="nivora-pad" style="padding:22px 28px;background:#1c1917;border-bottom:4px solid #d9773a;">
+            <td class="nivora-pad" style="padding:22px 28px;background:#1c1917;border-bottom:4px solid ' . $corMarca . ';">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;table-layout:fixed;">
                 <tr>
                   <td width="48" valign="middle">
-                    <div style="width:40px;height:40px;line-height:40px;text-align:center;border-radius:10px;background:#d9773a;color:#1c1917;font-size:20px;font-weight:800;">N</div>
+                    <div style="width:40px;height:40px;line-height:40px;text-align:center;border-radius:10px;background:' . $corMarca . ';color:#ffffff;font-size:20px;font-weight:800;">N</div>
                   </td>
                   <td valign="middle" style="overflow-wrap:anywhere;">
                     <p style="margin:0;font-size:13px;line-height:1.2;letter-spacing:0.13em;text-transform:uppercase;color:#fff7ed;font-weight:800;">NIVORA RESTAURANT</p>
                     <p style="margin:5px 0 0;font-size:12px;line-height:1.3;color:#a8a29e;">Gestão inteligente para restaurantes</p>
+' . $etiquetaPlano . '
                   </td>
                 </tr>
               </table>
@@ -69,10 +85,10 @@ if (!function_exists('nivora_email_compose_login_otp')) {
           </tr>
           <tr>
             <td class="nivora-pad" style="padding:18px 32px;">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;table-layout:fixed;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;table-layout:fixed;background:' . $corSuave . ';border:1px solid #e7e5e4;border-left:4px solid ' . $corMarca . ';border-radius:14px;">
                 <tr>
                   <td align="center" style="padding:24px 16px;">
-                    <p style="margin:0 0 10px;font-size:11px;line-height:1.2;letter-spacing:0.14em;text-transform:uppercase;color:#9a3412;font-weight:800;">Código de verificação</p>
+                    <p style="margin:0 0 10px;font-size:11px;line-height:1.2;letter-spacing:0.14em;text-transform:uppercase;color:' . $corMarca . ';font-weight:800;">Código de verificação</p>
                     <p class="nivora-code" style="margin:0;font-family:Consolas,Menlo,Monaco,monospace;font-size:34px;line-height:1.25;letter-spacing:8px;color:#1c1917;font-weight:800;">' . $codeEsc . '</p>
                   </td>
                 </tr>
