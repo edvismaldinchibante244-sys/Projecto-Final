@@ -237,6 +237,15 @@ if (!function_exists('security_set_headers')) {
             . $styleSrc
             . $scriptSrc
             . "connect-src 'self' https: wss:{$realtimeConnect};";
+
+        // Para onde o browser se queixa quando bloqueia alguma coisa. Sem isto
+        // a politica esta em vigor mas e cega: se partir uma pagina a um
+        // restaurante, ele ve a avaria e nos nao sabemos de nada.
+        // report-uri e antigo mas e o que quase todos os browsers ainda usam;
+        // report-to e o novo. Mandam-se os dois.
+        $destinoRelatorio = '/api/csp_report.php';
+        header('Reporting-Endpoints: csp="' . $destinoRelatorio . '"');
+        $csp .= ' report-uri ' . $destinoRelatorio . '; report-to csp;';
         if (security_is_production()) {
             $csp .= " upgrade-insecure-requests;";
         }
