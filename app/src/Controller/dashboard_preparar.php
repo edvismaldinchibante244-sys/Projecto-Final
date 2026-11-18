@@ -245,6 +245,14 @@ $estoque_resumo = [
 $estoque_previsao_map = [];
 $estoque_alertas_feed = [];
 
+// O titulo do cartao tem de dizer o que o cartao mostra. Estava fixo em
+// "Estoque Baixo" e aparecia a dizer isso por cima de um visto verde e da
+// frase "Estoque em dia": o titulo alarmava e o conteudo tranquilizava.
+$estoqueTemAlerta = !empty($estoque_baixo)
+    || (int)($estoqueSimplesResumo['zerados'] ?? 0) > 0
+    || (int)($estoqueSimplesResumo['baixo'] ?? 0) > 0;
+$estoqueCardTitulo = $estoqueTemAlerta ? 'Estoque baixo' : 'Estoque';
+
 if ($showEstoqueAvancado) {
     extract($dashboardService->estoqueAvancado(array_intersect_key(get_defined_vars(), array_flip(DashboardService::ENTRADAS_ESTOQUE_AVANCADO))));
 }

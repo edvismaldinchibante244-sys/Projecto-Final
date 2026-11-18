@@ -32,9 +32,9 @@
                                         <?php endif; ?>
                                                                             </div>
                                     <?php if ($plano_atual === 'BASICO'): ?>
-                                        <div class="mt-2 text-muted" style="font-size: 0.92rem; max-width: 42rem;">
-                                            Fluxo de barraca: PDV + Caixa. Pedidos online, Bar/Cozinha e relatórios avançados ficam no Profissional.
-                                        </div>
+                                        <?php /* O que o plano inclui e o que nao inclui esta na faixa
+                                                 logo abaixo dos numeros. Repeti-lo aqui so afastava o
+                                                 dono daquilo que ele vem ver. */ ?>
                                     <?php elseif ($plano_atual === 'PROFISSIONAL'): ?>
                                         <div class="mt-2" style="font-size: 0.92rem; max-width: 42rem; color: #0f766e;">
                                             Unidade única com receita, equipe, clientes, fichas técnicas e baixa automática de insumos. Sem multi-filial nem QR de reservas.
@@ -62,7 +62,14 @@
                     </div>
                     <?php endif; ?>
 
-                    <?php include __DIR__ . '/partes/admin_faixa_plano.php'; ?>
+                    <?php
+                    // No Basico a faixa do plano desce para depois dos numeros: o dono abre
+                    // isto para ver quanto vendeu, nao para ler o que o plano dele nao tem.
+                    // Nos outros planos fica onde estava.
+                    if ($plano_atual !== 'BASICO') {
+                        include __DIR__ . '/partes/admin_faixa_plano.php';
+                    }
+                    ?>
                     <?php include __DIR__ . '/partes/aviso_caixa_fechado.php'; ?>
                     <?php if ($plano_atual === 'EMPRESARIAL'): ?>
                         <?php
@@ -252,7 +259,7 @@
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div class="stat-icon success"><i class="fas fa-coins"></i></div>
                                 </div>
-                                <div class="stat-value" style="color: var(--success);" data-dash-campo="total_hoje_num"><?php echo number_format($total_hoje, 2, ',', '.'); ?></div>
+                                <div class="stat-value" data-dash-campo="total_hoje_num"><?php echo number_format($total_hoje, 2, ',', '.'); ?></div>
                                 <div class="stat-label">Vendas Hoje (MZN)</div>
                                 <div class="mt-2 text-muted" style="font-size: 13px;"><i class="fas fa-shopping-cart me-1"></i> <span data-dash-campo="qtd_hoje_txt"><?php echo $qtd_hoje; ?> vendas</span></div>
                                 <div class="mt-1 text-muted" style="font-size: 12px;"><i class="fas fa-chart-line me-1"></i> <span data-dash-campo="ticket_txt">Ticket médio: MZN <?php echo number_format($qtd_hoje > 0 ? ($total_hoje / max(1, $qtd_hoje)) : 0, 2, ',', '.'); ?></span></div>
@@ -282,7 +289,7 @@
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div class="stat-icon primary"><i class="fas fa-pizza-slice"></i></div>
                                 </div>
-                                <div class="stat-value" style="color: var(--primary);"><?php echo $total_produtos; ?></div>
+                                <div class="stat-value"><?php echo $total_produtos; ?></div>
                                 <div class="stat-label">Produtos Ativos</div>
                                 <div class="mt-2 text-muted" style="font-size: 13px;"><i class="fas fa-box me-1"></i> No cardápio</div>
                                 <div class="mt-1 text-muted" style="font-size: 12px;"><i class="fas fa-box-open me-1"></i> <?php echo $total_produtos > 0 ? 'Disponíveis para venda' : 'Sem produtos ativos'; ?></div>
@@ -292,7 +299,7 @@
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div class="stat-icon warning"><i class="fas fa-chair"></i></div>
                                 </div>
-                                <div class="stat-value" style="color: var(--warning);" data-dash-campo="salao_simples" data-total="<?php echo (int)$total_mesas; ?>"><?php echo $mesas_ocupadas; ?>/<?php echo $total_mesas; ?></div>
+                                <div class="stat-value" data-dash-campo="salao_simples" data-total="<?php echo (int)$total_mesas; ?>"><?php echo $mesas_ocupadas; ?>/<?php echo $total_mesas; ?></div>
                                 <div class="stat-label">Mesas Ocupadas</div>
                                 <div class="mt-2 text-muted" style="font-size: 13px;"><i class="fas fa-check-circle me-1"></i> <?php echo $total_mesas - $mesas_ocupadas; ?> livres</div>
                                 <div class="mt-1 text-muted" style="font-size: 12px;"><i class="fas fa-layer-group me-1"></i> <?php echo $total_mesas > 0 ? round(($mesas_ocupadas / $total_mesas) * 100) . '% de ocupação' : 'Sem dados'; ?></div>
@@ -307,6 +314,12 @@
                                 <div class="mt-1 text-muted" style="font-size: 12px;"><i class="fas fa-bolt me-1"></i> <?php echo $caixa_aberto ? 'Pronto para atender' : 'Aguardar abertura'; ?></div>
                             </div>
                         </div>
+                        <?php
+                        // A faixa do plano desce para aqui no Basico: os numeros primeiro.
+                        if ($plano_atual === 'BASICO') {
+                            include __DIR__ . '/partes/admin_faixa_plano.php';
+                        }
+                        ?>
                         <?php if ($proDash): ?>
                             <section class="dash-top-hoje mb-3">
                                 <div class="dash-avisos-head">
@@ -417,23 +430,23 @@
                     <!-- ATALHOS RÁPIDOS -->
                     <div class="row g-3">
                                                 <div class="col-6 col-md-3">
-                            <a href="vendas.php" class="quick-action" style="background: linear-gradient(135deg, #FF6B35, #F7931E);">
+                            <a href="vendas.php" class="quick-action is-principal">
                                 <i class="fas fa-plus-circle fa-2x mb-2"></i><span>Nova Venda</span>
                             </a>
                         </div>
                         <div class="col-6 col-md-3">
-                            <a href="produtos.php" class="quick-action" style="background: linear-gradient(135deg, #10b981, #20c997);">
+                            <a href="produtos.php" class="quick-action">
                                 <i class="fas fa-box fa-2x mb-2"></i><span>Produtos</span>
                             </a>
                         </div>
                                                 <div class="col-6 col-md-3">
-                            <a href="mesas.php" class="quick-action" style="background: linear-gradient(135deg, #3b82f6, #6f42c1);">
+                            <a href="mesas.php" class="quick-action">
                                 <i class="fas fa-chair fa-2x mb-2"></i><span>Mesas</span>
                             </a>
                         </div>
                         <?php if ($temEstoqueAvancado): ?>
                             <div class="col-6 col-md-3">
-                                <a href="estoque_inteligente.php" class="quick-action" style="background: linear-gradient(135deg, #1d4ed8, #0f766e);">
+                                <a href="estoque_inteligente.php" class="quick-action">
                                     <i class="fas fa-boxes-stacked fa-2x mb-2"></i><span>Estoque IA</span>
                                 </a>
                             </div>
@@ -442,7 +455,7 @@
                         <!-- CAIXA: Mostrar apenas se permitido no plano -->
                         <?php if ($temCaixa): ?>
                             <div class="col-6 col-md-3">
-                                <a href="caixa.php" class="quick-action" style="background: linear-gradient(135deg, #10b981, #059669);">
+                                <a href="caixa.php" class="quick-action">
                                     <i class="fas fa-money-bill-wave fa-2x mb-2"></i><span>Caixa</span>
                                 </a>
                             </div>
@@ -450,7 +463,7 @@
 
                         <?php if ($temContasAbertas): ?>
                             <div class="col-6 col-md-3">
-                                <a href="caixa_mesas.php" class="quick-action" style="background: linear-gradient(135deg, #0ea5e9, #0369a1);">
+                                <a href="caixa_mesas.php" class="quick-action">
                                     <i class="fas fa-receipt fa-2x mb-2"></i><span>Contas Abertas</span>
                                 </a>
                             </div>
@@ -459,7 +472,7 @@
                         <!-- GARÇOM: Mapa de mesas a partir do Profissional -->
                         <?php if ($temGarcons): ?>
                             <div class="col-6 col-md-3">
-                                <a href="garcom_mesas.php" class="quick-action" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                                <a href="garcom_mesas.php" class="quick-action">
                                     <i class="fas fa-table-cells fa-2x mb-2"></i><span>Mapa Mesas</span>
                                 </a>
                             </div>
@@ -468,7 +481,7 @@
                         <!-- RELATÓRIOS: Mostrar apenas se permitido no plano -->
                         <?php if (($temRelatorios || $temRelatoriosInteligentes)): ?>
                             <div class="col-6 col-md-3">
-                                <a href="relatorios.php<?php echo $temRelatoriosInteligentes ? '?tipo=horarios_pico' : ''; ?>" class="quick-action" style="background: linear-gradient(135deg, #64748b, #343a40);">
+                                <a href="relatorios.php<?php echo $temRelatoriosInteligentes ? '?tipo=horarios_pico' : ''; ?>" class="quick-action">
                                     <i class="fas fa-chart-bar fa-2x mb-2"></i><span><?php echo $temRelatoriosInteligentes ? 'Relatórios IA' : 'Relatórios'; ?></span>
                                 </a>
                             </div>
@@ -476,7 +489,7 @@
 
                         <?php if ($temGestaoFuncionarios): ?>
                             <div class="col-6 col-md-3">
-                                <a href="funcionarios_turnos.php" class="quick-action" style="background: linear-gradient(135deg, #7c3aed, #4f46e5);">
+                                <a href="funcionarios_turnos.php" class="quick-action">
                                     <i class="fas fa-clock fa-2x mb-2"></i><span>Funcionários</span>
                                 </a>
                             </div>
@@ -484,7 +497,7 @@
 
                         <?php if ($temHistoricoClientes): ?>
                             <div class="col-6 col-md-3">
-                                <a href="clientes.php" class="quick-action" style="background: linear-gradient(135deg, #0369a1, #0ea5e9);">
+                                <a href="clientes.php" class="quick-action">
                                     <i class="fas fa-address-book fa-2x mb-2"></i><span>Clientes</span>
                                 </a>
                             </div>
@@ -492,7 +505,7 @@
 
                         <?php if ($temMultiFilial && $perfil === 'ADMIN'): ?>
                             <div class="col-6 col-md-3">
-                                <a href="filiais.php<?php echo $temDashboardExecutivo ? '?secao=dashboard' : ''; ?>" class="quick-action" style="background: linear-gradient(135deg, #0f766e, #115e59);">
+                                <a href="filiais.php<?php echo $temDashboardExecutivo ? '?secao=dashboard' : ''; ?>" class="quick-action">
                                     <i class="fas fa-building fa-2x mb-2"></i><span><?php echo $temDashboardExecutivo ? 'Filiais Executivo' : 'Filiais'; ?></span>
                                 </a>
                             </div>

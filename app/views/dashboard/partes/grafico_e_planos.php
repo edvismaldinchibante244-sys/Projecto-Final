@@ -212,28 +212,15 @@
                                         if ($svgMax <= 0) {
                                             $svgMax = 1;
                                         }
-                                        // $empChart = grafico do DONO: alem da aparencia, usa dados que so
-                                        // ele ve ($dashEmpReceita, comparacao com a semana anterior).
                                         $empChart = ($plano_atual === 'EMPRESARIAL' && $isAdminDashboard);
                                         $proChart = ($plano_atual === 'PROFISSIONAL' && $isAdminDashboard);
-
-                                        // $empEquipaChart = mesmo plano, mas quem trabalha no salao. A serie
-                                        // ja vem filtrada por garcom_id, ou seja sao os pedidos dele.
-                                        // Antes caia no desenho mais pobre -- tela mais pequena, verde/vermelho
-                                        // generico, sem linha de media, sem melhor dia, sem marca de hoje e sem
-                                        // os dias da semana -- e por isso parecia um grafico qualquer.
-                                        $empEquipaChart = ($plano_atual === 'EMPRESARIAL' && !$isAdminDashboard);
-
-                                        // Aparencia do plano: vale para os dois. Os dados do dono continuam
-                                        // presos ao $empChart.
-                                        $empVisual = ($empChart || $empEquipaChart);
-                                        $richChart = ($empVisual || $proChart);
-                                        $svgW = $empVisual ? 760 : ($proChart ? 740 : 700);
-                                        $svgH = $empVisual ? 300 : ($proChart ? 286 : 260);
-                                        $padL = $empVisual ? 56 : ($proChart ? 56 : 52);
-                                        $padR = $empVisual ? 22 : ($proChart ? 22 : 16);
-                                        $padT = $empVisual ? 28 : ($proChart ? 28 : 18);
-                                        $padB = $empVisual ? 44 : ($proChart ? 44 : 36);
+                                        $richChart = ($empChart || $proChart);
+                                        $svgW = $empChart ? 760 : ($proChart ? 740 : 700);
+                                        $svgH = $empChart ? 300 : ($proChart ? 286 : 260);
+                                        $padL = $empChart ? 56 : ($proChart ? 56 : 52);
+                                        $padR = $empChart ? 22 : ($proChart ? 22 : 16);
+                                        $padT = $empChart ? 28 : ($proChart ? 28 : 18);
+                                        $padB = $empChart ? 44 : ($proChart ? 44 : 36);
                                         $plotW = $svgW - $padL - $padR;
                                         $plotH = $svgH - $padT - $padB;
                                         $nPts = count($svgVals);
@@ -250,8 +237,8 @@
                                         $trendUp = $empChart && is_array($dashEmpReceita)
                                             ? ((float)$dashEmpReceita['delta7pct'] >= 0)
                                             : ($svgVals[$nPts - 1] >= $svgVals[0]);
-                                        $stroke = $empVisual ? '#ea580c' : ($proChart ? '#2563eb' : ($trendUp ? '#16a34a' : '#dc2626'));
-                                        $fillGrad = $empVisual ? '#ea580c' : ($proChart ? '#2563eb' : ($trendUp ? '#16a34a' : '#dc2626'));
+                                        $stroke = $empChart ? '#ea580c' : ($proChart ? '#2563eb' : ($trendUp ? '#16a34a' : '#dc2626'));
+                                        $fillGrad = $empChart ? '#ea580c' : ($proChart ? '#2563eb' : ($trendUp ? '#16a34a' : '#dc2626'));
                                         $mediaChart = 0.0;
                                         $diasComVendaChart = 0;
                                         foreach ($svgVals as $vv) {
@@ -275,11 +262,11 @@
                                             : ($padL + $plotW / 2);
                                         $hojeIdx = $nPts - 1;
                                         ?>
-                                        <div class="chart-wrapper <?php echo $empVisual ? 'dash-emp-chart-wrap' : ($proChart ? 'dash-pro-chart-wrap' : ''); ?>" id="salesChartWrap">
-                                            <svg id="salesChartSvg" class="<?php echo $empVisual ? 'dash-emp-chart-svg' : ''; ?>" viewBox="0 0 <?php echo $svgW; ?> <?php echo $svgH; ?>" width="100%" height="100%" role="img" aria-label="Gráfico inteligente de receita dos últimos 14 dias" preserveAspectRatio="<?php echo $richChart ? 'xMidYMid meet' : 'none'; ?>">
+                                        <div class="chart-wrapper <?php echo $empChart ? 'dash-emp-chart-wrap' : ($proChart ? 'dash-pro-chart-wrap' : ''); ?>" id="salesChartWrap">
+                                            <svg id="salesChartSvg" class="<?php echo $empChart ? 'dash-emp-chart-svg' : ''; ?>" viewBox="0 0 <?php echo $svgW; ?> <?php echo $svgH; ?>" width="100%" height="100%" role="img" aria-label="Gráfico inteligente de receita dos últimos 14 dias" preserveAspectRatio="<?php echo $richChart ? 'xMidYMid meet' : 'none'; ?>">
                                                 <defs>
                                                     <linearGradient id="salesAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="0%" stop-color="<?php echo $fillGrad; ?>" stop-opacity="<?php echo $empVisual ? '0.34' : '0.28'; ?>"/>
+                                                        <stop offset="0%" stop-color="<?php echo $fillGrad; ?>" stop-opacity="<?php echo $empChart ? '0.34' : '0.28'; ?>"/>
                                                         <stop offset="100%" stop-color="<?php echo $fillGrad; ?>" stop-opacity="0.03"/>
                                                     </linearGradient>
                                                     <?php if ($empChart): ?>
@@ -318,50 +305,37 @@
                                                     <line x1="<?php echo $padL; ?>" y1="<?php echo $gy; ?>" x2="<?php echo $padL + $plotW; ?>" y2="<?php echo $gy; ?>" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
                                                     <text x="<?php echo $padL - 8; ?>" y="<?php echo $gy + 4; ?>" text-anchor="end" fill="#94a3b8" font-size="11" font-family="Outfit, sans-serif"><?php echo number_format($gVal, 0, ',', '.'); ?></text>
                                                 <?php endfor; ?>
-                                                <?php if ($empVisual && $mediaChart > 0): ?>
-                                                    <?php
-                                                    // A linha da media e o que da leitura imediata ao grafico:
-                                                    // sem ela, um dia de 300 nao diz nada; com ela, ve-se logo
-                                                    // se ficou acima ou abaixo do costume.
-                                                    $rotuloMedia = $empEquipaChart
-                                                        ? ('Sua média MZN ' . number_format($mediaChart, 0, ',', '.'))
-                                                        : ('Média MZN ' . number_format($mediaChart, 0, ',', '.'));
-                                                    $larguraMedia = $empEquipaChart ? 100 : 84;
-                                                    ?>
+                                                <?php if ($empChart && $mediaChart > 0): ?>
                                                     <line x1="<?php echo $padL; ?>" y1="<?php echo round($mediaY, 1); ?>" x2="<?php echo $padL + $plotW; ?>" y2="<?php echo round($mediaY, 1); ?>" stroke="#0ea5e9" stroke-width="1.75" stroke-dasharray="6 4"/>
-                                                    <rect x="<?php echo $padL + $plotW - ($larguraMedia + 2); ?>" y="<?php echo max($padT, round($mediaY, 1) - 16); ?>" width="<?php echo $larguraMedia; ?>" height="16" rx="4" fill="#e0f2fe"/>
-                                                    <text x="<?php echo $padL + $plotW - ($larguraMedia / 2) - 2; ?>" y="<?php echo max($padT + 11, round($mediaY, 1) - 4); ?>" text-anchor="middle" fill="#0369a1" font-size="9" font-weight="700" font-family="Outfit, sans-serif"><?php echo htmlspecialchars($rotuloMedia, ENT_QUOTES, 'UTF-8'); ?></text>
+                                                    <rect x="<?php echo $padL + $plotW - 86; ?>" y="<?php echo max($padT, round($mediaY, 1) - 16); ?>" width="84" height="16" rx="4" fill="#e0f2fe"/>
+                                                    <text x="<?php echo $padL + $plotW - 44; ?>" y="<?php echo max($padT + 11, round($mediaY, 1) - 4); ?>" text-anchor="middle" fill="#0369a1" font-size="9" font-weight="700" font-family="Outfit, sans-serif">Média MZN <?php echo number_format($mediaChart, 0, ',', '.'); ?></text>
                                                 <?php endif; ?>
                                                 <?php if ($proChart && $mediaChart > 0): ?>
                                                     <line x1="<?php echo $padL; ?>" y1="<?php echo round($mediaY, 1); ?>" x2="<?php echo $padL + $plotW; ?>" y2="<?php echo round($mediaY, 1); ?>" stroke="#0ea5e9" stroke-width="1.5" stroke-dasharray="6 4"/>
                                                     <text x="<?php echo $padL + $plotW - 4; ?>" y="<?php echo max($padT + 10, round($mediaY, 1) - 5); ?>" text-anchor="end" fill="#0284c7" font-size="9" font-weight="700" font-family="Outfit, sans-serif">Média</text>
                                                 <?php endif; ?>
                                                 <polygon points="<?php echo htmlspecialchars($areaPts); ?>" fill="url(#salesAreaGrad)"/>
-                                                <polyline points="<?php echo htmlspecialchars($linePts); ?>" fill="none" stroke="<?php echo $stroke; ?>" stroke-width="<?php echo $empVisual ? '3.5' : ($proChart ? '3.25' : '3'); ?>" stroke-linejoin="round" stroke-linecap="round"/>
+                                                <polyline points="<?php echo htmlspecialchars($linePts); ?>" fill="none" stroke="<?php echo $stroke; ?>" stroke-width="<?php echo $empChart ? '3.5' : ($proChart ? '3.25' : '3'); ?>" stroke-linejoin="round" stroke-linecap="round"/>
                                                 <?php foreach ($svgPoints as $pi => $pt):
                                                     $isPeak = ($pi === $peakIdx && $pt[2] > 0);
                                                     $isToday = ($pi === $hojeIdx);
                                                     $isZero = ($pt[2] <= 0);
-                                                    $todayDot = $empVisual ? '#c2410c' : '#2563eb';
+                                                    $todayDot = $empChart ? '#c2410c' : '#2563eb';
                                                     $dot = $isPeak ? '#f59e0b' : ($isToday ? $todayDot : ($isZero && $richChart ? '#cbd5e1' : $stroke));
                                                     $r = $isPeak ? 6.2 : ($isToday ? 5.2 : ($isZero && $richChart ? 2.8 : 3.5));
                                                 ?>
                                                     <circle cx="<?php echo $pt[0]; ?>" cy="<?php echo $pt[1]; ?>" r="<?php echo $r; ?>" fill="<?php echo $dot; ?>" stroke="#fff" stroke-width="2">
                                                         <title><?php echo htmlspecialchars(($pt[4] ? $pt[4] . ' ' : '') . $pt[3] . ': MZN ' . number_format($pt[2], 2, ',', '.')); ?></title>
                                                     </circle>
-                                                    <?php if ($empVisual && $isPeak): ?>
+                                                    <?php if ($empChart && $isPeak): ?>
                                                         <?php
-                                                        // "PICO" e linguagem de gestao; para quem atende, o que
-                                                        // importa e saber qual foi o seu melhor dia.
-                                                        $rotuloPico = ($empEquipaChart ? 'MELHOR ' : 'PICO ') . $pt[3];
-                                                        $larguraPico = $empEquipaChart ? 84 : 68;
-                                                        $labelX = min(max($pt[0], $padL + ($larguraPico / 2) + 2), $padL + $plotW - ($larguraPico / 2) - 2);
+                                                        $labelX = min(max($pt[0], $padL + 36), $padL + $plotW - 36);
                                                         $labelY = max($padT + 14, $pt[1] - 14);
                                                         ?>
-                                                        <rect x="<?php echo $labelX - ($larguraPico / 2); ?>" y="<?php echo $labelY - 12; ?>" width="<?php echo $larguraPico; ?>" height="16" rx="4" fill="#fffbeb" stroke="#fbbf24"/>
-                                                        <text x="<?php echo $labelX; ?>" y="<?php echo $labelY; ?>" text-anchor="middle" fill="#b45309" font-size="9" font-weight="800" font-family="Outfit, sans-serif"><?php echo htmlspecialchars($rotuloPico, ENT_QUOTES, 'UTF-8'); ?></text>
+                                                        <rect x="<?php echo $labelX - 34; ?>" y="<?php echo $labelY - 12; ?>" width="68" height="16" rx="4" fill="#fffbeb" stroke="#fbbf24"/>
+                                                        <text x="<?php echo $labelX; ?>" y="<?php echo $labelY; ?>" text-anchor="middle" fill="#b45309" font-size="9" font-weight="800" font-family="Outfit, sans-serif">PICO <?php echo htmlspecialchars($pt[3]); ?></text>
                                                     <?php endif; ?>
-                                                    <?php if ($empVisual && $isToday && !$isPeak): ?>
+                                                    <?php if ($empChart && $isToday && !$isPeak): ?>
                                                         <text x="<?php echo $pt[0]; ?>" y="<?php echo max($padT + 12, $pt[1] - 12); ?>" text-anchor="middle" fill="#c2410c" font-size="9" font-weight="800" font-family="Outfit, sans-serif">HOJE</text>
                                                     <?php endif; ?>
                                                     <?php if ($proChart && $isToday && !$isPeak): ?>
@@ -369,32 +343,13 @@
                                                     <?php endif; ?>
                                                     <?php if ($pi % 2 === 0 || $pi === $nPts - 1 || ($richChart && $isPeak)): ?>
                                                         <text x="<?php echo $pt[0]; ?>" y="<?php echo $svgH - ($richChart ? 18 : 10); ?>" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Outfit, sans-serif"><?php echo htmlspecialchars($pt[3]); ?></text>
-                                                        <?php if ($empVisual): ?>
+                                                        <?php if ($empChart): ?>
                                                             <text x="<?php echo $pt[0]; ?>" y="<?php echo $svgH - 6; ?>" text-anchor="middle" fill="#cbd5e1" font-size="8" font-family="Outfit, sans-serif"><?php echo htmlspecialchars($pt[4]); ?></text>
                                                         <?php endif; ?>
                                                     <?php endif; ?>
                                                 <?php endforeach; ?>
                                             </svg>
                                         </div>
-                                        <?php if ($empEquipaChart): ?>
-                                            <?php
-                                            // Legenda propria: a do dono fala em receita diaria e compara com
-                                            // a semana anterior, que sao numeros da casa. Esta explica o que
-                                            // ele tem mesmo a frente -- o trabalho dele.
-                                            ?>
-                                            <div class="dash-emp-chart-legend">
-                                                <span><i class="lg-line"></i> Os seus pedidos por dia</span>
-                                                <span><i class="lg-avg"></i> A sua média nos dias com serviço</span>
-                                                <span><i class="lg-peak"></i> O seu melhor dia</span>
-                                                <?php if ($mediaChart > 0 && $svgVals[$hojeIdx] > 0): ?>
-                                                    <?php $acimaDaMedia = ($svgVals[$hojeIdx] >= $mediaChart); ?>
-                                                    <strong class="<?php echo $acimaDaMedia ? 'is-up' : 'is-down'; ?>">
-                                                        <?php echo $acimaDaMedia ? '▲' : '▼'; ?>
-                                                        Hoje está <?php echo $acimaDaMedia ? 'acima' : 'abaixo'; ?> da sua média
-                                                    </strong>
-                                                <?php endif; ?>
-                                            </div>
-                                        <?php endif; ?>
                                         <?php if ($empChart): ?>
                                             <div class="dash-emp-chart-legend">
                                                 <span><i class="lg-line"></i> Receita diária</span>
@@ -498,12 +453,20 @@
                                             <span><i class="fas fa-hourglass-half me-1"></i><?php echo max(0, (int)$dias_restantes); ?> dias restantes</span>
                                         </div>
                                     </div>
-                                    <h6 class="mb-3" style="font-size: 13px; color: var(--text-light);">Recursos do Plano</h6>
-                                    <ul class="list-unstyled" style="font-size: 13px;">
-                                        <?php foreach ($recursos_plano_atual as $recurso): ?>
-                                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i><?php echo htmlspecialchars($recurso); ?></li>
-                                        <?php endforeach; ?>
-                                    </ul>
+                                    <?php /*
+                                        A lista do que o plano inclui le-se uma vez, no dia da compra,
+                                        e nao todas as manhas. Fica fechada no painel diario e abre a
+                                        um clique -- a informacao nao se perde, so deixa de ocupar o
+                                        espaco que pertence aos numeros do dia.
+                                    */ ?>
+                                    <details class="dash-plano-recursos">
+                                        <summary>O que este plano inclui<span class="dash-plano-conta"><?php echo count($recursos_plano_atual); ?></span></summary>
+                                        <ul class="list-unstyled mt-3" style="font-size: 13px;">
+                                            <?php foreach ($recursos_plano_atual as $recurso): ?>
+                                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i><?php echo htmlspecialchars($recurso); ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </details>
                                 </div>
                             </div>
                         </div>

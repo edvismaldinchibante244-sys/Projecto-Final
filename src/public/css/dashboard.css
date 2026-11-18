@@ -1114,21 +1114,65 @@
             font-size: 12px;
         }
 
+        /*
+         * Atalhos: UMA accao principal, as outras discretas.
+         * Antes eram cinco botoes com cinco gradientes diferentes escritos a
+         * mao -- laranja, verde, azul-roxo, azul-petroleo, verde outra vez.
+         * Com tudo ao mesmo peso, nada se destaca, e o que o dono faz vinte
+         * vezes por dia (Nova Venda) ficava igual ao que faz uma vez por mes.
+         */
         .quick-action {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            border-radius: 20px;
+            gap: 6px;
+            padding: 18px 16px;
+            border-radius: var(--nv-raio-lg, 16px);
             text-decoration: none;
-            transition: all 0.3s;
-            color: white;
+            background: var(--nv-superficie, #fff);
+            border: 1px solid var(--nv-borda, #e5e7eb);
+            color: var(--nv-tinta-2, #374151);
+            font-weight: 700;
+            transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+        }
+
+        .quick-action i {
+            color: var(--nv-tinta-suave, #5b6577);
+            transition: color .15s ease;
         }
 
         .quick-action:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+            border-color: var(--nv-borda-forte, #cbd5e1);
+            box-shadow: var(--nv-sombra-2, 0 6px 18px rgba(15, 23, 42, .08));
+            color: var(--nv-tinta, #172033);
+        }
+
+        .quick-action:hover i {
+            color: var(--nv-laranja-texto, #c2410c);
+        }
+
+        .quick-action.is-principal {
+            background: var(--nv-laranja-texto, #c2410c);
+            border-color: var(--nv-laranja-texto, #c2410c);
+            color: #fff;
+        }
+
+        .quick-action.is-principal i,
+        .quick-action.is-principal:hover,
+        .quick-action.is-principal:hover i {
+            color: #fff;
+        }
+
+        .quick-action.is-principal:hover {
+            background: var(--nv-laranja-forte, #a8380a);
+            border-color: var(--nv-laranja-forte, #a8380a);
+        }
+
+        .quick-action:focus-visible {
+            outline: none;
+            box-shadow: var(--nv-foco, 0 0 0 3px rgba(194, 65, 12, .35));
         }
 
         .plan-card {
@@ -2104,3 +2148,41 @@ a.dash-stat-link:hover { transform:translateY(-2px); }
 .dash-top-lista .qtd { color:#475569; white-space:nowrap; }
 .dash-top-lista .valor { font-weight:700; color:#0f172a; white-space:nowrap; }
 @media (max-width: 640px) { .dash-top-lista li { grid-template-columns:1fr auto; } .dash-top-lista .barra, .dash-top-lista .qtd { display:none; } }
+
+
+/* Lista do plano, fechada por omissao no painel diario. */
+.dash-plano-recursos > summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid var(--nv-borda, #e5e7eb);
+    border-radius: var(--nv-raio-md, 12px);
+    color: var(--nv-tinta-2, #374151);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+}
+
+.dash-plano-recursos > summary::-webkit-details-marker { display: none; }
+
+.dash-plano-recursos > summary:hover {
+    border-color: var(--nv-borda-forte, #cbd5e1);
+    color: var(--nv-tinta, #172033);
+}
+
+.dash-plano-recursos > summary:focus-visible {
+    outline: none;
+    box-shadow: var(--nv-foco, 0 0 0 3px rgba(194, 65, 12, .35));
+}
+
+.dash-plano-conta {
+    min-width: 22px;
+    padding: 1px 7px;
+    border-radius: var(--nv-raio-pill, 999px);
+    background: var(--nv-superficie-2, #f1f5f9);
+    color: var(--nv-tinta-suave, #5b6577);
+    font-size: 11px;
+}
