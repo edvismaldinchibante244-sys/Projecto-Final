@@ -44,6 +44,7 @@ if (!function_exists('nivora_email_layout')) {
 
         $plano = trim((string)($o['plano'] ?? ''));
         $destaqueCor = $plano !== '' ? plano_cor($plano) : '#d9773a';
+        $destaqueSuave = $plano !== '' ? plano_cor_suave($plano) : '#fff7ed';
         $etiqueta = '';
         if ($plano !== '') {
             $info = plano_cor_info($plano);
@@ -94,10 +95,12 @@ if (!function_exists('nivora_email_layout')) {
         if ($textoDestaque !== '') {
             $tituloDestaque = trim((string)($o['destaque_titulo'] ?? ''));
             $destaque = "<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" "
-                . "style=\"width:100%;table-layout:fixed;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;margin:6px 0;\"><tr>"
+                . "style=\"width:100%;table-layout:fixed;background:" . $esc($destaqueSuave)
+                . ";border:1px solid #e7e5e4;border-left:4px solid " . $esc($destaqueCor)
+                . ";border-radius:14px;margin:6px 0;\"><tr>"
                 . "<td style=\"padding:18px 20px;overflow-wrap:anywhere;\">"
                 . ($tituloDestaque !== ''
-                    ? "<p style=\"margin:0 0 8px;font-size:11px;line-height:1.2;letter-spacing:0.14em;text-transform:uppercase;color:#9a3412;font-weight:800;\">" . $esc($tituloDestaque) . "</p>"
+                    ? "<p style=\"margin:0 0 8px;font-size:11px;line-height:1.2;letter-spacing:0.14em;text-transform:uppercase;color:" . $esc($destaqueCor) . ";font-weight:800;\">" . $esc($tituloDestaque) . "</p>"
                     : '')
                 . "<p style=\"margin:0;font-size:15px;line-height:1.6;color:#1c1917;\">" . nl2br($esc($textoDestaque)) . "</p>"
                 . "</td></tr></table>";
