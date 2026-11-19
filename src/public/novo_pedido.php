@@ -165,11 +165,13 @@ function novo_pedido_img_iniciais(string $nomeProd): string
     if ($ini === '') {
         $ini = 'P';
     }
-    $cores = ['#ea580c', '#0f766e', '#2563eb', '#7c3aed', '#be123c', '#a16207', '#0e7490', '#4d7c0f'];
-    $cor = $cores[abs(crc32($nomeProd)) % count($cores)];
+    // Oito cores saturadas sorteadas pelo crc32 do nome: o roxo de um produto e o
+    // azul de outro nao queriam dizer nada, e enchiam o ecra de cor sem sentido.
+    // Produto sem fotografia fica numa pedra neutra, com as iniciais em tinta.
+    $cor = '#f0efee';
     $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">'
         . '<rect width="256" height="256" fill="' . $cor . '"/>'
-        . '<text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="96" font-weight="700" fill="#ffffff">'
+        . '<text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="88" font-weight="700" fill="#a8a29e">'
         . htmlspecialchars($ini, ENT_QUOTES | ENT_XML1, 'UTF-8') . '</text></svg>';
     return 'data:image/svg+xml;base64,' . base64_encode($svg);
 }
@@ -230,6 +232,10 @@ foreach ($mesas as $mCont) {
     }
 }
 $isProfissionalNp = (($plano_atual ?? '') === 'PROFISSIONAL');
+
+// O Basico tem desenho proprio nesta pagina. Definido aqui, e nao junto ao
+// <body>, porque a folha de estilo e ligada no <head>, antes disso.
+$npBasico = (($plano_atual ?? '') === 'BASICO') && empty($isEmpresarialUi);
 
 $npEmpIntel = null;
 if (($plano_atual ?? '') === 'EMPRESARIAL') {
@@ -407,7 +413,7 @@ if (($plano_atual ?? '') === 'EMPRESARIAL') {
 
     <link href="lib/bootstrap-5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="lib/fontawesome-6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -898,13 +904,18 @@ if (($plano_atual ?? '') === 'EMPRESARIAL') {
         }
     </style>
     <link rel="stylesheet" href="css/premium.css">
+    <?php // Depois do premium.css de proposito: e o desenho do Basico para esta
+          // pagina e tem de ganhar as regras gerais. ?>
+    <?php if ($npBasico): ?>
+        <link rel="stylesheet" href="css/novo-pedido-basico.css?v=<?php echo (int)@filemtime(__DIR__ . '/css/novo-pedido-basico.css'); ?>">
+    <?php endif; ?>
     <?php empresarial_head_assets(); ?>
     <?php if (!empty($isEmpresarialUi)): ?>
         <link rel="stylesheet" href="css/novo-pedido-empresarial.css?v=<?php echo (int)@filemtime(__DIR__ . "/css/novo-pedido-empresarial.css"); ?>">
     <?php endif; ?>
 </head>
 
-<body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui pedido-builder-page' . (!empty($isEmpresarialUi) ? ' pedido-emp-shell' : ''))); ?>">
+<body class="<?php echo htmlspecialchars(empresarial_body_class('premium-ui pedido-builder-page' . ($npBasico ? ' np-basico' : '') . (!empty($isEmpresarialUi) ? ' pedido-emp-shell' : ''))); ?>">
 
     <?php
     $perfilAtual = normalizePerfil($_SESSION['perfil'] ?? '');
@@ -1202,6 +1213,13 @@ if (($plano_atual ?? '') === 'EMPRESARIAL') {
         </aside>
     </div>
 
+    <?php if ($npBasico && (!empty($avisoFluxoBasico) || !$temTelasBarCozinha)): ?>
+        <p class="np-nota-fluxo">
+            O pedido criado aqui recebe pagamento em <a href="vendas.php">Vendas</a>, com a caixa aberta.
+            As telas de Bar e Cozinha fazem parte do plano Profissional.
+        </p>
+    <?php endif; ?>
+
 <?php else: ?>
     <!-- ===== LAYOUT PADRÃO (não Empresarial) ===== -->
     <div class="topbar">
@@ -1220,13 +1238,19 @@ if (($plano_atual ?? '') === 'EMPRESARIAL') {
         </div>
     </div>
 
-    <?php if (!empty($avisoFluxoBasico) || !$temTelasBarCozinha): ?>
+    <?php // No Basico esta nota desce para o fim da pagina: e util no primeiro dia
+          // e estorvo nos outros, e estava a ocupar o topo do ecra mais usado. ?>
+    <?php if (!$npBasico && (!empty($avisoFluxoBasico) || !$temTelasBarCozinha)): ?>
         <div class="alert alert-light border mx-3 mt-3 mb-0" style="border-radius:12px;max-width:960px;">
             <strong>Fluxo Básico:</strong> crie o pedido aqui no <strong>PDV</strong>. Depois abra o <strong>Caixa</strong> e receba o pagamento em <strong>Vendas → Pedidos para Receber</strong>.
             Telas Bar e Cozinha estão disponíveis a partir do plano Profissional.
         </div>
     <?php endif; ?>
 
+    <?php // Os tres mini-cartoes (Mesa, Itens, Total) repetiam o painel do pedido
+          // que esta a direita. O titulo dizia "Montar pedido com rapidez e
+          // controlo" a quem ja esta a montar o pedido. Tudo isto sai no Basico. ?>
+    <?php if (!$npBasico): ?>
     <div class="hero-panel">
         <div>
             <div class="hero-eyebrow"><i class="fas fa-bolt me-1"></i> Fluxo executivo</div>
@@ -1254,6 +1278,7 @@ if (($plano_atual ?? '') === 'EMPRESARIAL') {
             </div>
         </div>
     </div>
+    <?php endif; ?>
 
     <div class="content">
         <div id="produtos-area">

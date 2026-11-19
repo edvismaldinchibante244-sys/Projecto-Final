@@ -1,0 +1,322 @@
+/* ===========================================================================
+   Novo pedido — plano Básico.
+
+   É o ecrã que se abre vinte vezes por dia, e abria com dois blocos a explicar
+   o que o utilizador vinha fazer: uma nota de fluxo e um painel com o título
+   "Montar pedido com rapidez e controlo", mais três mini-cartões (Mesa, Itens,
+   Total) que repetiam o painel do pedido logo ao lado. Os produtos eram
+   quadrados saturados com as iniciais em letras enormes, cada um de uma cor
+   sorteada pelo crc32 do nome — roxo, azul, carmim, sem querer dizer nada.
+
+   Aqui vale a linguagem do painel: uma folha, traços finos a separar zonas, um
+   acento só — o laranja da marca — na acção que importa. O nome do produto é a
+   coisa maior do cartão, porque é por ele que se procura, não pela inicial.
+
+   Carregada só quando o plano é Básico; os outros planos ficam como estavam.
+   =========================================================================== */
+
+body.np-basico { background: #f7f6f5; }
+
+body.np-basico .topbar {
+    background: #fff;
+    border-bottom: 1px solid #e7e5e4;
+    box-shadow: none;
+}
+
+body.np-basico .topbar h1 { font-size: 20px; color: #1c1917; }
+body.np-basico .topbar h1 i { color: var(--nv-laranja, #ea580c); }
+
+/* --- a folha: produtos e pedido na mesma superfície ----------------------- */
+body.np-basico .content {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 18px;
+    background: #fff;
+    border: 1px solid #e7e5e4;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+body.np-basico #produtos-area { flex: 1 1 auto; min-width: 0; padding: 0 0 20px; }
+
+body.np-basico .section-title {
+    margin: 0;
+    padding: 18px 24px 12px;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #f0efee;
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: #a8a29e;
+}
+
+body.np-basico .produtos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+    gap: 10px;
+    padding: 16px 24px 4px;
+}
+
+/* O cartão: uma linha. Nome grande, preço por baixo, miniatura ao lado. */
+body.np-basico .produto-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 11px 13px;
+    background: #fff;
+    border: 1px solid #e7e5e4;
+    border-radius: 12px;
+    box-shadow: none;
+    text-align: left;
+    transition: border-color .12s, background .12s;
+}
+
+body.np-basico .produto-btn::before { display: none; }
+
+body.np-basico .produto-btn:hover:not(:disabled) {
+    background: #fafaf9;
+    border-color: #d6d3d1;
+    transform: none;
+    box-shadow: none;
+}
+
+body.np-basico .produto-btn:active:not(:disabled) { background: #f5f5f4; }
+body.np-basico .produto-btn:focus-visible { outline: 2px solid var(--nv-laranja, #ea580c); outline-offset: 2px; }
+body.np-basico .produto-btn:disabled { opacity: .48; }
+
+body.np-basico .p-img-wrap {
+    position: relative;
+    flex: 0 0 auto;
+    width: 52px;
+    height: 52px;
+    margin: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f0efee;
+}
+
+body.np-basico .p-img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 0; }
+
+body.np-basico .p-nome {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #1c1917;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.np-basico .p-preco {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #57534e;
+    font-variant-numeric: tabular-nums;
+}
+
+/* O estado do stock é uma palavra, não um selo colorido sobre a fotografia. */
+body.np-basico .p-stock-tag {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 2px 4px;
+    background: rgba(28, 25, 23, .78);
+    border-radius: 0;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    color: #fff;
+    box-shadow: none;
+}
+
+body.np-basico .p-stock-tag.low { background: rgba(194, 65, 12, .9); }
+
+/* --- o pedido ------------------------------------------------------------- */
+body.np-basico .cart-panel {
+    flex: 0 0 330px;
+    background: #fafaf9;
+    border: 0;
+    border-left: 1px solid #f0efee;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+body.np-basico .cart-header {
+    padding: 18px 20px 14px;
+    background: transparent;
+    border-bottom: 1px solid #f0efee;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #1c1917;
+}
+
+body.np-basico .cart-header i { color: var(--nv-laranja, #ea580c) !important; }
+body.np-basico .cart-body { padding: 16px 20px; }
+body.np-basico .cart-footer { padding: 14px 20px 20px; background: transparent; border-top: 1px solid #f0efee; }
+body.np-basico .cart-empty, body.np-basico #cart-items .cart-empty { color: #a8a29e; font-size: 13px; }
+body.np-basico .cart-empty i { color: #d6d3d1; }
+
+body.np-basico .total-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0efee;
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #a8a29e;
+}
+
+/* O total na serifa da marca, como o número do dia no painel. */
+body.np-basico #cart-total {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: #1c1917;
+}
+
+body.np-basico .btn-enviar {
+    width: 100%;
+    padding: 13px 18px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--nv-laranja, #ea580c);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: none;
+}
+
+body.np-basico .btn-enviar:hover:not(:disabled) { background: var(--nv-laranja-texto, #c2410c); }
+body.np-basico .btn-enviar:disabled { background: #e7e5e4; color: #a8a29e; opacity: 1; }
+body.np-basico .btn-enviar:focus-visible { outline: 2px solid #1c1917; outline-offset: 2px; }
+
+body.np-basico .mesa-select .form-label,
+body.np-basico .obs-field .form-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #78716c;
+}
+
+body.np-basico .form-control, body.np-basico .form-select { border-color: #e7e5e4; border-radius: 9px; font-size: 14px; }
+body.np-basico .form-control:focus, body.np-basico .form-select:focus { border-color: var(--nv-laranja, #ea580c); box-shadow: 0 0 0 3px rgba(234, 88, 12, .14); }
+
+/* --- a nota, no fim ------------------------------------------------------- */
+.np-nota-fluxo { margin: 0 18px 22px; font-size: 13px; line-height: 1.6; color: #78716c; }
+.np-nota-fluxo a { color: var(--nv-laranja-texto, #c2410c); font-weight: 600; text-decoration: none; }
+
+@media (max-width: 900px) {
+    body.np-basico .content { flex-direction: column; margin: 12px; }
+    body.np-basico .produtos-grid { grid-template-columns: 1fr; padding: 14px 16px 4px; }
+    body.np-basico .section-title { padding: 14px 16px 10px; }
+    body.np-basico .cart-panel { flex: 1 1 auto; border-left: 0; border-top: 1px solid #f0efee; }
+    .np-nota-fluxo { margin: 0 12px 18px; }
+}
+
+/* --- acertos depois de ver o ecrã ----------------------------------------- */
+
+/* O título da categoria era inline-flex: o traço parava onde acabava a palavra
+   em vez de atravessar a folha e separar de facto as duas zonas. */
+body.np-basico .section-title { display: block; width: auto; }
+
+/* O painel do pedido tinha cantos próprios dentro da folha — um cartão dentro
+   de um cartão. Fica rente, e estica até ao fundo. */
+body.np-basico .cart-panel {
+    border-radius: 0;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+}
+
+body.np-basico .cart-body { flex: 1 1 auto; }
+
+/* A etiqueta da observação não tem classe própria: vai pelo elemento. */
+body.np-basico .obs-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #78716c;
+}
+
+/* O premium.css marca background, border, box-shadow e border-radius como
+   !important para .cart-panel e .topbar (é a "pele premium" partilhada). Não
+   há especificidade que ganhe a !important, por isso aqui vai a mesma arma,
+   limitada a estas duas peças e só quando o plano é Básico. */
+body.np-basico .topbar {
+    background: #fff !important;
+    border: 0 !important;
+    border-bottom: 1px solid #e7e5e4 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
+}
+
+body.np-basico .cart-panel {
+    background: #fafaf9 !important;
+    border: 0 !important;
+    border-left: 1px solid #f0efee !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
+}
+
+@media (max-width: 900px) {
+    body.np-basico .cart-panel {
+        border-left: 0 !important;
+        border-top: 1px solid #f0efee !important;
+    }
+}
+
+/* --- últimos acertos, já com o pedido montado ---------------------------- */
+
+/* O cabeçalho do pedido tinha um degradê pêssego; a folha não tem tintas. */
+body.np-basico .cart-header { background: transparent !important; }
+
+/* O painel era sticky a 80px e ficava a meio da folha, com o canto da folha
+   branco por cima e por baixo. Dentro de uma folha não precisa de colar. */
+body.np-basico .cart-panel { position: static; top: auto; }
+
+/* As linhas do pedido e os seus botões vinham em azul-acinzentado, que é a
+   sexta cor de um ecrã que devia ter uma. */
+body.np-basico .cart-item { border-bottom: 1px solid #f0efee; padding: 10px 0; }
+body.np-basico .cart-item:last-child { border-bottom: 0; }
+body.np-basico .ci-nome { color: #1c1917; font-size: 14px; }
+body.np-basico .ci-preco { color: #57534e; font-size: 13px; font-variant-numeric: tabular-nums; }
+
+body.np-basico .qty-ctrl { background: #f5f5f4; border: 0; border-radius: 8px; padding: 2px; gap: 2px; }
+
+body.np-basico .qty-btn {
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #57534e;
+    font-size: 15px;
+    line-height: 1;
+}
+
+body.np-basico .qty-btn:hover { background: #e7e5e4; color: #1c1917; }
+body.np-basico .qty-num { min-width: 22px; text-align: center; font-size: 14px; font-weight: 600; color: #1c1917; }
