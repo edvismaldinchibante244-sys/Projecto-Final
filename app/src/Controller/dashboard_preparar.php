@@ -659,6 +659,134 @@ if ($isAdminDashboard && ($plano_atual ?? '') === 'EMPRESARIAL' && $db instanceo
 }
 
 // ---------------------------------------------------------------------------
+// Basico (administrador): o que uma casa de balcao precisa de saber todos os
+// dias. Nao e uma versao reduzida do Profissional -- e outra pergunta.
+//
+// Uma lanchonete abre cedo, vende muito e barato ao balcao e fecha a noite. O
+// dono nao precisa de medias semanais: precisa de saber a que horas vendeu
+// hoje (para saber quantos salgados fazer amanha de manha), o que saiu mais, e
+// se o dia esta a correr melhor ou pior do que ontem a esta mesma hora.
+// ---------------------------------------------------------------------------
+$dashBasTemOntem = false;
+$dashBasOntemTotal = 0.0;
+$dashBasDeltaOntem = null;
+$dashBasTopHoje = [];
+$dashBasHoras = [];
+$dashBasPicoHora = null;
+$dashBasPicoValor = 0.0;
+$dashBasMinutosSemVenda = null;
+$dashBasUltimaVendaHora = '';
+
+if ($isAdminDashboard && ($plano_atual ?? '') === 'BASICO' && $db instanceof PDO && $rid > 0) {
+    // Ontem ate esta mesma hora. Comparar o dia inteiro de ontem com meio dia
+    // de hoje daria sempre uma queda, e seria uma mentira por construcao.
+    try {
+        $stOntemBas = $db->prepare("
+            SELECT COALESCE(SUM(total_final), 0) FROM vendas
+            WHERE restaurante_id = :rid
+              AND UPPER(TRIM(COALESCE(status, ''))) = 'PAGO'
+              AND criado_em >= :ini AND criado_em <= :fim
+        ");
+        $diaOntemBas = date('Y-m-d', strtotime('-1 day'));
+        $stOntemBas->execute([
+            ':rid' => (int)$rid,
+            ':ini' => $diaOntemBas . ' 00:00:00',
+            ':fim' => $diaOntemBas . ' ' . date('H:i:s'),
+        ]);
+        $dashBasOntemTotal = (float)$stOntemBas->fetchColumn();
+        if ($dashBasOntemTotal > 0) {
+            $dashBasTemOntem = true;
+            $dashBasDeltaOntem = (((float)($total_hoje ?? 0)) - $dashBasOntemTotal) / $dashBasOntemTotal * 100;
+        }
+    } catch (Throwable $e) {
+        error_log('[DASH][BAS][ONTEM] ' . $e->getMessage());
+    }
+
+    // O que saiu mais hoje: a decisao do dia seguinte numa lista de cinco.
+    try {
+        $stTopBas = $db->prepare("
+            SELECT p.nome, SUM(iv.quantidade) AS qtd, SUM(iv.quantidade * iv.preco_unitario) AS valor
+            FROM itens_venda iv
+            INNER JOIN vendas v ON v.id = iv.venda_id
+            INNER JOIN produtos p ON p.id = iv.produto_id
+            WHERE v.restaurante_id = ?
+              AND UPPER(TRIM(COALESCE(v.status, ''))) = 'PAGO'
+              AND v.criado_em >= CURDATE()
+            GROUP BY p.id, p.nome
+            ORDER BY qtd DESC, valor DESC
+            LIMIT 5
+        ");
+        $stTopBas->execute([(int)$rid]);
+        $dashBasTopHoje = $stTopBas->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    } catch (Throwable $e) {
+        error_log('[DASH][BAS][TOP] ' . $e->getMessage());
+    }
+
+    // Ha quanto tempo nao entra uma venda. Serve para avisar do fecho de caixa
+    // sem inventar um horario: o sistema nao guarda a hora a que cada casa
+    // fecha, e 21:30 de uma lanchonete nao e 23:00 de um restaurante. Em vez
+    // de adivinhar, ouve-se o proprio negocio -- se a caixa esta aberta e ha
+    // mais de hora e meia que nao entra nada, o dia acabou.
+    try {
+        $stUltimaBas = $db->prepare("
+            SELECT MAX(criado_em) FROM vendas
+            WHERE restaurante_id = ?
+              AND UPPER(TRIM(COALESCE(status, ''))) = 'PAGO'
+              AND criado_em >= CURDATE()
+        ");
+        $stUltimaBas->execute([(int)$rid]);
+        $ultimaBas = $stUltimaBas->fetchColumn();
+        if (!empty($ultimaBas)) {
+            $dashBasMinutosSemVenda = (int)floor((time() - strtotime((string)$ultimaBas)) / 60);
+            $dashBasUltimaVendaHora = date('H:i', strtotime((string)$ultimaBas));
+        }
+    } catch (Throwable $e) {
+        error_log('[DASH][BAS][ULTIMA] ' . $e->getMessage());
+    }
+
+    // Movimento de hoje, hora a hora.
+    try {
+        $stHoraBas = $db->prepare("
+            SELECT HOUR(criado_em) AS h, COALESCE(SUM(total_final), 0) AS t, COUNT(*) AS n
+            FROM vendas
+            WHERE restaurante_id = ?
+              AND UPPER(TRIM(COALESCE(status, ''))) = 'PAGO'
+              AND criado_em >= CURDATE()
+            GROUP BY HOUR(criado_em)
+        ");
+        $stHoraBas->execute([(int)$rid]);
+        $porHora = [];
+        foreach ($stHoraBas->fetchAll(PDO::FETCH_ASSOC) ?: [] as $linha) {
+            $porHora[(int)$linha['h']] = ['total' => (float)$linha['t'], 'n' => (int)$linha['n']];
+        }
+
+        // Janela: do que abriu ate agora. Sem vendas ainda, mostra a manha
+        // tipica de uma lanchonete em vez de um grafico vazio sem eixos.
+        $horaAgora = (int)date('G');
+        $primeira = !empty($porHora) ? min(array_keys($porHora)) : 6;
+        $ultima = max($horaAgora, !empty($porHora) ? max(array_keys($porHora)) : 6);
+        $inicio = max(0, min($primeira, 6));
+        $fim = min(23, max($ultima, $inicio + 5));
+
+        for ($h = $inicio; $h <= $fim; $h++) {
+            $total = (float)($porHora[$h]['total'] ?? 0);
+            $dashBasHoras[] = [
+                'hora' => $h,
+                'total' => $total,
+                'vendas' => (int)($porHora[$h]['n'] ?? 0),
+                'agora' => ($h === $horaAgora),
+            ];
+            if ($total > $dashBasPicoValor) {
+                $dashBasPicoValor = $total;
+                $dashBasPicoHora = $h;
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('[DASH][BAS][HORAS] ' . $e->getMessage());
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Profissional (administrador): versao simples — so ontem, 3 avisos da unidade,
 // stock abaixo do minimo e mais vendidos de hoje. Meta, semana passada, rede e
 // periodos ficam no Empresarial.

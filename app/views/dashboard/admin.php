@@ -263,6 +263,18 @@
                                 <div class="stat-label">Vendas Hoje (MZN)</div>
                                 <div class="mt-2 text-muted" style="font-size: 13px;"><i class="fas fa-shopping-cart me-1"></i> <span data-dash-campo="qtd_hoje_txt"><?php echo $qtd_hoje; ?> vendas</span></div>
                                 <div class="mt-1 text-muted" style="font-size: 12px;"><i class="fas fa-chart-line me-1"></i> <span data-dash-campo="ticket_txt">Ticket médio: MZN <?php echo number_format($qtd_hoje > 0 ? ($total_hoje / max(1, $qtd_hoje)) : 0, 2, ',', '.'); ?></span></div>
+                                <?php if (($plano_atual ?? '') === 'BASICO' && $isAdminDashboard): ?>
+                                    <?php /* Um numero sozinho nao e informacao. A frase inteira esta
+                                             no Movimento de hoje; aqui fica so a seta, que e onde o
+                                             olho cai primeiro. */ ?>
+                                    <div class="dash-kpi-comparar">
+                                        <?php if ($dashBasTemOntem): ?>
+                                            <span class="<?php echo ((float)$dashBasDeltaOntem) >= 0 ? 'is-sobe' : 'is-desce'; ?>"><i class="fas fa-arrow-<?php echo ((float)$dashBasDeltaOntem) >= 0 ? 'up' : 'down'; ?>"></i> <?php echo (((float)$dashBasDeltaOntem) >= 0 ? '+' : '') . number_format((float)$dashBasDeltaOntem, 0, ',', '.'); ?>% vs ontem a esta hora</span>
+                                        <?php else: ?>
+                                            <span class="is-neutro">sem vendas ontem a esta hora</span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
                                 <?php if ($proDash): ?>
                                     <div class="dash-kpi-comparar">
                                         <?php if ($dashProTemOntem): ?>
@@ -320,17 +332,42 @@
                             include __DIR__ . '/partes/admin_faixa_plano.php';
                         }
                         ?>
-                        <?php if ($proDash): ?>
+                        <?php
+                        // Fecho de caixa: num negocio de dinheiro vivo e o controlo mais
+                        // importante do dia, e estava escondido num menu. Aparece quando a
+                        // caixa esta aberta e o movimento parou ha mais de hora e meia.
+                        $basFechoVisivel = (($plano_atual ?? '') === 'BASICO')
+                            && $isAdminDashboard
+                            && !empty($caixa_aberto)
+                            && $dashBasMinutosSemVenda !== null
+                            && $dashBasMinutosSemVenda >= 90;
+                        ?>
+                        <?php if ($basFechoVisivel): ?>
+                            <div class="bas-fecho-aviso">
+                                <div class="bas-fecho-texto">
+                                    <strong>A caixa continua aberta</strong>
+                                    <span>A última venda foi às <?php echo htmlspecialchars($dashBasUltimaVendaHora, ENT_QUOTES, 'UTF-8'); ?>, há <?php echo (int)floor($dashBasMinutosSemVenda / 60); ?>h<?php echo str_pad((string)($dashBasMinutosSemVenda % 60), 2, '0', STR_PAD_LEFT); ?>. Se já fechou a porta, feche também a caixa para o dia ficar certo.</span>
+                                </div>
+                                <a href="caixa.php" class="bas-fecho-botao">Fechar caixa</a>
+                            </div>
+                        <?php endif; ?>
+                        <?php
+                        // O que saiu mais hoje nao e funcionalidade premium: numa casa de
+                        // balcao e a decisao de amanha de manha. O Basico passa a ve-lo.
+                        $mostrarTopHoje = $proDash || (($plano_atual ?? '') === 'BASICO' && $isAdminDashboard);
+                        $topHojeLista = $proDash ? ($dashProTopHoje ?? []) : ($dashBasTopHoje ?? []);
+                        ?>
+                        <?php if ($mostrarTopHoje): ?>
                             <section class="dash-top-hoje mb-3">
                                 <div class="dash-avisos-head">
                                     <strong><i class="fas fa-fire"></i> Mais vendidos de hoje</strong>
                                     <span>só vendas pagas</span>
                                 </div>
-                                <?php if (empty($dashProTopHoje)): ?>
+                                <?php if (empty($topHojeLista)): ?>
                                     <p class="text-muted small mb-0">Ainda não há vendas pagas hoje.</p>
-                                <?php else: $topMaxQtd = max(1, (float)$dashProTopHoje[0]['qtd']); ?>
+                                <?php else: $topMaxQtd = max(1, (float)$topHojeLista[0]['qtd']); ?>
                                     <ol class="dash-top-lista">
-                                        <?php foreach ($dashProTopHoje as $topPro): ?>
+                                        <?php foreach ($topHojeLista as $topPro): ?>
                                             <li>
                                                 <span class="nome"><?php echo htmlspecialchars((string)$topPro['nome']); ?></span>
                                                 <span class="barra"><i style="width: <?php echo number_format(((float)$topPro['qtd'] / $topMaxQtd) * 100, 1, '.', ''); ?>%"></i></span>
@@ -345,7 +382,14 @@
                     <?php endif; ?>
 
                     <?php include __DIR__ . '/partes/admin_painel_plano.php'; ?>
-                    <?php include __DIR__ . '/partes/grafico_e_planos.php'; ?>
+                    <?php // O lugar nobre do painel, onde os outros planos mostram o grafico, mostrava
+                    // ao Basico um resumo do plano que ele ja comprou. Passa a mostrar o
+                    // movimento do dia -- que e o que o dono veio ver. O cartao do plano,
+                    // que o bloco seguinte desenha, fica logo a seguir.
+                    if (($plano_atual ?? '') === 'BASICO' && $isAdminDashboard) {
+                        include __DIR__ . '/partes/basico_movimento_dia.php';
+                    }
+                    include __DIR__ . '/partes/grafico_e_planos.php'; ?>
                     <?php include __DIR__ . '/partes/analytics_empresarial.php'; ?>
                     <?php include __DIR__ . '/partes/tabelas_operacao.php'; ?>
                     <?php if ($perfil === 'ADMIN' && is_array($resumoExecutivoRede)): ?>

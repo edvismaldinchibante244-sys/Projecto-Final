@@ -2186,3 +2186,201 @@ a.dash-stat-link:hover { transform:translateY(-2px); }
     color: var(--nv-tinta-suave, #5b6577);
     font-size: 11px;
 }
+
+/* ===========================================================================
+   Movimento do dia — peça do plano Básico.
+   Tudo em tokens do tokens.css: esta peça nasce dentro do sistema de design,
+   ao contrário do resto do painel, que tem cores escritas à mão.
+   =========================================================================== */
+.bas-movimento {
+    background: var(--nv-superficie, #fff);
+    border: 1px solid var(--nv-borda, #e5e7eb);
+    border-radius: var(--nv-raio-lg, 16px);
+    padding: 20px 22px 16px;
+}
+
+.bas-movimento-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.bas-movimento-titulo {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--nv-tinta, #172033);
+}
+
+.bas-movimento-sub {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--nv-tinta-suave, #5b6577);
+}
+
+.bas-movimento-pico {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 8px 14px;
+    background: var(--nv-laranja-suave, #fff7ed);
+    border: 1px solid var(--nv-laranja-borda, #fed7aa);
+    border-radius: var(--nv-raio-md, 12px);
+    line-height: 1.25;
+}
+
+.bas-movimento-pico-rotulo {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--nv-laranja-texto, #c2410c);
+}
+
+.bas-movimento-pico strong {
+    font-size: 20px;
+    color: var(--nv-tinta, #172033);
+}
+
+.bas-movimento-pico-valor {
+    font-size: 12px;
+    color: var(--nv-tinta-suave, #5b6577);
+}
+
+/* As barras: altura fixa para o gráfico não saltar quando os valores mudam. */
+.bas-movimento-barras {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 140px;
+    padding-bottom: 2px;
+}
+
+.bas-barra {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    min-width: 0;
+    height: 100%;
+}
+
+.bas-barra-haste {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    height: 100%;
+    /* Calha muito discreta: a barra cheia e que e o dado. Com a calha em
+       cinzento forte, uma hora sem vendas parecia uma hora com vendas. */
+    background: linear-gradient(to top, var(--nv-superficie-2, #f1f5f9), transparent 70%);
+    border-radius: var(--nv-raio-sm, 8px);
+    overflow: hidden;
+}
+
+.bas-barra-cheio {
+    width: 100%;
+    background: var(--nv-tinta-suave, #5b6577);
+    border-radius: var(--nv-raio-sm, 8px);
+    transition: height .25s ease;
+}
+
+/* A hora mais forte é a única colorida: é a informação que o dono procura. */
+.bas-barra.is-pico .bas-barra-cheio {
+    background: var(--nv-laranja-texto, #c2410c);
+}
+
+.bas-barra.is-pico .bas-barra-hora {
+    color: var(--nv-laranja-texto, #c2410c);
+    font-weight: 800;
+}
+
+/* A hora a decorrer leva um traço por baixo, para se situar no dia. */
+.bas-barra.is-agora .bas-barra-hora {
+    position: relative;
+    color: var(--nv-tinta, #172033);
+    font-weight: 800;
+}
+
+.bas-barra.is-agora .bas-barra-hora::after {
+    content: "";
+    position: absolute;
+    right: 15%;
+    bottom: -4px;
+    left: 15%;
+    height: 2px;
+    background: var(--nv-tinta, #172033);
+    border-radius: 2px;
+}
+
+.bas-barra-hora {
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--nv-tinta-suave, #5b6577);
+}
+
+.bas-movimento-pe {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--nv-borda, #e5e7eb);
+    font-size: 13px;
+}
+
+.bas-movimento-total strong {
+    font-size: 16px;
+    color: var(--nv-tinta, #172033);
+}
+
+.bas-movimento-ontem.is-sobe { color: var(--nv-sucesso, #11704c); font-weight: 700; }
+.bas-movimento-ontem.is-desce { color: var(--nv-perigo, #b91c1c); font-weight: 700; }
+.bas-movimento-ontem.is-neutro { color: var(--nv-tinta-suave, #5b6577); }
+
+@media (max-width: 760px) {
+    .bas-movimento { padding: 16px 14px 12px; }
+    .bas-movimento-head { flex-direction: column; gap: 10px; }
+    .bas-movimento-pico { align-items: flex-start; align-self: stretch; }
+    .bas-movimento-barras { height: 120px; gap: 4px; }
+    .bas-barra-hora { font-size: 10px; }
+}
+
+/* Aviso de fecho de caixa (Básico). Aparece só quando a caixa está aberta e o
+   movimento parou — ver o comentário em admin.php. */
+.bas-fecho-aviso {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    padding: 14px 18px;
+    background: var(--nv-aviso-suave, #fffbeb);
+    border: 1px solid var(--nv-aviso-borda, #fde68a);
+    border-left: 4px solid var(--nv-aviso, #92400e);
+    border-radius: var(--nv-raio-lg, 16px);
+}
+
+.bas-fecho-texto { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.bas-fecho-texto strong { font-size: 15px; color: var(--nv-tinta, #172033); }
+.bas-fecho-texto span { font-size: 13px; color: var(--nv-tinta-2, #374151); }
+
+.bas-fecho-botao {
+    flex: 0 0 auto;
+    padding: 10px 18px;
+    background: var(--nv-tinta, #172033);
+    border-radius: var(--nv-raio-md, 12px);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.bas-fecho-botao:hover { background: var(--nv-tinta-2, #374151); color: #fff; }
+.bas-fecho-botao:focus-visible { outline: none; box-shadow: var(--nv-foco, 0 0 0 3px rgba(194,65,12,.35)); }
