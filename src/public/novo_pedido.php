@@ -1354,6 +1354,23 @@ if (($plano_atual ?? '') === 'EMPRESARIAL') {
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>
+
+            <?php // Cardapio curto deixa o ecra quase todo vazio. Em vez de branco,
+                  // fica ali a accao que falta -- e que e mesmo precisa a meio de um
+                  // turno, quando se descobre que um produto nao esta no sistema.
+                  // Classe propria: o JS percorre .produto-btn e .np-card, e isto
+                  // nao e um produto. ?>
+            <?php if ($npBasico && !empty($produtos) && count($produtos) <= 6): ?>
+                <div class="produtos-grid np-grid-juntar">
+                    <a class="np-juntar" href="produtos.php">
+                        <span class="np-juntar-sinal" aria-hidden="true">+</span>
+                        <span class="np-juntar-txt">
+                            <strong>Adicionar produto</strong>
+                            <span>O cardápio tem <?php echo count($produtos); ?> <?php echo count($produtos) === 1 ? 'item' : 'itens'; ?>.</span>
+                        </span>
+                    </a>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="cart-panel">

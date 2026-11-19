@@ -348,3 +348,44 @@ body.np-basico #produtos-area { overflow-y: auto; }
    moldura branca à volta, dentro da folha. A folha não tem molduras. */
 body.np-basico .content { padding: 0; }
 body.np-basico #produtos-area { padding-bottom: 0; }
+
+/* O .content estava limitado a 1320px: num ecrã de 1920 sobravam 560px de
+   cinzento à direita. A folha passa a ocupar a largura toda, e a grelha dos
+   produtos (auto-fill) preenche-a com mais colunas em vez de esticar cartões. */
+body.np-basico .content { max-width: none; }
+
+/* Cardápio curto: a acção que falta, no lugar do branco. */
+body.np-basico .np-grid-juntar { padding-top: 0; }
+
+body.np-basico .np-juntar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 13px;
+    border: 1px dashed #d6d3d1;
+    border-radius: 12px;
+    background: transparent;
+    text-decoration: none;
+    color: inherit;
+}
+
+body.np-basico .np-juntar:hover { border-color: var(--nv-laranja, #ea580c); background: #fffbf7; }
+body.np-basico .np-juntar:focus-visible { outline: 2px solid var(--nv-laranja, #ea580c); outline-offset: 2px; }
+
+body.np-basico .np-juntar-sinal {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    background: #f5f5f4;
+    color: #a8a29e;
+    font-size: 24px;
+    line-height: 1;
+}
+
+body.np-basico .np-juntar:hover .np-juntar-sinal { background: var(--nv-laranja, #ea580c); color: #fff; }
+body.np-basico .np-juntar-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+body.np-basico .np-juntar-txt strong { font-size: 15px; font-weight: 600; color: #1c1917; }
+body.np-basico .np-juntar-txt span { font-size: 13px; color: #a8a29e; }
