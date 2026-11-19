@@ -1213,12 +1213,6 @@ if (($plano_atual ?? '') === 'EMPRESARIAL') {
         </aside>
     </div>
 
-    <?php if ($npBasico && (!empty($avisoFluxoBasico) || !$temTelasBarCozinha)): ?>
-        <p class="np-nota-fluxo">
-            O pedido criado aqui recebe pagamento em <a href="vendas.php">Vendas</a>, com a caixa aberta.
-            As telas de Bar e Cozinha fazem parte do plano Profissional.
-        </p>
-    <?php endif; ?>
 
 <?php else: ?>
     <!-- ===== LAYOUT PADRÃO (não Empresarial) ===== -->
@@ -1415,6 +1409,15 @@ if (($plano_atual ?? '') === 'EMPRESARIAL') {
             </div>
         </div>
     </div>
+
+    <?php // A nota do fluxo, que estava no topo, fica aqui: util no primeiro dia,
+          // fora do caminho nos outros. ?>
+    <?php if ($npBasico && (!empty($avisoFluxoBasico) || !$temTelasBarCozinha)): ?>
+        <p class="np-nota-fluxo">
+            O pedido criado aqui recebe pagamento em <a href="vendas.php">Vendas</a>, com a caixa aberta.
+            As telas de Bar e Cozinha fazem parte do plano Profissional.
+        </p>
+    <?php endif; ?>
 <?php endif; ?>
 
 

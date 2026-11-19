@@ -320,3 +320,31 @@ body.np-basico .qty-btn {
 
 body.np-basico .qty-btn:hover { background: #e7e5e4; color: #1c1917; }
 body.np-basico .qty-num { min-width: 22px; text-align: center; font-size: 14px; font-weight: 600; color: #1c1917; }
+
+/* --- a folha ocupa o ecrã ------------------------------------------------- */
+/* Sobrava um campo cinzento morto por baixo da folha: ela tinha a altura do
+   painel do pedido e o resto do ecrã ficava vazio. O corpo passa a ser uma
+   coluna e a folha estica até ao fim. Os modais e avisos desta página são
+   todos position:fixed, por isso não entram nesta coluna. */
+body.np-basico {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+body.np-basico .content { flex: 1 1 auto; }
+
+/* Com muitos produtos a lista rola dentro da folha, em vez de esticar o ecrã. */
+body.np-basico #produtos-area { overflow-y: auto; }
+
+@media (max-width: 900px) {
+    /* No telemóvel é tudo uma coluna que rola: esticar não ajuda. */
+    body.np-basico { display: block; }
+    body.np-basico #produtos-area { overflow-y: visible; }
+}
+
+/* O .content trazia 16px de preenchimento: o painel do pedido ficava com uma
+   moldura branca à volta, dentro da folha. A folha não tem molduras. */
+body.np-basico .content { padding: 0; }
+body.np-basico #produtos-area { padding-bottom: 0; }
