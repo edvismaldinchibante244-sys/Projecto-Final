@@ -534,3 +534,69 @@ var __NIVORA_SIDEBAR = JSON.parse(document.getElementById('cfg-sidebar').textCon
             setInterval(refreshEstoqueCounter, 45000);
         }
     })();
+
+// ---------------------------------------------------------------------------
+// A posicao do menu.
+//
+// O menu lateral rola por dentro (.sidebar-menu). Quem descia ate ao fim para
+// clicar em Ingredientes chegava a pagina nova com o menu outra vez no topo: a
+// pagina e recarregada do servidor e o menu nasce com scrollTop 0, por isso o
+// item onde a pessoa acabou de clicar ficava fora do ecra.
+//
+// Guarda-se a posicao no momento do clique (sessionStorage: e por separador e
+// morre com ele) e repoe-se antes de pintar, para nao haver salto visivel. Sem
+// posicao guardada -- primeira visita, ou entrada por link externo -- traz-se o
+// item activo para dentro do ecra, que e a mesma intencao por outro caminho.
+// ---------------------------------------------------------------------------
+(function manterPosicaoDoMenu() {
+    const CHAVE = 'sidebar.scrollTop';
+    const menu = document.querySelector('.sidebar-menu');
+    if (!menu) {
+        return;
+    }
+
+    let guardado = null;
+    try {
+        guardado = window.sessionStorage.getItem(CHAVE);
+    } catch (e) {
+        // Navegacao privada ou armazenamento bloqueado: segue sem memoria.
+        guardado = null;
+    }
+
+    if (guardado !== null && menu.scrollHeight > menu.clientHeight) {
+        menu.scrollTop = parseInt(guardado, 10) || 0;
+    }
+
+    // Repor a posicao nao chega: paginas diferentes tem menus diferentes (a de
+    // gestao mostra entradas que a do salao nao tem), por isso a posicao antiga
+    // pode cair ao lado do item onde a pessoa clicou. Ver o item activo e a
+    // garantia que interessa; a posicao guardada e so o ponto de partida.
+    const activo = menu.querySelector('.menu-item.active, .active');
+    if (activo) {
+        // Contas pelos rectangulos, e nao por offsetTop: offsetTop e medido a
+        // partir do ascendente posicionado mais proximo, que aqui nao e o menu
+        // (dava 1003 num menu de 798 de altura, e a conta saia ao lado).
+        const rMenu = menu.getBoundingClientRect();
+        const rItem = activo.getBoundingClientRect();
+        if (rItem.top < rMenu.top || rItem.bottom > rMenu.bottom) {
+            // Centrado na vertical, dentro dos limites do proprio menu.
+            const deslocar = (rItem.top - rMenu.top)
+                - Math.max(0, (menu.clientHeight - rItem.height) / 2);
+            const alvo = menu.scrollTop + deslocar;
+            menu.scrollTop = Math.max(0, Math.min(alvo, menu.scrollHeight - menu.clientHeight));
+        }
+    }
+
+    const gravar = function () {
+        try {
+            window.sessionStorage.setItem(CHAVE, String(menu.scrollTop));
+        } catch (e) {
+            // Sem armazenamento nao ha nada a fazer; o menu continua a funcionar.
+        }
+    };
+
+    // No clique, e nao a cada pixel rolado: o que interessa e onde a pessoa
+    // estava quando decidiu sair desta pagina.
+    menu.addEventListener('click', gravar, true);
+    window.addEventListener('pagehide', gravar);
+})();
