@@ -2083,15 +2083,21 @@
         }
     
 
-
 /* ---- Dashboard: letras de recurso, avisos, meta do dia e comparacao de periodos ---- */
-/* Sem internet, as letras do Google nao carregam: estas sao as de recurso do sistema. */
+/* Sem internet, as letras do Google nao carregam: estas sao as de recurso do sistema.
+
+   Estas variaveis tem nome proprio do painel de proposito. O tokens.css
+   tambem define --nv-fonte-titulo, com a serifa da marca, e e carregado
+   DEPOIS deste ficheiro (entra pelo menu lateral). Enquanto os titulos do
+   painel liam essa variavel, ficavam todos em serifa -- h1 a h6 e todos os
+   stat-value -- contra o que este ficheiro dizia. A serifa e a assinatura
+   do numero do dia na faixa; nao e para "0 produtos activos". */
 :root {
     --nv-fonte-texto: 'Outfit', 'Segoe UI', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
-    --nv-fonte-titulo: 'Space Grotesk', 'Segoe UI Semibold', 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+    --nv-dash-fonte-titulo: 'Space Grotesk', 'Segoe UI Semibold', 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
 }
 body { font-family: var(--nv-fonte-texto); }
-h1, h2, h3, h4, h5, h6, .stat-value, .dash-emp-kpi strong { font-family: var(--nv-fonte-titulo); }
+h1, h2, h3, h4, h5, h6, .stat-value, .dash-emp-kpi strong { font-family: var(--nv-dash-fonte-titulo); }
 
 .dash-avisos, .dash-meta, .dash-periodo { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:14px 18px; }
 .dash-avisos-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
@@ -2133,7 +2139,6 @@ h1, h2, h3, h4, h5, h6, .stat-value, .dash-emp-kpi strong { font-family: var(--n
 .dash-rede-hoje-head { font-weight:700; font-size:14px; color:#0f172a; margin-bottom:6px; }
 .dash-rede-hoje-head i { color:#f59e0b; margin-right:6px; }
 
-
 /* Profissional: cartao de stock clicavel e mais vendidos de hoje */
 a.dash-stat-link { display:block; text-decoration:none; color:inherit; }
 a.dash-stat-link:hover { transform:translateY(-2px); }
@@ -2148,7 +2153,6 @@ a.dash-stat-link:hover { transform:translateY(-2px); }
 .dash-top-lista .qtd { color:#475569; white-space:nowrap; }
 .dash-top-lista .valor { font-weight:700; color:#0f172a; white-space:nowrap; }
 @media (max-width: 640px) { .dash-top-lista li { grid-template-columns:1fr auto; } .dash-top-lista .barra, .dash-top-lista .qtd { display:none; } }
-
 
 /* Lista do plano, fechada por omissao no painel diario. */
 .dash-plano-recursos > summary {
@@ -2185,77 +2189,6 @@ a.dash-stat-link:hover { transform:translateY(-2px); }
     background: var(--nv-superficie-2, #f1f5f9);
     color: var(--nv-tinta-suave, #5b6577);
     font-size: 11px;
-}
-
-/* ===========================================================================
-   Movimento do dia — peça do plano Básico.
-   Tudo em tokens do tokens.css: esta peça nasce dentro do sistema de design,
-   ao contrário do resto do painel, que tem cores escritas à mão.
-   =========================================================================== */
-.bas-movimento {
-    background: var(--nv-superficie, #fff);
-    border: 1px solid var(--nv-borda, #e5e7eb);
-    border-radius: var(--nv-raio-lg, 16px);
-    padding: 20px 22px 16px;
-}
-
-.bas-movimento-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 18px;
-}
-
-.bas-movimento-titulo {
-    margin: 0;
-    font-size: 17px;
-    font-weight: 800;
-    color: var(--nv-tinta, #172033);
-}
-
-.bas-movimento-sub {
-    margin: 4px 0 0;
-    font-size: 13px;
-    color: var(--nv-tinta-suave, #5b6577);
-}
-
-.bas-movimento-pico {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    padding: 8px 14px;
-    background: var(--nv-laranja-suave, #fff7ed);
-    border: 1px solid var(--nv-laranja-borda, #fed7aa);
-    border-radius: var(--nv-raio-md, 12px);
-    line-height: 1.25;
-}
-
-.bas-movimento-pico-rotulo {
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--nv-laranja-texto, #c2410c);
-}
-
-.bas-movimento-pico strong {
-    font-size: 20px;
-    color: var(--nv-tinta, #172033);
-}
-
-.bas-movimento-pico-valor {
-    font-size: 12px;
-    color: var(--nv-tinta-suave, #5b6577);
-}
-
-/* As barras: altura fixa para o gráfico não saltar quando os valores mudam. */
-.bas-movimento-barras {
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-    height: 140px;
-    padding-bottom: 2px;
 }
 
 .bas-barra {
@@ -2322,33 +2255,7 @@ a.dash-stat-link:hover { transform:translateY(-2px); }
     color: var(--nv-tinta-suave, #5b6577);
 }
 
-.bas-movimento-pe {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 16px;
-    padding-top: 14px;
-    border-top: 1px solid var(--nv-borda, #e5e7eb);
-    font-size: 13px;
-}
-
-.bas-movimento-total strong {
-    font-size: 16px;
-    color: var(--nv-tinta, #172033);
-}
-
-.bas-movimento-ontem.is-sobe { color: var(--nv-sucesso, #11704c); font-weight: 700; }
-.bas-movimento-ontem.is-desce { color: var(--nv-perigo, #b91c1c); font-weight: 700; }
-.bas-movimento-ontem.is-neutro { color: var(--nv-tinta-suave, #5b6577); }
-
-@media (max-width: 760px) {
-    .bas-movimento { padding: 16px 14px 12px; }
-    .bas-movimento-head { flex-direction: column; gap: 10px; }
-    .bas-movimento-pico { align-items: flex-start; align-self: stretch; }
-    .bas-movimento-barras { height: 120px; gap: 4px; }
-    .bas-barra-hora { font-size: 10px; }
+@media (max-width: 760px) {.bas-barra-hora { font-size: 10px; }
 }
 
 /* Aviso de fecho de caixa (Básico). Aparece só quando a caixa está aberta e o
@@ -2386,156 +2293,277 @@ a.dash-stat-link:hover { transform:translateY(-2px); }
 .bas-fecho-botao:focus-visible { outline: none; box-shadow: var(--nv-foco, 0 0 0 3px rgba(194,65,12,.35)); }
 
 /* ===========================================================================
-   A faixa do dia (Básico).
-   A marca Nivora vive no login e nos emails: painel escuro, laranja quente,
-   Cormorant Garamond nos títulos. O painel era branco sobre cinzento com
-   Outfit — a tipografia da marca parava à porta. Isto traz a linguagem para
-   dentro, no bloco que o dono olha primeiro.
+   O painel do Básico numa folha só.
+
+   Antes eram oito blocos no mesmo ecrã, cada um com o seu fundo, sombra e cor.
+   Aqui há uma folha branca e traços finos a separar zonas. Um acento só — o
+   laranja da marca — no número do dia e na acção principal. Sem ícones
+   coloridos, sem cartões a flutuar: quem manda no olho é o tamanho da letra.
    =========================================================================== */
-.bas-dia {
-    margin-bottom: 18px;
-    padding: 26px 28px 22px;
-    background: #1c1917;
-    border-radius: var(--nv-raio-lg, 16px);
-    border-bottom: 4px solid var(--nv-laranja-texto, #c2410c);
-    box-shadow: 0 14px 34px rgba(28, 25, 23, .16);
+.bas-folha {
+    background: #fff;
+    border: 1px solid #e7e5e4;
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 16px;
 }
 
-.bas-dia-corpo {
+/* --- zona 1: o dinheiro do dia ------------------------------------------- */
+.bas-f-topo {
     display: flex;
-    align-items: stretch;
-    gap: 34px;
+    align-items: flex-end;
+    gap: 40px;
+    padding: 30px 32px 26px;
 }
 
-.bas-dia-numero { flex: 0 0 auto; min-width: 0; }
+.bas-f-numero { flex: 0 0 auto; }
 
-.bas-dia-sobre {
-    margin: 0 0 6px;
+.bas-f-etiqueta {
+    margin: 0 0 8px;
     font-size: 11px;
-    font-weight: 800;
-    letter-spacing: .14em;
+    font-weight: 700;
+    letter-spacing: .13em;
     text-transform: uppercase;
     color: #a8a29e;
 }
 
-/* A assinatura: o dinheiro do dia na serifa da marca, a mesma do login. */
-.bas-dia-valor {
+.bas-f-valor {
     margin: 0;
     font-family: "Cormorant Garamond", Georgia, serif;
-    font-size: 58px;
+    font-size: 64px;
     font-weight: 700;
-    line-height: 1;
-    color: #fff7ed;
-    letter-spacing: -0.01em;
+    line-height: .95;
+    color: #1c1917;
+    letter-spacing: -0.015em;
 }
 
-.bas-dia-moeda {
+.bas-f-moeda {
     margin-left: 10px;
-    font-family: "Manrope", system-ui, sans-serif;
+    font-family: var(--nv-fonte-texto);
     font-size: 15px;
-    font-weight: 800;
-    letter-spacing: .1em;
+    font-weight: 600;
+    letter-spacing: .06em;
     color: #a8a29e;
-    vertical-align: middle;
+    vertical-align: super;
 }
 
-.bas-dia-detalhe {
-    margin: 10px 0 0;
-    font-size: 14px;
-    color: #d6d3d1;
-}
+.bas-f-linha { margin: 12px 0 0; font-size: 14px; color: #57534e; }
+.bas-f-sep { margin: 0 7px; color: #d6d3d1; }
+.bas-f-ontem { font-weight: 600; color: #44403c; }
 
-.bas-dia-ontem {
+.bas-f-ritmo { flex: 1 1 auto; min-width: 0; }
+
+.bas-f-barras {
     display: flex;
-    align-items: center;
-    gap: 7px;
-    margin: 8px 0 0;
-    font-size: 13px;
-    font-weight: 700;
+    align-items: flex-end;
+    gap: 5px;
+    height: 74px;
 }
 
-.bas-dia-ontem.is-sobe { color: #6ee7b7; }
-.bas-dia-ontem.is-desce { color: #fca5a5; }
-.bas-dia-ontem.is-neutro { color: #a8a29e; font-weight: 500; }
-
-/* O ritmo vive dentro da faixa: é a mesma pergunta, não outro cartão. */
-.bas-dia-ritmo {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
+.bas-f-barra {
+    flex: 1 1 0;
     min-width: 0;
-    padding-left: 32px;
-    border-left: 1px solid rgba(255, 247, 237, .14);
+    background: #e7e5e4;
+    border-radius: 3px 3px 0 0;
+    transition: background .15s;
 }
 
-.bas-dia-ritmo-topo {
+.bas-f-barra.is-pico { background: var(--nv-laranja, #ea580c); }
+.bas-f-barra.is-agora { outline: 1px solid #d6d3d1; outline-offset: 1px; }
+
+/* --- zona 2: o estado da casa -------------------------------------------- */
+.bas-f-estado {
+    display: flex;
+    border-top: 1px solid #f0efee;
+    border-bottom: 1px solid #f0efee;
+    background: #fafaf9;
+}
+
+.bas-f-estado-item {
+    flex: 1 1 0;
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    padding: 15px 32px;
+    text-decoration: none;
+    color: inherit;
+    border-right: 1px solid #f0efee;
+}
+
+.bas-f-estado-item:last-child { border-right: 0; }
+.bas-f-estado-item:hover { background: #f5f5f4; color: inherit; }
+.bas-f-estado-item strong { font-size: 20px; font-weight: 600; color: #1c1917; }
+.bas-f-estado-item span { font-size: 13px; color: #78716c; }
+.bas-f-estado-item.is-aviso strong { color: var(--nv-laranja-texto, #c2410c); }
+.bas-f-estado-item:focus-visible { outline: 2px solid var(--nv-laranja, #ea580c); outline-offset: -2px; }
+
+/* --- zona 3: o detalhe ---------------------------------------------------- */
+.bas-f-detalhe { display: flex; }
+
+.bas-f-col {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 22px 32px 24px;
+    border-right: 1px solid #f0efee;
+}
+
+.bas-f-col:last-child { border-right: 0; }
+
+.bas-f-titulo {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 14px;
+    margin: 0 0 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: #1c1917;
 }
 
-.bas-dia-ritmo-rotulo {
+.bas-f-titulo span, .bas-f-titulo a {
     font-size: 11px;
-    font-weight: 800;
-    letter-spacing: .14em;
-    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
     color: #a8a29e;
 }
 
-.bas-dia-ritmo-pico { font-size: 13px; color: #d6d3d1; }
-.bas-dia-ritmo-pico strong { color: #fdba74; }
+.bas-f-titulo a { text-decoration: none; }
+.bas-f-titulo a:hover { color: var(--nv-laranja-texto, #c2410c); }
+.bas-f-vazio { margin: 0; font-size: 13px; color: #a8a29e; }
 
-.bas-dia-barras {
-    display: flex;
-    align-items: flex-end;
-    gap: 5px;
-    flex: 1 1 auto;
-    min-height: 104px;
-}
+.bas-f-top { margin: 0; padding: 0; list-style: none; }
 
-.bas-dia-barra {
+.bas-f-top li {
     display: flex;
-    flex: 1 1 0;
-    flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
-    gap: 7px;
-    min-width: 0;
-    height: 100%;
+    gap: 11px;
+    padding: 7px 0;
+    font-size: 14px;
 }
 
-.bas-dia-barra-cheio {
-    width: 100%;
-    background: rgba(255, 247, 237, .22);
-    border-radius: 5px 5px 2px 2px;
-    transition: height .25s ease;
+.bas-f-top-pos { width: 14px; font-size: 12px; color: #a8a29e; }
+.bas-f-top-nome { flex: 0 0 34%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #1c1917; }
+.bas-f-top-barra { flex: 1 1 auto; height: 6px; background: #f0efee; border-radius: 3px; overflow: hidden; }
+.bas-f-top-barra i { display: block; height: 100%; background: #d6d3d1; }
+.bas-f-top li:first-child .bas-f-top-barra i { background: var(--nv-laranja, #ea580c); }
+.bas-f-top-qtd { flex: 0 0 auto; font-size: 12px; color: #a8a29e; }
+.bas-f-top-valor { flex: 0 0 auto; min-width: 68px; text-align: right; font-variant-numeric: tabular-nums; color: #1c1917; }
+
+.bas-f-vendas { margin: 0; padding: 0; list-style: none; }
+
+.bas-f-vendas li {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 7px 0;
+    font-size: 14px;
 }
 
-.bas-dia-barra.is-pico .bas-dia-barra-cheio { background: var(--nv-laranja, #f97316); }
-.bas-dia-barra.is-pico .bas-dia-barra-hora { color: #fdba74; font-weight: 800; }
+.bas-f-v-hora { flex: 0 0 auto; font-variant-numeric: tabular-nums; color: #a8a29e; font-size: 13px; }
+.bas-f-v-ref { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #44403c; }
+.bas-f-v-ref em { font-style: normal; color: #a8a29e; font-size: 12px; }
+.bas-f-v-total { flex: 0 0 auto; font-variant-numeric: tabular-nums; color: #1c1917; }
 
-.bas-dia-barra-hora {
-    font-size: 10px;
-    font-variant-numeric: tabular-nums;
-    color: #78716c;
+.bas-f-estoque {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 16px;
+    padding: 13px 32px;
+    border-top: 1px solid #f0efee;
+    background: #fffbf5;
+    font-size: 13px;
+    color: #57534e;
 }
 
-.bas-dia-barra.is-agora .bas-dia-barra-hora { color: #fff7ed; font-weight: 800; }
+.bas-f-estoque strong { font-size: 12px; letter-spacing: .07em; text-transform: uppercase; color: var(--nv-laranja-texto, #c2410c); }
+.bas-f-estoque i { font-style: normal; color: #a8a29e; }
+.bas-f-estoque a { margin-left: auto; color: var(--nv-laranja-texto, #c2410c); text-decoration: none; font-weight: 600; }
 
-@media (max-width: 900px) {
-    .bas-dia { padding: 20px 18px 16px; }
-    .bas-dia-corpo { flex-direction: column; gap: 20px; }
-    .bas-dia-valor { font-size: 44px; }
-    .bas-dia-ritmo { padding-left: 0; padding-top: 18px; border-left: 0; border-top: 1px solid rgba(255, 247, 237, .14); }
-    .bas-dia-barras { min-height: 86px; }
+/* --- acções e plano ------------------------------------------------------- */
+.bas-f-accoes { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+
+.bas-f-accao-principal {
+    padding: 11px 22px;
+    border-radius: 10px;
+    background: var(--nv-laranja, #ea580c);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
 }
 
+.bas-f-accao-principal:hover { background: var(--nv-laranja-texto, #c2410c); color: #fff; }
 
-/* Com a faixa do dia no topo, o Basico fica com tres cartoes em vez de quatro:
-   a linha reparte-se por tres para nao deixar uma coluna vazia. */
-.bas-dia ~ .dashboard-stats-wrap .stats-grid,
-body.plan-theme-basico .stats-grid:has(> :nth-child(3):last-child) {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+.bas-f-accoes a:not(.bas-f-accao-principal) {
+    padding: 11px 16px;
+    border-radius: 10px;
+    border: 1px solid #e7e5e4;
+    background: #fff;
+    color: #44403c;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.bas-f-accoes a:not(.bas-f-accao-principal):hover { border-color: #d6d3d1; background: #fafaf9; color: #1c1917; }
+.bas-f-accoes a:focus-visible { outline: 2px solid var(--nv-laranja, #ea580c); outline-offset: 2px; }
+
+.bas-f-plano { margin: 0; font-size: 13px; line-height: 1.6; color: #78716c; }
+.bas-f-plano strong { color: #44403c; }
+.bas-f-plano a { color: var(--nv-laranja-texto, #c2410c); font-weight: 600; text-decoration: none; }
+
+@media (max-width: 980px) {
+    .bas-f-topo { flex-direction: column; align-items: stretch; gap: 22px; padding: 24px 20px 20px; }
+    .bas-f-valor { font-size: 48px; }
+    .bas-f-estado { flex-direction: column; }
+    .bas-f-estado-item { border-right: 0; border-bottom: 1px solid #f0efee; padding: 13px 20px; }
+    .bas-f-estado-item:last-child { border-bottom: 0; }
+    .bas-f-detalhe { flex-direction: column; }
+    .bas-f-col { border-right: 0; border-bottom: 1px solid #f0efee; padding: 20px; }
+    .bas-f-col:last-child { border-bottom: 0; }
+    .bas-f-estoque { padding: 13px 20px; }
+    .bas-f-top-nome { flex: 0 0 40%; }
+    .bas-f-top-barra { display: none; }
+}
+
+/* Primeiros passos: a mesma folha, com a lista no lugar dos números. */
+.bas-f-valor-texto { font-size: 42px; line-height: 1.04; }
+.bas-f-passos { margin: 0; padding: 0 32px 26px; list-style: none; }
+
+.bas-f-passo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid #f0efee;
+}
+
+.bas-f-passo-n {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--nv-laranja, #ea580c);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.bas-f-passo.is-feito { opacity: .55; }
+.bas-f-passo.is-feito .bas-f-passo-n { background: #e7e5e4; color: #57534e; }
+.bas-f-passo-txt { display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0; }
+.bas-f-passo-txt strong { font-size: 15px; font-weight: 600; color: #1c1917; }
+.bas-f-passo-txt span { font-size: 13px; color: #78716c; }
+.bas-f-passo-pronto { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #a8a29e; }
+
+@media (max-width: 980px) {
+    .bas-f-valor-texto { font-size: 32px; }
+    .bas-f-passos { padding: 0 20px 20px; }
+    .bas-f-passo { flex-wrap: wrap; }
+    .bas-f-passo .bas-f-accao-principal { width: 100%; text-align: center; }
 }

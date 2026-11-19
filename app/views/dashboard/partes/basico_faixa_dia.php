@@ -14,6 +14,50 @@
  * comparação. Agora é um bloco: o dinheiro, o ritmo e a referência de ontem.
  */
 
+// Restaurante que ainda nao tem produtos nunca vendeu nada, e nunca vai
+// vender enquanto nao os criar. Mostrar-lhe "0,00 MZN" e um grafico de barras
+// vazio nao e informacao: e um esqueleto. Enquanto esta assim, a faixa diz-lhe
+// o que falta fazer, pela ordem em que tem de ser feito.
+if ((int)($total_produtos ?? 0) === 0):
+    $fdPassos = [
+        ['n' => 1, 'feito' => false, 'titulo' => 'Criar os produtos',
+         'texto' => 'O que a casa vende, com preco. Sem isto nao ha pedidos.',
+         'link' => 'produtos.php', 'accao' => 'Criar produtos'],
+        ['n' => 2, 'feito' => !empty($caixa_aberto), 'titulo' => 'Abrir a caixa',
+         'texto' => 'Marca o inicio do dia e o dinheiro com que comeca.',
+         'link' => 'caixa.php', 'accao' => 'Abrir caixa'],
+        ['n' => 3, 'feito' => false, 'titulo' => 'Lancar o primeiro pedido',
+         'texto' => 'A partir daqui este espaco passa a mostrar o dia.',
+         'link' => 'novo_pedido.php', 'accao' => 'Novo pedido'],
+    ];
+    ?>
+    <section class="bas-dia bas-inicio" aria-labelledby="bas-inicio-titulo">
+        <p class="bas-dia-sobre">Primeiros passos</p>
+        <h2 class="bas-inicio-titulo" id="bas-inicio-titulo">Falta pouco para abrir portas</h2>
+        <p class="bas-inicio-sub">Tres passos e o painel passa a mostrar o movimento do dia.</p>
+        <ol class="bas-inicio-passos">
+            <?php foreach ($fdPassos as $fdP): ?>
+                <li class="bas-inicio-passo<?php echo $fdP['feito'] ? ' is-feito' : ''; ?>">
+                    <span class="bas-inicio-n" aria-hidden="true"><?php echo $fdP['feito'] ? '&#10003;' : (int)$fdP['n']; ?></span>
+                    <span class="bas-inicio-txt">
+                        <strong><?php echo htmlspecialchars($fdP['titulo'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                        <span><?php echo htmlspecialchars($fdP['texto'], ENT_QUOTES, 'UTF-8'); ?></span>
+                    </span>
+                    <?php if (!$fdP['feito']): ?>
+                        <a class="bas-inicio-accao" href="<?php echo htmlspecialchars($fdP['link'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <?php echo htmlspecialchars($fdP['accao'], ENT_QUOTES, 'UTF-8'); ?>
+                        </a>
+                    <?php else: ?>
+                        <span class="bas-inicio-pronto">feito</span>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        </ol>
+    </section>
+    <?php
+    return;
+endif;
+
 $fdHoras = $dashBasHoras ?? [];
 $fdTemDados = !empty($fdHoras) && ($dashBasPicoValor ?? 0) > 0;
 $fdMax = max(0.01, (float)($dashBasPicoValor ?? 0));

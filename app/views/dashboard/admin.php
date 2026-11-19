@@ -2,15 +2,17 @@
                     <?php include __DIR__ . '/partes/alerta_funcionalidade.php'; ?>
                     <?php include __DIR__ . '/partes/cartao_utilizador.php'; ?>
                     <?php
-                    // No Basico a faixa do dia ocupa o topo. O cumprimento e a descricao do
-                    // plano saem: o dono abre isto para saber como esta a correr o dia, e o
-                    // movimento que estava num cartao a parte mudou-se para dentro dela.
-                    $basFaixaDia = (($plano_atual ?? '') === 'BASICO') && $isAdminDashboard;
-                    if ($basFaixaDia) {
-                        include __DIR__ . '/partes/basico_faixa_dia.php';
+                    // O painel do Basico e uma folha so, desenhada de raiz: tinha oito
+                    // blocos soltos no mesmo ecra -- faixa, cartoes, fichas de plano,
+                    // aviso, mais vendidos, tabelas e atalhos -- cada um com o seu fundo
+                    // e a sua cor. A folha trata o ecra inteiro, por isso esta vista
+                    // termina aqui para o Basico, em vez de ir juntando blocos.
+                    if ((($plano_atual ?? '') === 'BASICO') && $isAdminDashboard) {
+                        include __DIR__ . '/partes/basico_painel.php';
+                        return;
                     }
                     ?>
-                    <?php if (!$basFaixaDia && ($plano_atual !== 'EMPRESARIAL' || $perfil !== 'ADMIN')): ?>
+                    <?php if ($plano_atual !== 'EMPRESARIAL' || $perfil !== 'ADMIN'): ?>
                     <div class="dashboard-user-card">
                         <div class="dashboard-user-toolbar">
                             <div class="d-flex align-items-center gap-3">
