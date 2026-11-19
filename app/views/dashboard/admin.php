@@ -1,7 +1,16 @@
 <?php /** Dashboard do administrador/dono (e de qualquer perfil sem vista propria). */ ?>
                     <?php include __DIR__ . '/partes/alerta_funcionalidade.php'; ?>
                     <?php include __DIR__ . '/partes/cartao_utilizador.php'; ?>
-                    <?php if ($plano_atual !== 'EMPRESARIAL' || $perfil !== 'ADMIN'): ?>
+                    <?php
+                    // No Basico a faixa do dia ocupa o topo. O cumprimento e a descricao do
+                    // plano saem: o dono abre isto para saber como esta a correr o dia, e o
+                    // movimento que estava num cartao a parte mudou-se para dentro dela.
+                    $basFaixaDia = (($plano_atual ?? '') === 'BASICO') && $isAdminDashboard;
+                    if ($basFaixaDia) {
+                        include __DIR__ . '/partes/basico_faixa_dia.php';
+                    }
+                    ?>
+                    <?php if (!$basFaixaDia && ($plano_atual !== 'EMPRESARIAL' || $perfil !== 'ADMIN')): ?>
                     <div class="dashboard-user-card">
                         <div class="dashboard-user-toolbar">
                             <div class="d-flex align-items-center gap-3">
@@ -255,6 +264,13 @@
                         <?php endif; ?>
                         <!-- GENERIC ADMIN STATS -->
                         <div class="stats-grid"<?php echo $proDash ? ' data-dash-auto="1"' : ''; ?>>
+                            <?php /*
+                                No Basico este cartao repetia a faixa do dia, que ja mostra o
+                                mesmo numero e a mesma comparacao a dois centimetros de
+                                distancia. Dizer duas vezes nao e insistir, e desperdicar
+                                espaco e confundir sobre qual e o numero bom.
+                            */ ?>
+                            <?php if (!$basFaixaDia): ?>
                             <div class="stat-card success">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div class="stat-icon success"><i class="fas fa-coins"></i></div>
@@ -286,6 +302,7 @@
                                     <small class="dash-kpi-nota" id="dashAutoHora">actualiza sozinho</small>
                                 <?php endif; ?>
                             </div>
+                            <?php endif; ?>
                             <?php if ($proDash && $dashProStockBaixo !== null): ?>
                             <a class="stat-card dash-stat-link" href="estoque_inteligente.php">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
@@ -382,14 +399,7 @@
                     <?php endif; ?>
 
                     <?php include __DIR__ . '/partes/admin_painel_plano.php'; ?>
-                    <?php // O lugar nobre do painel, onde os outros planos mostram o grafico, mostrava
-                    // ao Basico um resumo do plano que ele ja comprou. Passa a mostrar o
-                    // movimento do dia -- que e o que o dono veio ver. O cartao do plano,
-                    // que o bloco seguinte desenha, fica logo a seguir.
-                    if (($plano_atual ?? '') === 'BASICO' && $isAdminDashboard) {
-                        include __DIR__ . '/partes/basico_movimento_dia.php';
-                    }
-                    include __DIR__ . '/partes/grafico_e_planos.php'; ?>
+                    <?php include __DIR__ . '/partes/grafico_e_planos.php'; ?>
                     <?php include __DIR__ . '/partes/analytics_empresarial.php'; ?>
                     <?php include __DIR__ . '/partes/tabelas_operacao.php'; ?>
                     <?php if ($perfil === 'ADMIN' && is_array($resumoExecutivoRede)): ?>

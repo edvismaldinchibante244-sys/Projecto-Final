@@ -2384,3 +2384,158 @@ a.dash-stat-link:hover { transform:translateY(-2px); }
 
 .bas-fecho-botao:hover { background: var(--nv-tinta-2, #374151); color: #fff; }
 .bas-fecho-botao:focus-visible { outline: none; box-shadow: var(--nv-foco, 0 0 0 3px rgba(194,65,12,.35)); }
+
+/* ===========================================================================
+   A faixa do dia (Básico).
+   A marca Nivora vive no login e nos emails: painel escuro, laranja quente,
+   Cormorant Garamond nos títulos. O painel era branco sobre cinzento com
+   Outfit — a tipografia da marca parava à porta. Isto traz a linguagem para
+   dentro, no bloco que o dono olha primeiro.
+   =========================================================================== */
+.bas-dia {
+    margin-bottom: 18px;
+    padding: 26px 28px 22px;
+    background: #1c1917;
+    border-radius: var(--nv-raio-lg, 16px);
+    border-bottom: 4px solid var(--nv-laranja-texto, #c2410c);
+    box-shadow: 0 14px 34px rgba(28, 25, 23, .16);
+}
+
+.bas-dia-corpo {
+    display: flex;
+    align-items: stretch;
+    gap: 34px;
+}
+
+.bas-dia-numero { flex: 0 0 auto; min-width: 0; }
+
+.bas-dia-sobre {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #a8a29e;
+}
+
+/* A assinatura: o dinheiro do dia na serifa da marca, a mesma do login. */
+.bas-dia-valor {
+    margin: 0;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 58px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff7ed;
+    letter-spacing: -0.01em;
+}
+
+.bas-dia-moeda {
+    margin-left: 10px;
+    font-family: "Manrope", system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    color: #a8a29e;
+    vertical-align: middle;
+}
+
+.bas-dia-detalhe {
+    margin: 10px 0 0;
+    font-size: 14px;
+    color: #d6d3d1;
+}
+
+.bas-dia-ontem {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 8px 0 0;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.bas-dia-ontem.is-sobe { color: #6ee7b7; }
+.bas-dia-ontem.is-desce { color: #fca5a5; }
+.bas-dia-ontem.is-neutro { color: #a8a29e; font-weight: 500; }
+
+/* O ritmo vive dentro da faixa: é a mesma pergunta, não outro cartão. */
+.bas-dia-ritmo {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    padding-left: 32px;
+    border-left: 1px solid rgba(255, 247, 237, .14);
+}
+
+.bas-dia-ritmo-topo {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.bas-dia-ritmo-rotulo {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #a8a29e;
+}
+
+.bas-dia-ritmo-pico { font-size: 13px; color: #d6d3d1; }
+.bas-dia-ritmo-pico strong { color: #fdba74; }
+
+.bas-dia-barras {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    flex: 1 1 auto;
+    min-height: 104px;
+}
+
+.bas-dia-barra {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+    min-width: 0;
+    height: 100%;
+}
+
+.bas-dia-barra-cheio {
+    width: 100%;
+    background: rgba(255, 247, 237, .22);
+    border-radius: 5px 5px 2px 2px;
+    transition: height .25s ease;
+}
+
+.bas-dia-barra.is-pico .bas-dia-barra-cheio { background: var(--nv-laranja, #f97316); }
+.bas-dia-barra.is-pico .bas-dia-barra-hora { color: #fdba74; font-weight: 800; }
+
+.bas-dia-barra-hora {
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    color: #78716c;
+}
+
+.bas-dia-barra.is-agora .bas-dia-barra-hora { color: #fff7ed; font-weight: 800; }
+
+@media (max-width: 900px) {
+    .bas-dia { padding: 20px 18px 16px; }
+    .bas-dia-corpo { flex-direction: column; gap: 20px; }
+    .bas-dia-valor { font-size: 44px; }
+    .bas-dia-ritmo { padding-left: 0; padding-top: 18px; border-left: 0; border-top: 1px solid rgba(255, 247, 237, .14); }
+    .bas-dia-barras { min-height: 86px; }
+}
+
+
+/* Com a faixa do dia no topo, o Basico fica com tres cartoes em vez de quatro:
+   a linha reparte-se por tres para nao deixar uma coluna vazia. */
+.bas-dia ~ .dashboard-stats-wrap .stats-grid,
+body.plan-theme-basico .stats-grid:has(> :nth-child(3):last-child) {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
