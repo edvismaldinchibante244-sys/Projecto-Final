@@ -22,10 +22,12 @@ require_once APP_BASE . '/src/config/plano_lancamento.php';
 $trialAtivo = plan_security_supports_trial('BASICO');
 include_once APP_BASE . '/src/config/audit.php';
 require_once APP_BASE . '/src/config/plano_pagamentos.php';
+require_once APP_BASE . '/src/config/zumbopay.php';
 require_once APP_BASE . '/src/config/legal_documents.php';
 
 $planos_catalogo = require APP_BASE . '/src/config/planos.php';
 $planoPaymentInstructions = plano_pagamento_instrucoes_publicas();
+$zumbopayAtivo = zumbopay_is_configured();
 
 security_start_session();
 security_set_headers();
@@ -248,6 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $plano = $form['plano'];
         $ciclo = $form['ciclo'];
         $metodo = $form['metodo'];
+        $usaCheckoutZumbo = $metodo === 'MPESA' && $zumbopayAtivo;
         $arquivo_logo = $_FILES['logo'] ?? null;
     $arquivo_comprovativo = $_FILES['comprovativo'] ?? null;
     $arquivo_documento = $_FILES['documento_titularidade'] ?? null;
@@ -359,7 +362,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 : 'Falha no envio do logotipo. Tente novamente.';
         }
 
-        if ($uploadError !== UPLOAD_ERR_OK && $metodo !== 'TRIAL') {
+        if ($uploadError !== UPLOAD_ERR_OK && $metodo !== 'TRIAL' && !$usaCheckoutZumbo) {
             $erros[] = $uploadError === UPLOAD_ERR_NO_FILE
                 ? 'Anexe o comprovativo de pagamento.'
                 : 'Falha no envio do comprovativo. Tente novamente.';
@@ -508,10 +511,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         } elseif (($arquivo_logo['size'] ?? 0) > $max_tamanho_logo) {
                             $mensagem = 'Logotipo excede 4MB.';
                             $tipo_msg = 'danger';
-                        } elseif ($metodo !== 'TRIAL' && !in_array($extensao, $extensoes_permitidas, true)) {
+                        } elseif ($metodo !== 'TRIAL' && !$usaCheckoutZumbo && !in_array($extensao, $extensoes_permitidas, true)) {
                             $mensagem = 'Comprovativo invalido. Envie JPG, PNG ou PDF.';
                             $tipo_msg = 'danger';
-                        } elseif ($metodo !== 'TRIAL' && ($arquivo_comprovativo['size'] ?? 0) > $max_tamanho) {
+                        } elseif ($metodo !== 'TRIAL' && !$usaCheckoutZumbo && ($arquivo_comprovativo['size'] ?? 0) > $max_tamanho) {
                             $mensagem = 'Comprovativo excede 5MB.';
                             $tipo_msg = 'danger';
                         } elseif (!in_array($documento_extensao, $documento_extensoes, true)) {
@@ -535,7 +538,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
 
                             $mime = '';
-                            if ($metodo !== 'TRIAL') {
+                            if ($metodo !== 'TRIAL' && !$usaCheckoutZumbo) {
                                 if (function_exists('finfo_open')) {
                                     $finfo = finfo_open(FILEINFO_MIME_TYPE);
                                     if ($finfo) {
@@ -561,7 +564,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             if ($logoMime !== '' && !in_array($logoMime, $mimes_logo_permitidos, true)) {
                                 $mensagem = 'Tipo de arquivo invalido para o logotipo.';
                                 $tipo_msg = 'danger';
-                            } elseif ($metodo !== 'TRIAL' && $mime !== '' && !in_array($mime, $mimes_permitidos, true)) {
+                            } elseif ($metodo !== 'TRIAL' && !$usaCheckoutZumbo && $mime !== '' && !in_array($mime, $mimes_permitidos, true)) {
                                 $mensagem = 'Tipo de arquivo invalido para comprovativo.';
                                 $tipo_msg = 'danger';
                             } elseif ($documentoMime !== '' && !in_array($documentoMime, $documento_mimes, true)) {
@@ -610,7 +613,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         $nome_documento = '';
                                     }
 
-                                    if ($nome_logo === '' || $nome_documento === '' || ($metodo !== 'TRIAL' && $nome_comprovativo === '')) {
+                                    if ($nome_logo === '' || $nome_documento === '' || ($metodo !== 'TRIAL' && !$usaCheckoutZumbo && $nome_comprovativo === '')) {
                                         $mensagem = 'Nao foi possivel gerar identificadores seguros para os uploads.';
                                         $tipo_msg = 'danger';
                                     } else {
@@ -618,7 +621,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         $logo_caminho_relativo = 'uploads/restaurantes/logos/' . $nome_logo;
                                         $documento_caminho_absoluto = $dir_documento_absoluto . '/' . $nome_documento;
                                         $documento_caminho_relativo = 'uploads/documentos_titularidade/' . $nome_documento;
-                                        if ($metodo !== 'TRIAL') {
+                                        if ($metodo !== 'TRIAL' && !$usaCheckoutZumbo) {
                                             $caminho_absoluto = $dir_upload_absoluto . '/' . $nome_comprovativo;
                                             $caminho_relativo = 'uploads/comprovativos/' . $nome_comprovativo;
                                             $hash_arquivo = plan_security_file_sha256((string)$arquivo_comprovativo['tmp_name']);
@@ -636,7 +639,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             4 * 1024 * 1024,
                                             $uploadError
                                         );
-                                        $compOk = $metodo !== 'TRIAL'
+                                        $compOk = $metodo !== 'TRIAL' && !$usaCheckoutZumbo
                                             ? security_validate_upload(
                                                 $arquivo_comprovativo,
                                                 ['png', 'jpg', 'jpeg', 'pdf'],
@@ -664,7 +667,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             if (is_file($logo_caminho_absoluto)) @unlink($logo_caminho_absoluto);
                                             $mensagem = 'Nao foi possivel guardar o documento de titularidade.';
                                             $tipo_msg = 'danger';
-                                        } elseif ($metodo !== 'TRIAL' && !imagem_mover_e_otimizar($arquivo_comprovativo['tmp_name'], $caminho_absoluto, 1600)) {
+                                        } elseif ($metodo !== 'TRIAL' && !$usaCheckoutZumbo && !imagem_mover_e_otimizar($arquivo_comprovativo['tmp_name'], $caminho_absoluto, 1600)) {
                                             if (is_file($logo_caminho_absoluto)) {
                                                 @unlink($logo_caminho_absoluto);
                                             }
@@ -762,7 +765,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     $colunas_compra[] = $col['Field'];
                                                 }
 
-                                                if ($metodo !== 'TRIAL') {
+                                                if ($metodo !== 'TRIAL' && !$usaCheckoutZumbo) {
                                                     if ($hash_arquivo === '') {
                                                         throw new RuntimeException('Nao foi possivel calcular hash do comprovativo.');
                                                     }
@@ -826,6 +829,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 $sql_compra = 'INSERT INTO compras_planos (' . implode(', ', $insert_cols) . ') VALUES (' . implode(', ', $insert_vals) . ')';
                                                 $stmt_compra = $db->prepare($sql_compra);
                                                 $stmt_compra->execute($insert_params);
+                                                $compraId = (int)$db->lastInsertId();
+                                                if ($usaCheckoutZumbo) {
+                                                    $checkout = zumbopay_create_plan_checkout($compraId, $valor, 'Plano ' . $plano . ' - ' . $ciclo);
+                                                    $refColumn = in_array('referencia_pagamento', $colunas_compra, true) ? 'referencia_pagamento' : 'referencia';
+                                                    $refStmt = $db->prepare('UPDATE compras_planos SET ' . $refColumn . ' = ?, observacao = ? WHERE id = ?');
+                                                    $refStmt->execute([$checkout['reference'], 'Checkout ZumboPay criado; aguardando confirmacao segura.', $compraId]);
+                                                    $_SESSION['zumbopay_checkout_url'] = $checkout['checkout_url'];
+                                                }
 
                                                 audit_log($db, 'plano_solicitacao_publica_recebida', [
                                                     'restaurante_id' => (int)$restaurante_id,
@@ -848,6 +859,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                                                 $db->commit();
 
+                                                if ($usaCheckoutZumbo && !empty($_SESSION['zumbopay_checkout_url'])) {
+                                                    $checkoutRedirect = (string)$_SESSION['zumbopay_checkout_url'];
+                                                    unset($_SESSION['zumbopay_checkout_url']);
+                                                    header('Location: ' . $checkoutRedirect, true, 303);
+                                                    exit;
+                                                }
+
                                                 plano_notificar_solicitacao_recebida(
                                                     $email,
                                                     $telefone,
@@ -858,7 +876,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     $metodo
                                                 );
 
-                                                $mensagem = 'Solicitacao enviada com sucesso! Aguarde a aprovacao do administrador.';
+                                                $mensagem = $usaCheckoutZumbo
+                                                    ? 'Solicitacao criada. A abrir o pagamento seguro ZumboPay...'
+                                                    : 'Solicitacao enviada com sucesso! Aguarde a aprovacao do administrador.';
                                                 $tipo_msg = 'success';
                                                 $form = solicitar_plano_default_form();
                                                 $_SESSION['solicitar_plano_form_started_at'] = time();
@@ -1188,7 +1208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                             <span id="instrucoes_pagamento"></span>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12">
+                                                    <div class="col-12" id="comprovativo_manual_wrap">
                                                         <label class="form-label">Foto do comprovativo *</label>
                                                         <label class="ficheiro-campo" for="comprovativo">
                                                             <input type="file" name="comprovativo" id="comprovativo" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" onchange="previewComprovativo(this)">
@@ -1494,8 +1514,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             var instrucoes = '';
             var metodo = metodoSelecionado;
+            var usaZumboPay = <?php echo $zumbopayAtivo ? 'true' : 'false'; ?> && metodo === 'MPESA' && !planoBasicoTrial;
+            var comprovativoWrap = document.getElementById('comprovativo_manual_wrap');
+            if (comprovativoWrap) comprovativoWrap.style.display = usaZumboPay ? 'none' : '';
 
-            if (planoBasicoTrial) {
+            if (usaZumboPay) {
+                instrucoes = 'Ao continuar, abrirÃ¡ o checkout seguro ZumboPay para pagar por M-Pesa.';
+            } else if (planoBasicoTrial) {
                 instrucoes = 'Trial gratuito de 30 dias — sem comprovativo neste momento.';
             } else if (planoPaymentInstructions[metodo]) {
                 var dadosMetodo = planoPaymentInstructions[metodo];
@@ -1528,7 +1553,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 NivoraFeedback.warning('Selecione um método de pagamento para continuar.');
                 return;
             }
-            if (!planoBasicoTrial && (!comprovativoInput.files || !comprovativoInput.files[0])) {
+            var usaZumboPay = <?php echo $zumbopayAtivo ? 'true' : 'false'; ?> && metodoSelecionado === 'MPESA';
+            if (!planoBasicoTrial && !usaZumboPay && (!comprovativoInput.files || !comprovativoInput.files[0])) {
                 e.preventDefault();
                 NivoraFeedback.warning('Anexe o comprovativo para continuar.');
                 return;
