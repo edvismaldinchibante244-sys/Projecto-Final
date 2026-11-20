@@ -32,12 +32,21 @@ if ($rawPayload === '' || strlen($rawPayload) > (1024 * 1024)) {
     security_json(['success' => false, 'message' => 'Payload invalido'], 422);
 }
 
-$configuredSecret = (string)(getenv('PLANO_WEBHOOK_SECRET') ?: '');
+$zumbopaySignature = trim((string)($_SERVER['HTTP_X_ZUMBOPAY_SIGNATURE'] ?? ''));
+$isZumboPay = $zumbopaySignature !== '';
+$configuredSecret = (string)(getenv($isZumboPay ? 'ZUMBOPAY_WEBHOOK_SECRET' : 'PLANO_WEBHOOK_SECRET') ?: '');
 $incomingSignature = trim((string)($_SERVER['HTTP_X_WEBHOOK_SIGNATURE'] ?? ''));
 $configuredToken = (string)(getenv('PLANO_WEBHOOK_TOKEN') ?: '');
 $incomingToken = (string)($_SERVER['HTTP_X_WEBHOOK_TOKEN'] ?? '');
 
-if ($configuredSecret !== '') {
+if ($isZumboPay) {
+    $expectedSignature = hash_hmac('sha256', $rawPayload, $configuredSecret);
+    if ($configuredSecret === '' || !preg_match('/^[a-f0-9]{64}$/i', $zumbopaySignature)
+        || !hash_equals($expectedSignature, strtolower($zumbopaySignature))) {
+        security_log_event('zumbopay_webhook_invalid_signature');
+        security_json(['success' => false, 'message' => 'Assinatura invalida'], 401);
+    }
+} elseif ($configuredSecret !== '') {
     $expectedSignature = 'sha256=' . hash_hmac('sha256', $rawPayload, $configuredSecret);
     if ($incomingSignature === '' || !hash_equals($expectedSignature, $incomingSignature)) {
         security_log_event('plano_webhook_invalid_signature');
@@ -58,13 +67,21 @@ if (!is_array($payload)) {
     security_json(['success' => false, 'message' => 'Payload invalido'], 422);
 }
 
-$event = strtolower(trim((string)($payload['event'] ?? '')));
+$zumbopayData = is_array($payload['data'] ?? null) ? $payload['data'] : [];
+$event = strtolower(trim((string)($payload['event'] ?? ($_SERVER['HTTP_X_ZUMBOPAY_EVENT'] ?? ''))));
+if ($isZumboPay) {
+    $event = match ($event) {
+        'payment.succeeded' => 'payment.approved',
+        'payment.failed' => 'payment.failed',
+        default => $event,
+    };
+}
 $compraId = filter_var($payload['compra_id'] ?? 0, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?? 0;
-$transactionId = security_clean_string($payload['transaction_id'] ?? '', 191);
-$provider = security_clean_string($payload['provider'] ?? 'gateway', 100);
+$transactionId = security_clean_string($payload['transaction_id'] ?? $zumbopayData['transaction_id'] ?? $zumbopayData['reference'] ?? '', 191);
+$provider = security_clean_string($isZumboPay ? 'zumbopay' : ($payload['provider'] ?? 'gateway'), 100);
 $provider = strtolower($provider);
 
-if ($compraId <= 0 || $event === '') {
+if (!$isZumboPay && ($compraId <= 0 || $event === '')) {
     security_json(['success' => false, 'message' => 'Parametros obrigatorios ausentes'], 422);
 }
 
@@ -75,6 +92,19 @@ if ($transactionId === '' || strlen($transactionId) > 191) {
 try {
     $db = (new Database())->getConnection();
     $columns = plan_security_table_columns($db, 'compras_planos');
+    if ($isZumboPay && $compraId <= 0) {
+        $reference = security_clean_string($zumbopayData['reference'] ?? $payload['reference'] ?? '', 191);
+        if ($reference !== '') {
+            $lookupColumn = in_array('referencia_pagamento', $columns, true) ? 'referencia_pagamento' : 'referencia';
+            $lookup = $db->prepare('SELECT id FROM compras_planos WHERE ' . $lookupColumn . ' = ? LIMIT 1');
+            $lookup->execute([$reference]);
+            $compraId = (int)$lookup->fetchColumn();
+        }
+    }
+
+    if ($compraId <= 0 || $event === '' || $transactionId === '') {
+        security_json(['success' => false, 'message' => 'Parametros obrigatorios ausentes'], 422);
+    }
 
     $db->exec("
         CREATE TABLE IF NOT EXISTS webhook_idempotency (
