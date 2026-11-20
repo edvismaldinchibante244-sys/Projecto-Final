@@ -62,6 +62,13 @@ try {
             && str_contains($requestSource, 'campoDocumento.required = true;'),
         'documento obrigatorio so quando a secao de pagamento esta visivel'
     );
+    $check(
+        str_contains($requestSource, 'function checkoutZumboPayAtivo()')
+            && str_contains($requestSource, 'campoComprovativo.required = !checkoutZumboPayAtivo();')
+            && str_contains($requestSource, 'metodoSelecionado = metodo;')
+            && str_contains($requestSource, 'atualizarEstadoPagamento();'),
+        'comprovativo dispensado no checkout ZumboPay e atualizado ao escolher metodo'
+    );
 
     // Colunas obrigatorias sem valor por omissao tem de constar das insercoes.
     // Um MariaDB permissivo (XAMPP) preenche-as em silencio; um em modo

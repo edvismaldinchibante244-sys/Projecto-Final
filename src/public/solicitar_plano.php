@@ -1221,16 +1221,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                             <div id="arquivo_comprovativo_info" class="small text-muted mt-2"></div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12">
-                                                        <label class="form-label">Documento de titularidade/representação *</label>
-                                                        <label class="ficheiro-campo" for="documento_titularidade">
-                                                            <input type="file" name="documento_titularidade" id="documento_titularidade" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" required>
-                                                            <span class="ficheiro-botao">Escolher ficheiro</span>
-                                                            <span class="ficheiro-nome" data-ficheiro-vazio="Nenhum ficheiro escolhido">Nenhum ficheiro escolhido</span>
-                                                        </label>
-                                                        <small class="text-muted">JPG, PNG ou PDF (máx. 5MB). Será analisado pelo super administrador.</small>
-                                                    </div>
                                                 </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">Documento de titularidade/representação *</label>
+                                                <label class="ficheiro-campo" for="documento_titularidade">
+                                                    <input type="file" name="documento_titularidade" id="documento_titularidade" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" required>
+                                                    <span class="ficheiro-botao">Escolher ficheiro</span>
+                                                    <span class="ficheiro-nome" data-ficheiro-vazio="Nenhum ficheiro escolhido">Nenhum ficheiro escolhido</span>
+                                                </label>
+                                                <small class="text-muted">JPG, PNG ou PDF (máx. 5MB). Será analisado pelo super administrador.</small>
                                             </div>
                                         </div>
                                     </div>
@@ -1380,6 +1380,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         var valorPlano = 0;
         var metodoSelecionado = <?php echo json_encode($form['metodo'], JSON_UNESCAPED_UNICODE); ?>;
         var TRIAL_ATIVO = <?php echo $trialAtivo ? 'true' : 'false'; ?>;
+        var ZUMBOPAY_ATIVO = <?php echo $zumbopayAtivo ? 'true' : 'false'; ?>;
         var planoBasicoTrial = false;
         var planoPaymentInstructions = <?php echo json_encode($planoPaymentInstructions, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
 
@@ -1400,6 +1401,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         'ANUAL' => (int)$preco_empresarial['anual'],
                                     ],
                                 ], JSON_UNESCAPED_UNICODE); ?>;
+
+        function checkoutZumboPayAtivo() {
+            return ZUMBOPAY_ATIVO && metodoSelecionado === 'MPESA' && !planoBasicoTrial;
+        }
 
         function atualizarEstadoPagamento() {
             var secaoPagamento = document.getElementById('secao_pagamento');
@@ -1433,11 +1438,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 });
             } else {
                 if (camposPagos) camposPagos.style.display = 'block';
-                campoComprovativo.required = true;
                 if (metodoSelecionado === 'TRIAL') {
                     metodoSelecionado = '';
                 }
                 document.getElementById('metodo_pagamento').value = metodoSelecionado || '';
+                campoComprovativo.required = !checkoutZumboPayAtivo();
             }
         }
 
@@ -1514,6 +1519,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             metodoSelecionado = metodo;
             document.getElementById('metodo_pagamento').value = metodo;
+            atualizarEstadoPagamento();
 
             document.querySelectorAll('#metodo_grid .choice-option').forEach(function(btn) {
                 btn.classList.remove('active');
@@ -1547,7 +1553,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             var instrucoes = '';
             var metodo = metodoSelecionado;
-            var usaZumboPay = <?php echo $zumbopayAtivo ? 'true' : 'false'; ?> && metodo === 'MPESA' && !planoBasicoTrial;
+            var usaZumboPay = checkoutZumboPayAtivo();
             var comprovativoWrap = document.getElementById('comprovativo_manual_wrap');
             if (comprovativoWrap) comprovativoWrap.style.display = usaZumboPay ? 'none' : '';
 
@@ -1586,7 +1592,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 NivoraFeedback.warning('Selecione um método de pagamento para continuar.');
                 return;
             }
-            var usaZumboPay = <?php echo $zumbopayAtivo ? 'true' : 'false'; ?> && metodoSelecionado === 'MPESA';
+            var usaZumboPay = checkoutZumboPayAtivo();
             if (!planoBasicoTrial && !usaZumboPay && (!comprovativoInput.files || !comprovativoInput.files[0])) {
                 e.preventDefault();
                 NivoraFeedback.warning('Anexe o comprovativo para continuar.');
