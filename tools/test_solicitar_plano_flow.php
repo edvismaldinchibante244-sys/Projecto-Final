@@ -49,6 +49,19 @@ try {
     $check(str_contains($approvalSource, "UPDATE usuarios SET ativo = 1"), 'aprovacao ativa administrador');
     $check(str_contains($approvalSource, "\$compraIsTrial ? 'TRIAL' : 'PAGO'"), 'aprovacao distingue trial e pagamento');
     $check(str_contains($approvalSource, 'plan_security_purchase_trial_days($compra) ?: 30'), 'aprovacao aplica prazo do trial');
+    $check(
+        str_contains($requestSource, 'id="logo_restaurante" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" onchange="previewLogoRestaurante(this)" required'),
+        'logotipo obrigatorio antes de enviar o formulario'
+    );
+    $check(
+        str_contains($requestSource, "formElement.addEventListener('invalid'"),
+        'campos obrigatorios invalidos exibem orientacao antes do envio'
+    );
+    $check(
+        str_contains($requestSource, 'campoDocumento.required = false;')
+            && str_contains($requestSource, 'campoDocumento.required = true;'),
+        'documento obrigatorio so quando a secao de pagamento esta visivel'
+    );
 
     // Colunas obrigatorias sem valor por omissao tem de constar das insercoes.
     // Um MariaDB permissivo (XAMPP) preenche-as em silencio; um em modo

@@ -1031,7 +1031,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <div class="col-12">
                                             <label class="form-label">Logótipo do restaurante *</label>
                                             <label class="ficheiro-campo" for="logo_restaurante">
-                                                <input type="file" name="logo" id="logo_restaurante" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" onchange="previewLogoRestaurante(this)">
+                                                <input type="file" name="logo" id="logo_restaurante" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" onchange="previewLogoRestaurante(this)" required>
                                                 <span class="ficheiro-botao">Escolher ficheiro</span>
                                                 <span class="ficheiro-nome" data-ficheiro-vazio="Nenhum ficheiro escolhido">Nenhum ficheiro escolhido</span>
                                             </label>
@@ -1345,6 +1345,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         submitStatus.style.display = 'none';
         submitStatus.setAttribute('role', 'status');
         submitButton.parentNode.appendChild(submitStatus);
+        var mensagensCamposObrigatorios = {
+            nome: 'Informe o nome do restaurante.',
+            email: 'Informe um email válido.',
+            telefone: 'Informe um telefone de contacto válido.',
+            cidade: 'Informe a cidade do restaurante.',
+            endereco: 'Informe o endereço do restaurante.',
+            nuit: 'Informe o NUIT com 9 dígitos.',
+            logo: 'Anexe o logótipo do restaurante.',
+            comprovativo: 'Anexe o comprovativo de pagamento.',
+            documento_titularidade: 'Anexe o documento de titularidade ou representação.',
+            aceite_legal: 'Aceite os Termos de Uso e a Política de Privacidade.'
+        };
+        var avisoCampoObrigatorioAtivo = false;
+        formElement.addEventListener('invalid', function(e) {
+            if (avisoCampoObrigatorioAtivo) {
+                return;
+            }
+
+            avisoCampoObrigatorioAtivo = true;
+            var campo = e.target;
+            var mensagem = mensagensCamposObrigatorios[campo.name] || 'Verifique os campos obrigatórios.';
+            if (campo.name === 'nuit' && campo.validity.patternMismatch) {
+                mensagem = 'O NUIT deve conter exatamente 9 dígitos.';
+            }
+            NivoraFeedback.warning(mensagem);
+            setTimeout(function() {
+                avisoCampoObrigatorioAtivo = false;
+            }, 0);
+        }, true);
+
         var planoSelecionado = <?php echo json_encode($form['plano'], JSON_UNESCAPED_UNICODE); ?>;
         var cicloSelecionado = <?php echo json_encode($form['ciclo'], JSON_UNESCAPED_UNICODE); ?>;
         var valorPlano = 0;
@@ -1375,6 +1405,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             var secaoPagamento = document.getElementById('secao_pagamento');
             var camposPagos = document.getElementById('pagamento_campos_pagos');
             var campoComprovativo = document.getElementById('comprovativo');
+            var campoDocumento = document.getElementById('documento_titularidade');
 
             planoBasicoTrial = TRIAL_ATIVO && planoSelecionado === 'BASICO' && cicloSelecionado === 'MENSAL';
 
@@ -1382,6 +1413,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 secaoPagamento.style.display = 'none';
                 if (camposPagos) camposPagos.style.display = 'none';
                 campoComprovativo.required = false;
+                campoDocumento.required = false;
                 metodoSelecionado = '';
                 document.getElementById('metodo_pagamento').value = '';
                 return;
@@ -1389,6 +1421,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Sempre mostra ciclo + resumo quando há plano (inclui trial Básico mensal)
             secaoPagamento.style.display = 'block';
+            campoDocumento.required = true;
 
             if (planoBasicoTrial) {
                 if (camposPagos) camposPagos.style.display = 'none';
