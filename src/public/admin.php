@@ -727,7 +727,7 @@ if ($secaoParam === 'restaurantes' && $can_manage_restaurants) {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="btnCadastrarRestaurante">
+                    <button type="submit" form="formCadastrar" class="btn btn-primary" id="btnCadastrarRestaurante">
                         <i class="fas fa-save me-1"></i> Cadastrar
                     </button>
                 </div>

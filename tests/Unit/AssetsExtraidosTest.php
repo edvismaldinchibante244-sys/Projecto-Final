@@ -93,4 +93,20 @@ final class AssetsExtraidosTest extends TestCase
             $this->assertLessThanOrEqual(600, count(file($f)), basename(dirname($f)) . '/' . basename($f) . ' passou de 600 linhas; divida por area.');
         }
     }
+
+    public function testCadastroRestauranteUsaSubmissaoDoFormulario(): void
+    {
+        $publico = NIVORA_ROOT . '/src/public/';
+        $pagina = (string)file_get_contents($publico . 'admin.php');
+        $script = (string)file_get_contents($publico . 'js/admin/restaurantes.js');
+
+        $this->assertStringContainsString(
+            '<button type="submit" form="formCadastrar" class="btn btn-primary" id="btnCadastrarRestaurante">',
+            $pagina
+        );
+        $this->assertStringContainsString(
+            "getElementById('formCadastrar')?.addEventListener('submit'",
+            $script
+        );
+    }
 }

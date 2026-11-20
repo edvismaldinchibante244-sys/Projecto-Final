@@ -42,7 +42,6 @@
             document.getElementById('btnBloquearIpManual')?.addEventListener('click', bloquearIpManual);
             document.getElementById('btnSincronizarFilaOffline')?.addEventListener('click', sincronizarFilaOfflineAgora);
             // Os botoes de aprovar/rejeitar usam onclick inline para evitar bind duplicado.
-            document.getElementById('btnCadastrarRestaurante')?.addEventListener('click', cadastrarRestaurante);
             document.getElementById('btnSalvarEdicao')?.addEventListener('click', salvarEdicao);
             document.getElementById('btnCadastrarUsuario')?.addEventListener('click', cadastrarUsuario);
             document.getElementById('filtroRestaurantes')?.addEventListener('input', aplicarFiltroRestaurantes);

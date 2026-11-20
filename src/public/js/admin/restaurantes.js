@@ -309,6 +309,11 @@
                 });
         }
 
+        document.getElementById('formCadastrar')?.addEventListener('submit', event => {
+            event.preventDefault();
+            cadastrarRestaurante();
+        });
+
         // Ver detalhes
         function verDetalhes(id) {
             if (!hasPermission('manage_restaurants')) {
