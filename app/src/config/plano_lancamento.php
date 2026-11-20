@@ -138,7 +138,9 @@ if (!function_exists('lancamento_preco')) {
         $final = $valorTabela * (1 - ($desconto / 100));
 
         // Arredonda a dezena para nao mostrar precos como 1.399,30.
-        return max(0.0, round($final / 10) * 10);
+        // Um preco valido nao pode cair para zero devido ao arredondamento da
+        // campanha (por exemplo, quando o valor de teste e 1 MZN).
+        return max(1.0, round($final / 10) * 10);
     }
 }
 

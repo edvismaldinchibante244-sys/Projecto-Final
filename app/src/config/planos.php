@@ -25,7 +25,8 @@ $planos = [
         'cor' => '#475569',
         'icone' => 'fa-user',
         'precos' => [
-            'mensal' => 799,
+            // Valor temporario de teste para o checkout ZumboPay em producao.
+            'mensal' => 1,
             'trimestral' => 2157,
             'anual' => 7670
         ],
