@@ -25,7 +25,7 @@ $planos = [
         'cor' => '#475569',
         'icone' => 'fa-user',
         'precos' => [
-            // Valor temporario de teste para o checkout ZumboPay em producao.
+            // Preco temporario de teste: 1 MT; restaurar 799 MT antes da venda normal.
             'mensal' => 1,
             'trimestral' => 2157,
             'anual' => 7670

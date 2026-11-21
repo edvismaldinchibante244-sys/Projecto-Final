@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 $root = dirname(__DIR__);
 require_once $root . '/app/src/config/plan_security.php';
+require_once $root . '/app/src/config/epay.php';
 
 $requestSource = file_get_contents($root . '/src/public/solicitar_plano.php');
 $approvalSource = file_get_contents($root . '/src/public/api/super_admin_plano_aprovar.php');
@@ -63,12 +64,20 @@ try {
         'documento obrigatorio so quando a secao de pagamento esta visivel'
     );
     $check(
-        str_contains($requestSource, 'function checkoutZumboPayAtivo()')
-            && str_contains($requestSource, 'campoComprovativo.required = !checkoutZumboPayAtivo();')
+        str_contains($requestSource, 'function checkoutEpayAtivo()')
+            && str_contains($requestSource, 'campoComprovativo.required = !checkoutEpayAtivo();')
             && str_contains($requestSource, 'metodoSelecionado = metodo;')
             && str_contains($requestSource, 'atualizarEstadoPagamento();'),
-        'comprovativo dispensado no checkout ZumboPay e atualizado ao escolher metodo'
+        'comprovativo dispensado no checkout ePay e atualizado ao escolher metodo'
     );
+    $epaySecret = 'test-epay-webhook-secret';
+    putenv('EPAY_SECRET_KEY=' . $epaySecret);
+    $_ENV['EPAY_SECRET_KEY'] = $epaySecret;
+    $callbackPayload = '{"id":"payment-test","status":"paid"}';
+    $callbackSignature = hash_hmac('sha256', $callbackPayload, $epaySecret);
+    $check(epay_verify_payment_callback($callbackPayload, $callbackSignature), 'assinatura HMAC ePay valida');
+    $check(!epay_verify_payment_callback($callbackPayload . ' ', $callbackSignature), 'assinatura HMAC ePay rejeita payload alterado');
+    $check(!epay_verify_payment_callback($callbackPayload, str_repeat('g', 64)), 'assinatura ePay malformada rejeitada');
 
     // Colunas obrigatorias sem valor por omissao tem de constar das insercoes.
     // Um MariaDB permissivo (XAMPP) preenche-as em silencio; um em modo

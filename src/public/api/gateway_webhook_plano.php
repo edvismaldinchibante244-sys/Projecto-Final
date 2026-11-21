@@ -12,6 +12,7 @@ require_once APP_BASE . '/src/config/database.php';
 require_once APP_BASE . '/src/config/plano_check.php';
 require_once APP_BASE . '/src/config/plan_security.php';
 require_once APP_BASE . '/src/config/audit.php';
+require_once APP_BASE . '/src/config/epay.php';
 
 security_set_headers();
 header('Content-Type: application/json; charset=utf-8');
@@ -32,18 +33,16 @@ if ($rawPayload === '' || strlen($rawPayload) > (1024 * 1024)) {
     security_json(['success' => false, 'message' => 'Payload invalido'], 422);
 }
 
-$zumbopaySignature = trim((string)($_SERVER['HTTP_X_ZUMBOPAY_SIGNATURE'] ?? ''));
-$isZumboPay = $zumbopaySignature !== '';
-$configuredSecret = (string)(getenv($isZumboPay ? 'ZUMBOPAY_WEBHOOK_SECRET' : 'PLANO_WEBHOOK_SECRET') ?: '');
+$epaySignature = trim((string)($_SERVER['HTTP_X_EDUCAVELPAY_SIGNATURE'] ?? ''));
+$isEpay = $epaySignature !== '';
+$configuredSecret = (string)(getenv('PLANO_WEBHOOK_SECRET') ?: '');
 $incomingSignature = trim((string)($_SERVER['HTTP_X_WEBHOOK_SIGNATURE'] ?? ''));
 $configuredToken = (string)(getenv('PLANO_WEBHOOK_TOKEN') ?: '');
 $incomingToken = (string)($_SERVER['HTTP_X_WEBHOOK_TOKEN'] ?? '');
 
-if ($isZumboPay) {
-    $expectedSignature = hash_hmac('sha256', $rawPayload, $configuredSecret);
-    if ($configuredSecret === '' || !preg_match('/^[a-f0-9]{64}$/i', $zumbopaySignature)
-        || !hash_equals($expectedSignature, strtolower($zumbopaySignature))) {
-        security_log_event('zumbopay_webhook_invalid_signature');
+if ($isEpay) {
+    if (!epay_verify_payment_callback($rawPayload, $epaySignature)) {
+        security_log_event('epay_webhook_invalid_signature');
         security_json(['success' => false, 'message' => 'Assinatura invalida'], 401);
     }
 } elseif ($configuredSecret !== '') {
@@ -67,21 +66,26 @@ if (!is_array($payload)) {
     security_json(['success' => false, 'message' => 'Payload invalido'], 422);
 }
 
-$zumbopayData = is_array($payload['data'] ?? null) ? $payload['data'] : [];
-$event = strtolower(trim((string)($payload['event'] ?? ($_SERVER['HTTP_X_ZUMBOPAY_EVENT'] ?? ''))));
-if ($isZumboPay) {
-    $event = match ($event) {
-        'payment.succeeded' => 'payment.approved',
-        'payment.failed' => 'payment.failed',
-        default => $event,
-    };
+$epayData = is_array($payload['data'] ?? null) ? $payload['data'] : [];
+$event = strtolower(trim((string)($payload['event'] ?? '')));
+$epayStatus = strtolower(trim((string)($payload['status'] ?? $epayData['status'] ?? '')));
+if ($isEpay) {
+    $event = $epayStatus === 'paid' ? 'payment.approved' : ($epayStatus === 'failed' ? 'payment.failed' : '');
 }
-$compraId = filter_var($payload['compra_id'] ?? 0, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?? 0;
-$transactionId = security_clean_string($payload['transaction_id'] ?? $zumbopayData['transaction_id'] ?? $zumbopayData['reference'] ?? '', 191);
-$provider = security_clean_string($isZumboPay ? 'zumbopay' : ($payload['provider'] ?? 'gateway'), 100);
+$compraId = filter_var(
+    $isEpay ? ($payload['external_reference'] ?? '') : ($payload['compra_id'] ?? 0),
+    FILTER_VALIDATE_INT,
+    ['options' => ['min_range' => 1]]
+) ?: 0;
+$transactionId = security_clean_string(
+    $isEpay ? ($payload['id'] ?? '') : ($payload['transaction_id'] ?? $epayData['transaction_id'] ?? ''),
+    191
+);
+$provider = security_clean_string($isEpay ? 'epay' : ($payload['provider'] ?? 'gateway'), 100);
 $provider = strtolower($provider);
 
-if (!$isZumboPay && ($compraId <= 0 || $event === '')) {
+if ((!$isEpay && ($compraId <= 0 || $event === ''))
+    || ($isEpay && !in_array($event, ['payment.approved', 'payment.failed'], true))) {
     security_json(['success' => false, 'message' => 'Parametros obrigatorios ausentes'], 422);
 }
 
@@ -92,13 +96,11 @@ if ($transactionId === '' || strlen($transactionId) > 191) {
 try {
     $db = (new Database())->getConnection();
     $columns = plan_security_table_columns($db, 'compras_planos');
-    if ($isZumboPay && $compraId <= 0) {
-        $reference = security_clean_string($zumbopayData['reference'] ?? $payload['reference'] ?? '', 191);
-        if ($reference !== '') {
-            $lookupColumn = in_array('referencia_pagamento', $columns, true) ? 'referencia_pagamento' : 'referencia';
-            $lookup = $db->prepare('SELECT id FROM compras_planos WHERE ' . $lookupColumn . ' = ? LIMIT 1');
-            $lookup->execute([$reference]);
-            $compraId = (int)$lookup->fetchColumn();
+    if ($isEpay) {
+        $currency = strtoupper(trim((string)($payload['currency'] ?? $epayData['currency'] ?? '')));
+        $amount = $payload['amount'] ?? $epayData['amount'] ?? null;
+        if ($currency !== 'MZN' || !is_numeric($amount)) {
+            security_json(['success' => false, 'message' => 'Dados do pagamento invalidos'], 422);
         }
     }
 
@@ -150,6 +152,12 @@ try {
     if (!$compra) {
         $db->rollBack();
         security_json(['success' => false, 'message' => 'Compra nao encontrada'], 404);
+    }
+
+    if ($isEpay && abs((float)$amount - (float)$compra['valor']) > 0.01) {
+        $db->rollBack();
+        security_log_event('epay_webhook_amount_mismatch', ['compra_id' => $compraId]);
+        security_json(['success' => false, 'message' => 'Valor do pagamento divergente'], 409);
     }
 
     if (($compra['status'] ?? '') !== 'PENDENTE') {

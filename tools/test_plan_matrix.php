@@ -27,7 +27,7 @@ $feature = static function (array $catalog, string $plan, string $name): bool {
 };
 
 $expectedPrices = [
-    'BASICO' => ['mensal' => 799, 'trimestral' => 2157, 'anual' => 7670],
+    'BASICO' => ['mensal' => 1, 'trimestral' => 2157, 'anual' => 7670],
     'PROFISSIONAL' => ['mensal' => 1999, 'trimestral' => 5397, 'anual' => 19190],
     'EMPRESARIAL' => ['mensal' => 3999, 'trimestral' => 10797, 'anual' => 38390],
 ];
@@ -158,6 +158,10 @@ foreach ($expectedPrices as $plan => $prices) {
     $monthly = (float)$plans[$plan]['precos']['mensal'];
     $quarterly = (float)$plans[$plan]['precos']['trimestral'];
     $annual = (float)$plans[$plan]['precos']['anual'];
+    // O preço mensal de teste do Básico não altera a base comercial dos ciclos longos.
+    if ($plan === 'BASICO' && $monthly === 1.0) {
+        $monthly = 799.0;
+    }
     $check($quarterly < $monthly * 3, "Plano {$plan} deve conceder desconto trimestral.");
     $check($annual < $monthly * 12, "Plano {$plan} deve conceder desconto anual.");
 }

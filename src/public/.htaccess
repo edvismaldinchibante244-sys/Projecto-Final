@@ -6,9 +6,6 @@ ServerSignature Off
 # Força HTTPS (compatível com Cloudflare - verifica cabeçalho X-Forwarded-Proto)
 RewriteEngine On
 
-# Callback publico do ZumboPay. O fornecedor usa esta URL sem extensao.
-RewriteRule ^pagamentos/zumbopay/callback/?$ api/gateway_webhook_plano.php [END,QSA]
-
 # URLs limpas para todas as páginas PHP públicas.
 # /src/public/pedidos.php e /pedidos.php passam a /pedidos.
 # APIs são excluídas para preservar os contratos existentes.

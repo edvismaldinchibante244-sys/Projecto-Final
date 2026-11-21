@@ -14,7 +14,7 @@ require_once APP_BASE . '/src/config/plano_upgrade_guard.php';
 require_once APP_BASE . '/src/config/plan_security.php';
 require_once APP_BASE . '/src/config/audit.php';
 require_once APP_BASE . '/src/config/plano_lifecycle.php';
-require_once APP_BASE . '/src/config/zumbopay.php';
+require_once APP_BASE . '/src/config/epay.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -111,26 +111,28 @@ try {
     $compraId = (int)$db->lastInsertId();
 
     $checkoutUrl = '';
-    // Quando ZumboPay esta configurado, M-Pesa abre o checkout hospedado e a
+    // Quando ePay esta configurado, M-Pesa abre o checkout hospedado e a
     // aprovacao continua exclusivamente pelo webhook assinado.
-    if ($validation['method'] === 'MPESA' && zumbopay_is_configured()) {
+    if ($validation['method'] === 'MPESA' && epay_is_configured()) {
         try {
-            $checkout = zumbopay_create_plan_checkout(
+            $checkout = epay_create_plan_payment(
                 $compraId,
                 (float)$validation['price'],
-                'Plano ' . $validation['plan'] . ' - ' . $validation['cycle']
+                'Plano ' . $validation['plan'] . ' - ' . $validation['cycle'],
+                (string)($restaurante['nome'] ?? ''),
+                (string)($restaurante['email'] ?? '')
             );
             $refColumn = in_array('referencia_pagamento', $columns, true) ? 'referencia_pagamento' : 'referencia';
             $stmtRef = $db->prepare('UPDATE compras_planos SET ' . $refColumn . ' = ?, observacao = ? WHERE id = ?');
             $stmtRef->execute([
-                $checkout['reference'],
-                'Checkout ZumboPay criado; aguardando confirmacao segura.',
+                $checkout['id'],
+                'Checkout ePay criado; aguardando confirmacao segura.',
                 $compraId,
             ]);
-            $checkoutUrl = $checkout['checkout_url'];
+            $checkoutUrl = $checkout['payment_url'];
         } catch (Throwable $gatewayError) {
-            error_log('plano_comprar ZumboPay: ' . $gatewayError->getMessage());
-            security_json(['success' => false, 'message' => 'Nao foi possivel iniciar o pagamento ZumboPay. Tente novamente mais tarde.'], 502);
+            error_log('plano_comprar ePay: ' . $gatewayError->getMessage());
+            security_json(['success' => false, 'message' => 'Nao foi possivel iniciar o pagamento ePay. Tente novamente mais tarde.'], 502);
         }
     }
 
